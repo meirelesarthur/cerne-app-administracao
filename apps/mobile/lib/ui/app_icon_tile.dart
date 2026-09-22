@@ -12,9 +12,7 @@ import '../design/theme/app_theme_extension.dart';
 enum AppAppIconTileSize { large, small }
 
 /// Ícone de app estilo launcher Android — quadrado arredondado ("squircle") +
-/// rótulo abaixo. Usado pela simulação de tela inicial ([AndroidHomePage] e
-/// [CerneAppFolderPage]): o ícone "CERNE App" na área de trabalho, "CERNE ADM"/
-/// "CERNE Operação" dentro da pasta, e os ícones decorativos do dock.
+/// rótulo abaixo.
 ///
 /// Deriva do mesmo padrão de [AppQuickAction] (círculo + rótulo, ação do hub),
 /// mas com forma de "squircle" — a leitura visual precisa ser "ícone de app",

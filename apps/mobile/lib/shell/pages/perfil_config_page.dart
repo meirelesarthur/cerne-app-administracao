@@ -188,10 +188,7 @@ class PerfilConfigPage extends ConsumerWidget {
                       showShadow: false,
                       onTap: () {
                         ref.read(prototypeSessionProvider.notifier).logout();
-                        // Volta para a seleção de ambiente — simula "fechar o
-                        // app", reforçando a separação entre CERNE ADM e CERNE
-                        // Operação.
-                        context.go('/desktop/cerne-app');
+                        context.go('/login');
                       },
                     ),
                   ],

@@ -5,20 +5,17 @@
 /// de obra, máquinas, insumos, EPIs) → execução com evidências → conclusão →
 /// avaliação.
 ///
-/// LACUNA (premissa de protótipo): a OS nasce no app **web** — o app mobile
-/// nunca cadastra uma OS nova, só recebe o que já foi solicitado/autorizado
-/// por lá (mesmo padrão de Confinamento: cadastro no web, lançamento em
-/// campo no mobile). Por isso não há formulário de criação aqui, só os
-/// mocks que representam o que chegaria do banco compartilhado.
-///
 /// Decisão de perfil confirmada com o usuário:
+/// - Administrativo cria a OS diretamente na aba "OS" (`ordem_servico_painel.dart`,
+///   `OrdemServicoStoreNotifier.criar`) — autoassina como solicitante e
+///   autorizador, sem uma segunda etapa de aprovação (spec simplificada de
+///   protótipo). Também avalia (checkpoint de qualidade, sem mudar o
+///   andamento) ou cancela, mas só enquanto a OS ainda não foi encerrada pelo
+///   Operacional (aguardando/em execução/pausada) — nunca uma já entregue ou
+///   refeita.
 /// - Operacional inicia, pausa/retoma e encerra a própria OS (entregue, ou
 ///   refeita com justificativa quando o serviço não pôde ser concluído como
 ///   planejado).
-/// - Administrativo só visualiza; pode avaliar (checkpoint de qualidade,
-///   sem mudar o andamento) ou cancelar, mas só enquanto a OS ainda não foi
-///   encerrada pelo Operacional (aguardando/em execução/pausada) — nunca uma
-///   já entregue ou refeita.
 library;
 
 enum TipoServicoOs { agricola, pecuario, manutencao, infraestrutura }

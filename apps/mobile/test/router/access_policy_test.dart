@@ -10,30 +10,21 @@ void main() {
       UserAccessProfile.administration,
     );
 
-    test(
-      'sem sessão só login, onboarding e a seleção de ambiente permanecem públicos',
-      () {
-        expect(redirectForSession('/login', signedOut), isNull);
-        expect(redirectForSession('/onboarding', signedOut), isNull);
-        expect(redirectForSession('/desktop', signedOut), isNull);
-        expect(redirectForSession('/desktop/cerne-app', signedOut), isNull);
+    test('sem sessão só login e onboarding permanecem públicos', () {
+      expect(redirectForSession('/login', signedOut), isNull);
+      expect(redirectForSession('/onboarding', signedOut), isNull);
 
-        for (final path in [
-          '/',
-          '/inicio',
-          '/bank/extrato',
-          '/perfil',
-          '/notificacoes',
-          '/fazendas/administracao',
-        ]) {
-          expect(
-            redirectForSession(path, signedOut),
-            '/desktop/cerne-app',
-            reason: path,
-          );
-        }
-      },
-    );
+      for (final path in [
+        '/',
+        '/inicio',
+        '/bank/extrato',
+        '/perfil',
+        '/notificacoes',
+        '/fazendas/administracao',
+      ]) {
+        expect(redirectForSession(path, signedOut), '/login', reason: path);
+      }
+    });
 
     test('com sessão, as rotas administrativas passam direto', () {
       for (final path in [
@@ -51,7 +42,7 @@ void main() {
     test('raiz, login e atalhos neutros retornam à central do perfil', () {
       for (final profile in UserAccessProfile.values) {
         final session = PrototypeSessionState.signedIn(profile);
-        for (final path in ['/', '/login', '/desktop', '/desktop/cerne-app']) {
+        for (final path in ['/', '/login']) {
           expect(
             redirectForSession(path, session),
             profile.landingRoute,

@@ -1370,26 +1370,25 @@ const adminFeatures = <FeatureDefinition>[
         'Período e formatos CSV/JSON são premissas funcionais do protótipo frontend.',
     auditExport: AuditExportKind.pecuaria,
   ),
-  // Espelha `minhas-os`, mas para o Administrativo: só visualização, com as
-  // duas ações que o perfil pode tomar enquanto a OS não foi encerrada pelo
-  // Operacional (avaliar, cancelar) — `admin/dash_ordem_servico.dart`. Grupo
-  // 'Ordem de serviço': aba própria da Administração (`focusGroup` em
-  // `fazendas_module.dart`), reaproveitando ícone/rótulo/ordem já definidos
-  // para o mesmo nome de grupo no operacional (`group_icons.dart`).
+  // Espelha `minhas-os`, mas para o Administrativo: cria novas OS e tem as
+  // duas ações que o perfil pode tomar enquanto uma OS não foi encerrada pelo
+  // Operacional (avaliar, cancelar) — `admin/dash_ordem_servico.dart`, mesmo
+  // painel (`ordem_servico/screens/ordem_servico_painel.dart`) da aba "OS"
+  // própria da Administração (`ordem_servico_tab_screen.dart`).
   FeatureDefinition(
     id: 'consulta-os',
     profile: FeatureProfile.administration,
     group: 'Ordem de serviço',
     title: 'Ordem de Serviço',
     objective:
-        'Consultar todas as ordens de serviço da fazenda, avaliar o andamento '
-        'ou cancelar uma OS ainda não encerrada pelo Operacional.',
+        'Consultar as ordens de serviço da fazenda, filtrar por data e status, '
+        'criar uma nova OS, avaliar o andamento ou cancelar uma OS ainda não '
+        'encerrada pelo Operacional.',
     status: FeatureStatus.ready,
     existingRoute: '/fazendas/dashboards/ordem-servico',
     emptyLabel: 'Nenhuma ordem de serviço registrada.',
     sourceDetail:
-        'Consulta demonstrativa de todas as ordens de serviço registradas nesta sessão.',
-    readOnly: true,
+        'Consulta e criação demonstrativas de ordens de serviço registradas nesta sessão.',
     listMode: true,
   ),
   // Mesmo padrão de `consulta-os`: o cadastro (`ApontamentoFlow`) é

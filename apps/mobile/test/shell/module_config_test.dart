@@ -113,7 +113,7 @@ void main() {
       expect(adminTabs.map((tab) => tab.id), isNot(contains('rotinas')));
       expect(
         adminTabs.where((tab) => tab.action == null).map((tab) => tab.label),
-        ['Gestão', 'Consultas', 'Ordens de Serviço'],
+        ['Gestão', 'Consultas', 'OS'],
       );
     });
   });

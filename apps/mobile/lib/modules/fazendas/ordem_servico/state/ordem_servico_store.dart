@@ -30,6 +30,62 @@ class OrdemServicoStoreNotifier extends Notifier<OrdemServicoState> {
 
   OrdemServico byId(String id) => state.ordens.firstWhere((o) => o.id == id);
 
+  /// Ação do Administrativo: abre e já autoriza uma nova OS — no protótipo
+  /// não há uma segunda etapa de autorização por outra pessoa, então quem
+  /// cria também assina como solicitante e autorizador (spec simplificada,
+  /// decisão confirmada com o usuário: a Administração passou a poder criar
+  /// OS diretamente por aqui, não só consultar).
+  void criar({
+    required String titulo,
+    required TipoServicoOs tipo,
+    required String fazenda,
+    required String areaOuTalhao,
+    required PrioridadeOs prioridade,
+    required DateTime prazo,
+    required String descricao,
+    required String autor,
+  }) {
+    final agora = DateTime.now();
+    final codigo = 'OS #${_proximoNumero()}';
+    final nova = OrdemServico(
+      id: 'os-${DateTime.now().microsecondsSinceEpoch}',
+      codigo: codigo,
+      titulo: titulo,
+      tipo: tipo,
+      fazenda: fazenda,
+      areaOuTalhao: areaOuTalhao,
+      solicitante: autor,
+      dataSolicitacao: agora,
+      autorizador: autor,
+      dataAutorizacao: agora,
+      prioridade: prioridade,
+      prazo: prazo,
+      descricao: descricao,
+      instrucoesSeguranca: '',
+      maoDeObra: const [],
+      maquinas: const [],
+      insumos: const [],
+      epis: const [],
+      status: OrdemServicoStatus.aguardando,
+      responsavelExecucao: 'A definir',
+      historico: [
+        EventoOs(dataHora: agora, autor: autor, acao: 'OS criada e autorizada'),
+      ],
+    );
+    state = state.copyWith(ordens: [nova, ...state.ordens]);
+  }
+
+  /// Próximo número sequencial de exibição (`OS #2202`, ...), continuando a
+  /// numeração dos mocks — só estética, o `id` interno já é único por si.
+  int _proximoNumero() {
+    final numeros = state.ordens.map((o) {
+      final digitos = o.codigo.replaceAll(RegExp(r'[^0-9]'), '');
+      return int.tryParse(digitos) ?? 0;
+    });
+    final maior = numeros.isEmpty ? 2200 : numeros.reduce((a, b) => a > b ? a : b);
+    return maior + 1;
+  }
+
   void _update(String id, OrdemServico Function(OrdemServico atual) update) {
     state = state.copyWith(
       ordens: [

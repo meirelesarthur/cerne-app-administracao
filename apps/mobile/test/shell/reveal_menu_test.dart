@@ -72,9 +72,7 @@ void main() {
         await tester.tap(find.text('Sair'));
         await tester.pump();
 
-        // Logout volta para a seleção de ambiente (simula "fechar o app"),
-        // não direto para o login.
-        expect(navigatedTo, '/desktop/cerne-app');
+        expect(navigatedTo, '/login');
       },
     );
 

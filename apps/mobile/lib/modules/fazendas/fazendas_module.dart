@@ -10,6 +10,7 @@ import 'screens/fazendas_home.dart';
 import 'screens/group_features_screen.dart';
 import 'screens/mais_screen.dart';
 import 'screens/mapped_feature_screen.dart';
+import 'screens/ordem_servico_tab_screen.dart';
 import 'screens/responsibility_workspace.dart';
 
 /// Rotas do módulo Fazendas (ex-"Cerne") — espelha `FazendasModule.tsx`.
@@ -108,30 +109,13 @@ GoRoute buildFazendasModuleRoute() {
           ),
         ],
       ),
-      // Aba "Ordens de Serviço" da Administração: 100% leitura, sem
-      // cadastros operacionais — só as duas consultas (`consulta-os`,
-      // `consulta-apontamentos`) do grupo 'Ordem de serviço' do catálogo.
+      // Aba "OS" da Administração: lista direto as ordens de serviço da
+      // fazenda ativa, filtráveis por status e prazo, com a opção de criar
+      // uma nova — sem a camada intermediária de tiles (`OrdemServicoTabScreen`).
       GoRoute(
         path: 'ordem-servico',
-        builder: (context, state) => const _FazendasScaffold(
-          child: ResponsibilityWorkspace(
-            profile: FeatureProfile.administration,
-            showLocalContext: false,
-            focusGroup: 'Ordem de serviço',
-          ),
-        ),
-        routes: [
-          GoRoute(
-            path: ':featureId',
-            builder: (context, state) => _FazendasScaffold(
-              child: MappedFeatureScreen(
-                featureId: state.pathParameters['featureId']!,
-                profile: FeatureProfile.administration,
-                centerRoute: '/fazendas/ordem-servico',
-              ),
-            ),
-          ),
-        ],
+        builder: (context, state) =>
+            const _FazendasScaffold(child: OrdemServicoTabScreen()),
       ),
       GoRoute(
         path: 'dashboards/:dashId',

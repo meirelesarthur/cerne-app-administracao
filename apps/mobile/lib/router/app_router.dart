@@ -10,8 +10,6 @@ import '../modules/fazendas/screens/busca_global_screen.dart';
 import '../modules/hub/hub_module.dart';
 import '../modules/marketplace/marketplace_module.dart';
 import '../shell/module_config.dart';
-import '../shell/pages/android_home_page.dart';
-import '../shell/pages/cerne_app_folder_page.dart';
 import '../shell/pages/login_page.dart';
 import '../shell/pages/module_placeholder_screen.dart';
 import '../shell/pages/notificacoes_page.dart';
@@ -35,7 +33,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   });
 
   final router = GoRouter(
-    initialLocation: '/desktop/cerne-app',
+    initialLocation: '/login',
     refreshListenable: refresh,
     redirect: (context, state) {
       final session = ref.read(prototypeSessionProvider);
@@ -116,22 +114,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => const OnboardingPage(),
       ),
-      // Simulação da tela inicial Android. A apresentação começa diretamente
-      // na pasta `cerne-app` (ver `initialLocation` acima), mas a área de
-      // trabalho continua disponível em `/desktop`. `cerne-app` é filho literal
-      // de `desktop`, então `context.go` entre as duas mantém a linhagem — só
-      // o salto para `/login` (rota irmã fora da linhagem) usa `push` em
-      // `CerneAppFolderPage`.
-      GoRoute(
-        path: '/desktop',
-        builder: (context, state) => const AndroidHomePage(),
-        routes: [
-          GoRoute(
-            path: 'cerne-app',
-            builder: (context, state) => const CerneAppFolderPage(),
-          ),
-        ],
-      ),
     ],
   );
 
@@ -144,28 +126,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 /// Política única de acesso do protótipo, separada do roteador para permitir
 /// testes determinísticos de deep links. O CERNE ADM tem um único perfil
-/// (Administração), então a política só decide entre rota pública, entrada
+/// (Administração) e entra direto pelo login — sem tela de seleção de
+/// ambiente/perfil —, então a política só decide entre rota pública, entrada
 /// sem sessão e normalização das rotas de entrada do módulo.
 String? redirectForSession(String path, PrototypeSessionState session) {
-  final isPublic =
-      path == '/login' ||
-      path == '/onboarding' ||
-      path == '/desktop' ||
-      path == '/desktop/cerne-app';
+  final isPublic = path == '/login' || path == '/onboarding';
   final profile = session.profile;
 
   if (profile == null) {
-    // A seleção de ambiente é a porta de entrada real do protótipo (ver
-    // `initialLocation`) — sem sessão, qualquer rota protegida cai nela, não
-    // direto no formulário de login.
-    return isPublic ? null : '/desktop/cerne-app';
+    // O login é a porta de entrada real do protótipo (ver
+    // `initialLocation`) — sem sessão, qualquer rota protegida cai nele.
+    return isPublic ? null : '/login';
   }
 
-  if (path == '/' ||
-      path == '/fazendas' ||
-      path == '/login' ||
-      path == '/desktop' ||
-      path == '/desktop/cerne-app') {
+  if (path == '/' || path == '/fazendas' || path == '/login') {
     return path == '/fazendas' ? profile.homeRoute : profile.landingRoute;
   }
   if (path == '/fazendas/mais') return profile.homeRoute;

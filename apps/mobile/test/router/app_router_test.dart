@@ -6,6 +6,7 @@ import 'package:cerne_app/shell/state/prototype_session_store.dart';
 import 'package:cerne_app/ui/module_tile.dart';
 import 'package:cerne_app/ui/pressable.dart';
 import 'package:cerne_app/ui/search_field.dart';
+import 'package:cerne_app/ui/segmented_tabs.dart';
 
 import '../support/router_test_harness.dart';
 import '../support/test_viewport.dart';
@@ -97,10 +98,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.descendant(
-            of: contextTabs,
-            matching: find.text('Ordens de Serviço'),
-          ),
+          find.descendant(of: contextTabs, matching: find.text('OS')),
           findsOneWidget,
         );
         expect(
@@ -126,7 +124,7 @@ void main() {
         );
         final ordemServicoTab = tester.getRect(
           find.ancestor(
-            of: find.text('Ordens de Serviço'),
+            of: find.text('OS'),
             matching: find.byType(AppPressable),
           ),
         );
@@ -187,7 +185,7 @@ void main() {
     );
 
     testWidgets(
-      'aba Ordens de Serviço só entrega as duas consultas, sem os cadastros operacionais',
+      'aba OS lista as ordens de serviço da fazenda, com filtro e criação',
       (tester) async {
         await setTallSurface(tester);
         harness.router.go('/fazendas');
@@ -196,19 +194,15 @@ void main() {
 
         final contextTabs = find.byType(AppContextTabs);
         await tester.tap(
-          find.descendant(
-            of: contextTabs,
-            matching: find.text('Ordens de Serviço'),
-          ),
+          find.descendant(of: contextTabs, matching: find.text('OS')),
         );
         await tester.pumpAndSettle();
 
-        // Só as duas consultas somente-leitura do grupo 'Ordem de serviço'
-        // (`admin/dash_ordem_servico.dart`, `admin/dash_apontamentos.dart') —
-        // nenhum cadastro operacional de campo aparece mais aqui.
-        expect(find.text('Ordem de Serviço'), findsOneWidget);
-        expect(find.text('Apontamentos agrícolas'), findsOneWidget);
-        expect(find.byType(AppModuleTile), findsNWidgets(2));
+        // Lista direto as OS da fazenda — sem a camada intermediária de
+        // tiles que as demais abas usam.
+        expect(find.text('Criar OS'), findsOneWidget);
+        expect(find.text('OS #2201 · Reparo de cerca do Talhão 04'), findsOneWidget);
+        expect(find.text('OS #2170 · Construção de bebedouro no Piquete 07'), findsOneWidget);
         expect(find.text('Confinamento'), findsNothing);
         expect(find.text('Pecuária'), findsNothing);
         expect(find.text('Agricultura'), findsNothing);
@@ -217,11 +211,17 @@ void main() {
         expect(find.text('Sincronizar aplicativo'), findsNothing);
         expect(tester.takeException(), isNull);
 
-        await tester.tap(find.text('Ordem de Serviço'));
+        // Filtro por status: só a OS aguardando permanece.
+        await tester.tap(
+          find.descendant(
+            of: find.byType(AppSegmentedTabs),
+            matching: find.text('Aguardando'),
+          ),
+        );
         await tester.pumpAndSettle();
 
-        expect(find.text('Central de gestão'), findsNothing);
-        expect(tester.takeException(), isNull);
+        expect(find.text('OS #2201 · Reparo de cerca do Talhão 04'), findsOneWidget);
+        expect(find.text('OS #2170 · Construção de bebedouro no Piquete 07'), findsNothing);
       },
     );
 
@@ -245,48 +245,34 @@ void main() {
       },
     );
 
-    testWidgets(
-      'deep link sem sessão retorna à seleção de ambiente (não ao login)',
-      (tester) async {
-        // Regressão: a seleção de ambiente (`/desktop/cerne-app`) é a porta de
-        // entrada real do protótipo — sem sessão, qualquer rota protegida cai
-        // nela, não direto no formulário de login.
-        harness.dispose();
-        harness = RouterTestHarness();
-        harness.router.go('/fazendas/dashboards/financeiro');
+    testWidgets('deep link sem sessão retorna direto ao login', (
+      tester,
+    ) async {
+      // Regressão: o login (`/login`) é a porta de entrada real do
+      // protótipo — sem sessão, qualquer rota protegida cai nele, sem passar
+      // por uma tela de seleção de ambiente/perfil.
+      harness.dispose();
+      harness = RouterTestHarness();
+      harness.router.go('/fazendas/dashboards/financeiro');
 
-        await tester.pumpWidget(harness.buildApp());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(harness.buildApp());
+      await tester.pumpAndSettle();
 
-        expect(find.text('Administrativo'), findsOneWidget);
-        expect(find.text('Operacional'), findsNothing);
-        expect(find.text('Login Administração'), findsNothing);
-      },
-    );
+      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('Acesso administrativo'), findsOneWidget);
+    });
 
-    testWidgets(
-      'rota inicial sem navegação explícita é a seleção de ambiente',
-      (tester) async {
-        harness.dispose();
-        harness = RouterTestHarness();
+    testWidgets('rota inicial sem navegação explícita é o login', (
+      tester,
+    ) async {
+      harness.dispose();
+      harness = RouterTestHarness();
 
-        await tester.pumpWidget(harness.buildApp());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(harness.buildApp());
+      await tester.pumpAndSettle();
 
-        expect(find.text('Administrativo'), findsOneWidget);
-        expect(find.text('Operacional'), findsNothing);
-      },
-    );
-
-    testWidgets(
-      'sessão autenticada em "/desktop" é redirecionada para a central do perfil',
-      (tester) async {
-        harness.router.go('/desktop');
-        await tester.pumpWidget(harness.buildApp());
-        await tester.pumpAndSettle();
-
-        expect(find.text('Conta GB Banking'), findsOneWidget);
-      },
-    );
+      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('Acesso administrativo'), findsOneWidget);
+    });
   });
 }

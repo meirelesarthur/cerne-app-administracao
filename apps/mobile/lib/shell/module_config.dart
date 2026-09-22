@@ -190,13 +190,13 @@ const List<ModuleDef> modules = [
         profiles: {UserAccessProfile.administration},
       ),
       // Substitui a antiga aba "Operacional": a Administração não acessa mais
-      // os cadastros operacionais de campo por aqui — só a consulta,
-      // 100% leitura, das Ordens de Serviço e dos Apontamentos agrícolas
-      // lançados pelo Operacional (`admin/dash_ordem_servico.dart`,
-      // `admin/dash_apontamentos.dart`).
+      // os cadastros operacionais de campo por aqui — lista direto as OS da
+      // fazenda (filtráveis por data/status) e permite abrir uma nova
+      // (`admin/dash_ordem_servico.dart`). "OS" (não "Ordens de Serviço"):
+      // rótulo curto de aba, igual às demais.
       BottomTab(
         id: 'ordem-servico-adm',
-        label: 'Ordens de Serviço',
+        label: 'OS',
         icon: AppIcons.fileText,
         path: 'ordem-servico',
         profiles: {UserAccessProfile.administration},
@@ -213,8 +213,8 @@ const List<ModuleDef> modules = [
     // que já existe em outro lugar — "Central de gestão/rotinas" é a própria
     // aba de contexto ativa; os 7 "Dashboards gerenciais" já são o grupo
     // "Painéis de decisão"/"Consultas e auditoria" da central; "Fila de
-    // sincronização" já é o grupo "Sincronização"; a consulta de Ordens de
-    // Serviço já é a aba "Ordens de Serviço". Dois caminhos para o mesmo
+    // sincronização" já é o grupo "Sincronização"; a listagem de Ordens de
+    // Serviço já é a aba "OS". Dois caminhos para o mesmo
     // destino não é conveniência, é a pessoa não saber se são a mesma coisa.
     menuSections: [],
   ),
