@@ -1,0 +1,12 @@
+tags:
+  golden:
+    description: Golden tests (Alchemist) — comparam contra imagens em test/golden/goldens/.
+  captura:
+    description: >-
+      Captura de tela inteira para conferência visual da migração ao padrão
+      global do Figma. Não é regressão: as imagens não são versionadas e o
+      resultado é para olho humano, não para comparação automática — uma tela
+      inteira muda a cada ajuste de conteúdo e um golden dela seria só ruído.
+      Rodar sob demanda com:
+      `flutter test --tags captura --run-skipped --update-goldens test/golden/_captura_visual_test.dart`
+    skip: "conferência visual sob demanda — rode com --tags captura"

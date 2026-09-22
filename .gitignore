@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Diffs temporários do Alchemist quando um golden falha — artefato local, nunca versionado.
+apps/mobile/test/golden/failures/
+
+# Capturas de conferência visual (test/golden/_captura_visual_test.dart) — para olho
+# humano, sob demanda; não são golden de regressão.
+apps/mobile/test/golden/captura/

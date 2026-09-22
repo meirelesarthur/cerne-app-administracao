@@ -1,0 +1,76 @@
+name: Flutter CI (apps/mobile)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/mobile/**'
+      - 'tokens/**'
+      - 'design/tokens.ts'
+      - 'scripts/export-tokens-*.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/flutter-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'tokens/**'
+      - 'design/tokens.ts'
+      - 'scripts/export-tokens-*.ts'
+      - 'package.json'
+      - 'package-lock.json'
+
+defaults:
+  run:
+    working-directory: apps/mobile
+
+jobs:
+  analyze-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # Versão fixa (não `channel: stable` flutuante) — os golden tests
+          # (F2.6, `test/flutter_test_config.dart`) comparam pixels contra o
+          # motor Skia desta versão exata; um bump silencioso de "stable"
+          # entre execuções do CI voltaria a divergir dos PNGs commitados
+          # sem nenhuma mudança de código. Subir junto com os goldens quando
+          # atualizar de propósito.
+          flutter-version: '3.44.6'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify tokens.ts → DTCG → Dart
+        working-directory: .
+        run: |
+          npm ci
+          npm run tokens:verify
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+      - name: Functional parity and access gate (53 features)
+        run: bash tool/functional_gate.sh
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build web (Widgetbook + app compile check)
+        working-directory: .
+        run: npm run build
+
+      - name: Smoke test Cloudflare routes
+        working-directory: .
+        run: npm run smoke:deploy

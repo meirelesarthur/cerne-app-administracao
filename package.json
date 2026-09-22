@@ -1,0 +1,23 @@
+{
+  "name": "cerne-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "cd apps/mobile && flutter run -d chrome",
+    "build": "node scripts/build-flutter-site.mjs",
+    "lint": "cd apps/mobile && flutter analyze --fatal-infos",
+    "test": "cd apps/mobile && flutter test",
+    "quality:functional": "cd apps/mobile && flutter test test/architecture/component_first_test.dart test/architecture/token_integrity_test.dart test/modules/fazendas/functional_catalog_test.dart test/modules/fazendas/functional_journey_engine_test.dart test/router/access_policy_test.dart test/router/app_router_test.dart",
+    "tokens:export": "tsx scripts/export-tokens-dtcg.ts",
+    "tokens:export:flutter": "tsx scripts/export-tokens-flutter.ts && dart format apps/mobile/lib/design/generated",
+    "tokens:verify": "npm run tokens:export && npm run tokens:export:flutter && git diff --exit-code -- tokens/tokens.json apps/mobile/lib/design/generated",
+    "smoke:deploy": "node scripts/smoke-flutter-deploy.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4",
+    "wrangler": "4.123.0"
+  }
+}

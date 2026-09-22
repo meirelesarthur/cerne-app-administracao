@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cerne-app-operacao",
+  "main": "./workers/index.js",
+  "compatibility_date": "2026-08-17",
+  "assets": {
+    "directory": "./apps/mobile/build/site",
+    "binding": "ASSETS"
+  }
+}
