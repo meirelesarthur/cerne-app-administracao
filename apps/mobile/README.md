@@ -1,17 +1,21 @@
-# cerne_app
+<p align="center">
+  <img src="assets/images/Logo.svg" alt="GB CERNE" width="200" />
+</p>
 
-A new Flutter project.
+# GB CERNE ADM — app Flutter
 
-## Getting Started
+Código-fonte do app (Flutter 3.44.6 + Dart 3, Riverpod, go_router, Widgetbook). Para a descrição de
+funcionalidades e fluxos do produto, veja o [README na raiz do repositório](../../README.md).
 
-This project is a starting point for a Flutter application.
+## Comandos locais
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter pub get
+flutter run -d chrome     # roda o app
+flutter analyze --fatal-infos
+flutter test
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Estrutura principal em `lib/`: `design/` (temas e tokens gerados), `ui/` (catálogo component-first),
+`router/` (rotas e política de acesso), `shell/` (shell global e sessão demonstrativa),
+`modules/` (Início, Fazendas, Bank, Crédito, Marketplace, Armazém).
