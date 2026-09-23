@@ -471,7 +471,6 @@ export const shadow = {
   tile: '0 4px 12px rgba(0,0,0,0.02)',
   row: '0 4px 6px rgba(0,0,0,0.02)',
   hero: '0 4px 8px rgba(0,0,0,0.12)',
-  actionBar: '0 -1px 8.8px rgba(0,0,0,0.05)',
   bubble: '0 2px 4px rgba(0,0,0,0.04)',
 } as const
 

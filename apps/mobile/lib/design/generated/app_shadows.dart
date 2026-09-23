@@ -45,9 +45,6 @@ class AppShadows {
   static const List<BoxShadow> hero = [
     BoxShadow(color: Color(0x1F000000), offset: Offset(0, 4), blurRadius: 8),
   ];
-  static const List<BoxShadow> actionBar = [
-    BoxShadow(color: Color(0x0D000000), offset: Offset(0, -1), blurRadius: 8.8),
-  ];
   static const List<BoxShadow> bubble = [
     BoxShadow(color: Color(0x0A000000), offset: Offset(0, 2), blurRadius: 4),
   ];
