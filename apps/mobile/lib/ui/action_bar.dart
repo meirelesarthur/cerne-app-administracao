@@ -33,6 +33,8 @@ class AppActionBar extends StatelessWidget {
     this.primaryLoading = false,
     this.secondaryLabel,
     this.onSecondary,
+    this.alternativeLabel,
+    this.onAlternative,
     this.summary,
     this.primarySize = AppButtonSize.lg,
   });
@@ -52,6 +54,12 @@ class AppActionBar extends StatelessWidget {
   /// Ação de escape. No Figma é "Cancelar", em contorno vermelho.
   final String? secondaryLabel;
   final VoidCallback? onSecondary;
+
+  /// Alternativa não destrutiva acima do CTA (ex.: "Pausar execução" na OS),
+  /// em contorno neutro. Mesmo tamanho e caixa alta dos outros botões da
+  /// barra — por isso é prop própria, e não um botão solto em [summary].
+  final String? alternativeLabel;
+  final VoidCallback? onAlternative;
 
   /// Faixa acima dos botões. No frame *bottom fixed* é um
   /// [AppActionBarSummary]; o app também usa para o aviso de fila offline.
@@ -78,6 +86,21 @@ class AppActionBar extends StatelessWidget {
             children: [
               if (summary != null) ...[
                 summary!,
+                const SizedBox(height: AppSpacing.space2),
+              ],
+              if (alternativeLabel != null) ...[
+                Semantics(
+                  label: alternativeLabel,
+                  child: AppButton(
+                    size: AppButtonSize.lg,
+                    fullWidth: true,
+                    variant: AppButtonVariant.secondary,
+                    onPressed: onAlternative,
+                    child: ExcludeSemantics(
+                      child: Text(alternativeLabel!.toUpperCase()),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.space2),
               ],
               // A caixa alta é decisão visual da referência, não do conteúdo:
@@ -202,6 +225,20 @@ WidgetbookComponent buildActionBarWidgetbookComponent() {
             primaryIcon: AppIcons.saveAll,
             onPrimary: () {},
             secondaryLabel: 'Cancelar',
+            onSecondary: () {},
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Três ações (com alternativa)',
+        builder: (context) => Align(
+          alignment: Alignment.bottomCenter,
+          child: AppActionBar(
+            alternativeLabel: 'Pausar execução',
+            onAlternative: () {},
+            primaryLabel: 'Marcar como entregue',
+            onPrimary: () {},
+            secondaryLabel: 'Marcar como refeita',
             onSecondary: () {},
           ),
         ),
