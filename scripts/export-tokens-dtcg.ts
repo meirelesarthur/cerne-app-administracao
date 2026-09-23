@@ -170,6 +170,7 @@ const dtcg = {
     kpi: mapColors(component.kpi),
     tabbar: mapDimensions(component.tabbar),
     navigationCard: mapDimensions(component.navigationCard),
+    emptyState: mapDimensions(component.emptyState),
   },
 } as const
 

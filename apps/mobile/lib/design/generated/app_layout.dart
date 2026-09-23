@@ -58,4 +58,12 @@ class AppComponentMetrics {
   static const double tabbarInset = 14;
   static const double tabbarItemSize = 48;
   static const double navigationCardHeight = 140;
+  static const double emptyStateArt = 112;
+  static const double emptyStateArtIcon = 56;
+  static const double emptyStateBadge = 36;
+  static const double emptyStateBadgeIcon = 18;
+  static const double emptyStateArtCompact = 64;
+  static const double emptyStateArtIconCompact = 32;
+  static const double emptyStateBadgeCompact = 24;
+  static const double emptyStateBadgeIconCompact = 14;
 }

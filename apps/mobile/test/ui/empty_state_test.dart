@@ -41,5 +41,47 @@ void main() {
       expect(find.text('Sem dados'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('desenha o selo e dispara o link de ajuda', (tester) async {
+      var tocou = false;
+      await tester.pumpWidget(
+        _wrap(
+          AppEmptyState(
+            icon: AppIcons.bell,
+            badgeIcon: AppIcons.check,
+            tone: AppEmptyStateTone.success,
+            title: 'Você está em dia',
+            hint: 'Procurando uma antiga?',
+            hintActionLabel: 'Ver histórico',
+            onHintAction: () => tocou = true,
+          ),
+        ),
+      );
+
+      expect(findAppIcon(AppIcons.bell), findsOneWidget);
+      expect(findAppIcon(AppIcons.check), findsOneWidget);
+      expect(find.text('Procurando uma antiga?'), findsOneWidget);
+      await tester.tap(find.text('Ver histórico'));
+      expect(tocou, isTrue);
+    });
+
+    testWidgets('compacto não estoura numa caixa estreita', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const SizedBox(
+            width: 200,
+            child: AppEmptyState(
+              size: AppEmptyStateSize.compact,
+              icon: AppIcons.search,
+              badgeIcon: AppIcons.x,
+              title: 'Nada encontrado',
+              description: 'Tente outro termo de busca.',
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+    });
   });
 }
