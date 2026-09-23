@@ -423,6 +423,13 @@ class AppIcons {
   static const AppIconData clock = AppIconData.glyph(
     HugeIcons.strokeRoundedClock01,
   );
+  // Ciclo de execução (iniciar/retomar e pausar uma OS).
+  static const AppIconData play = AppIconData.glyph(
+    HugeIcons.strokeRoundedPlay,
+  );
+  static const AppIconData pause = AppIconData.glyph(
+    HugeIcons.strokeRoundedPause,
+  );
   static const AppIconData calendar = AppIconData.glyph(
     HugeIcons.strokeRoundedCalendar03,
   );
