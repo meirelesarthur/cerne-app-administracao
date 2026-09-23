@@ -2,31 +2,86 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../design/generated/app_layout.dart';
-import '../../design/generated/app_radius.dart';
 import '../../design/generated/app_spacing.dart';
+import '../../design/generated/app_typography.dart';
 import '../../design/theme/app_theme_extension.dart';
 import '../../ui/ui.dart';
 import '../components/sub_page_header.dart';
-import '../module_config.dart';
 import '../state/shell_store.dart';
-import 'package:cerne_app/design/generated/app_typography.dart';
 
-const Map<String, AppIconData> _moduleIcon = {
-  'fazendas': AppIcons.sprout,
-  'credito': AppIcons.handCoins,
-  'bank': AppIcons.landmark,
-};
-
-/// Notificações agregadas de todos os módulos (spec §3.1) — espelha `Notificacoes.tsx`.
-class NotificacoesPage extends ConsumerWidget {
+/// Notificações do app — espelha `Notificacoes.tsx`.
+///
+/// Duas abas: **Novidades** (não lidas) e **Histórico** (já lidas). Cada aba
+/// agrupa por dia ("Hoje, 23 de setembro", "Ontem, …") e mostra a mais
+/// recente primeiro. Tocar numa notificação a marca como lida — ela passa
+/// para o Histórico — e abre a tela de origem quando existe uma.
+class NotificacoesPage extends ConsumerStatefulWidget {
   const NotificacoesPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NotificacoesPage> createState() => _NotificacoesPageState();
+}
+
+class _NotificacoesPageState extends ConsumerState<NotificacoesPage> {
+  int _aba = 0;
+
+  static const _abas = ['Novidades', 'Histórico'];
+
+  void _abrir(AppNotification n) {
+    ref.read(shellStoreProvider.notifier).markRead(n.id);
+    final route = n.route;
+    if (route != null) context.push(route);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final notifications = ref.watch(shellStoreProvider).notifications;
-    final hasUnread = notifications.any((n) => !n.read);
+    final agora = DateTime.now();
+    final novidades = _aba == 0;
+    final visiveis = notifications.where((n) => n.read != novidades).toList()
+      ..sort((a, b) => b.dataHora.compareTo(a.dataHora));
+    final temNaoLidas = notifications.any((n) => !n.read);
+
+    final itens = <Widget>[];
+    DateTime? diaAtual;
+    for (final n in visiveis) {
+      final dia = DateTime(n.dataHora.year, n.dataHora.month, n.dataHora.day);
+      if (dia != diaAtual) {
+        diaAtual = dia;
+        itens.add(
+          Padding(
+            padding: EdgeInsets.only(
+              top: itens.isEmpty ? AppSpacing.space0 : AppSpacing.space4,
+              bottom: AppSpacing.space3,
+            ),
+            child: Text(
+              _rotuloDia(dia, agora),
+              style: TextStyle(
+                fontSize: AppTypography.md,
+                fontWeight: AppTypography.weightSemibold,
+                color: semantic.fgMuted,
+              ),
+            ),
+          ),
+        );
+      }
+      final visual = _visualDoTipo(n.tipo);
+      itens.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.space3),
+          child: AppNotificationTile(
+            icon: visual.icon,
+            tone: visual.tone,
+            title: n.title,
+            message: n.detail,
+            timeLabel: _tempoRelativo(n.dataHora, agora),
+            unread: !n.read,
+            onTap: () => _abrir(n),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: semantic.bgCanvas,
@@ -35,7 +90,7 @@ class NotificacoesPage extends ConsumerWidget {
           children: [
             SubPageHeader(
               title: 'Notificações',
-              action: hasUnread
+              action: novidades && temNaoLidas
                   ? AppButton(
                       variant: AppButtonVariant.ghost,
                       size: AppButtonSize.sm,
@@ -48,113 +103,50 @@ class NotificacoesPage extends ConsumerWidget {
             Expanded(
               child: AppContentSheet(
                 padded: false,
-                child: notifications.isEmpty
-                    ? const Center(
-                        child: AppEmptyState(
-                          icon: AppIcons.bellOff,
-                          title: 'Sem notificações',
-                          description: 'Você está em dia.',
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(AppSpacing.space4),
-                        itemCount: notifications.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: AppSpacing.space2),
-                        itemBuilder: (context, index) {
-                          final n = notifications[index];
-                          final icon =
-                              _moduleIcon[n.moduleId] ?? AppIcons.sprout;
-                          final destination =
-                              getModule(n.moduleId)?.homeRoute ?? '/inicio';
-
-                          return AppCard(
-                            interactive: true,
-                            onTap: () => context.go(destination),
-                            padded: false,
-                            child: Container(
-                              padding: const EdgeInsets.all(AppSpacing.space3),
-                              decoration: !n.read
-                                  ? BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        AppRadius.xl3,
-                                      ),
-                                      border: Border.all(
-                                        color: semantic.accentDefault
-                                            .withValues(alpha: 0.6),
-                                      ),
-                                    )
-                                  : null,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: AppSpacing.space10,
-                                    height: AppSpacing.space10,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: semantic.accentSubtle,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: AppIcon(
-                                      icon,
-                                      size: AppSize.iconMd,
-                                      color: semantic.accentDefault,
-                                    ),
-                                  ),
-                                  const SizedBox(width: AppSpacing.space3),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                n.title,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: AppTypography
-                                                      .weightSemibold,
-                                                  color: semantic.fgDefault,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: AppSpacing.space2,
-                                            ),
-                                            Text(
-                                              n.time,
-                                              style: TextStyle(
-                                                fontSize: AppTypography.xs,
-                                                color: semantic.fgSubtle,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          n.detail,
-                                          style: TextStyle(
-                                            color: semantic.fgMuted,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: AppSpacing.space1,
-                                        ),
-                                        AppChip(child: Text(n.moduleId)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.space4,
+                        AppSpacing.space4,
+                        AppSpacing.space4,
+                        AppSpacing.space2,
                       ),
+                      child: AppSegmentedTabs(
+                        labels: _abas,
+                        selectedIndex: _aba,
+                        onChanged: (i) => setState(() => _aba = i),
+                      ),
+                    ),
+                    Expanded(
+                      child: itens.isEmpty
+                          ? Center(
+                              child: novidades
+                                  ? const AppEmptyState(
+                                      icon: AppIcons.bellOff,
+                                      title: 'Você está em dia',
+                                      description:
+                                          'Nenhuma notificação nova por aqui.',
+                                    )
+                                  : const AppEmptyState(
+                                      icon: AppIcons.bell,
+                                      title: 'Histórico vazio',
+                                      description:
+                                          'As notificações lidas aparecem aqui.',
+                                    ),
+                            )
+                          : ListView(
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.space4,
+                                AppSpacing.space3,
+                                AppSpacing.space4,
+                                AppSpacing.space4,
+                              ),
+                              children: itens,
+                            ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -162,4 +154,84 @@ class NotificacoesPage extends ConsumerWidget {
       ),
     );
   }
+}
+
+({AppIconData icon, AppNotificationTone tone}) _visualDoTipo(
+  TipoNotificacao tipo,
+) => switch (tipo) {
+  TipoNotificacao.lancamento => (
+    icon: AppIcons.check,
+    tone: AppNotificationTone.success,
+  ),
+  TipoNotificacao.financeiro => (
+    icon: AppIcons.handCoins,
+    tone: AppNotificationTone.info,
+  ),
+  TipoNotificacao.pendencia => (
+    icon: AppIcons.fileText,
+    tone: AppNotificationTone.warning,
+  ),
+  TipoNotificacao.alerta => (
+    icon: AppIcons.alertTriangle,
+    tone: AppNotificationTone.warning,
+  ),
+  TipoNotificacao.cancelamento => (
+    icon: AppIcons.x,
+    tone: AppNotificationTone.danger,
+  ),
+  TipoNotificacao.novidade => (
+    icon: AppIcons.bell,
+    tone: AppNotificationTone.warning,
+  ),
+};
+
+const _meses = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
+];
+
+const _diasSemana = [
+  'Segunda',
+  'Terça',
+  'Quarta',
+  'Quinta',
+  'Sexta',
+  'Sábado',
+  'Domingo',
+];
+
+/// "Hoje, 23 de setembro" · "Ontem, 22 de setembro" · "Sexta, 20 de setembro".
+String _rotuloDia(DateTime dia, DateTime agora) {
+  final hoje = DateTime(agora.year, agora.month, agora.day);
+  final diferenca = hoje.difference(dia).inDays;
+  final data = '${dia.day} de ${_meses[dia.month - 1]}';
+  if (diferenca == 0) return 'Hoje, $data';
+  if (diferenca == 1) return 'Ontem, $data';
+  return '${_diasSemana[dia.weekday - 1]}, $data';
+}
+
+/// "agora" · "há 5 min" · "há 3 h" · "ontem às 14:20" · "20/09 às 08:15".
+String _tempoRelativo(DateTime quando, DateTime agora) {
+  final d = agora.difference(quando);
+  if (d.inMinutes < 1) return 'agora';
+  if (d.inMinutes < 60) return 'há ${d.inMinutes} min';
+  final hoje = DateTime(agora.year, agora.month, agora.day);
+  final dia = DateTime(quando.year, quando.month, quando.day);
+  final hora =
+      '${quando.hour.toString().padLeft(2, '0')}:'
+      '${quando.minute.toString().padLeft(2, '0')}';
+  if (dia == hoje) return 'há ${d.inHours} h';
+  if (hoje.difference(dia).inDays == 1) return 'ontem às $hora';
+  return '${quando.day.toString().padLeft(2, '0')}/'
+      '${quando.month.toString().padLeft(2, '0')} às $hora';
 }

@@ -94,10 +94,13 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
     context.go(route);
   }
 
-  void _openSearch(BuildContext context, WidgetRef ref) {
+  void _push(BuildContext context, WidgetRef ref, String route) {
     ref.read(shellStoreProvider.notifier).closeMenu();
-    context.push('/busca');
+    context.push(route);
   }
+
+  void _openSearch(BuildContext context, WidgetRef ref) =>
+      _push(context, ref, '/busca');
 
   /// Corpo do módulo: faixa de offline (quando aplicável) e a tela em si, com
   /// o respiro do dock flutuante. É o mesmo em rota rasa e funda — só muda se
@@ -159,6 +162,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
               module: module,
               activeRoute: GoRouterState.of(context).uri.toString(),
               onNavigate: (route) => _go(context, ref, route),
+              onPush: (route) => _push(context, ref, route),
             ),
           ),
           // o app inteiro — encolhe como cartão quando o menu abre.
@@ -227,13 +231,17 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                                                 collapsed: _headerCollapsed,
                                                 showMenu: false,
                                                 showProfileSubtitle: false,
-                                                onOpenProfile: () =>
-                                                    _go(context, ref, '/perfil'),
-                                                onOpenNotifications: () => _go(
+                                                onOpenProfile: () => _push(
                                                   context,
                                                   ref,
-                                                  '/notificacoes',
+                                                  '/perfil',
                                                 ),
+                                                onOpenNotifications: () =>
+                                                    _push(
+                                                      context,
+                                                      ref,
+                                                      '/notificacoes',
+                                                    ),
                                                 child: showGlobalContext
                                                     ? AppSearchField(
                                                         onTap: () =>

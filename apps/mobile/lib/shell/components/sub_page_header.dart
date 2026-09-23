@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../ui/ui.dart';
 
 /// Cabeçalho das páginas secundárias do shell e dos fluxos de módulo (Perfil,
@@ -46,11 +48,24 @@ class SubPageHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppPageHeaderBand(
       title: title,
-      onBack: onBack ?? () => Navigator.of(context).maybePop(),
+      onBack: onBack ?? () => _voltar(context),
       actionIcon: actionIcon,
       actionLabel: actionLabel,
       onAction: onAction,
       action: action,
     );
   }
+}
+
+/// Volta uma tela; sem tela para onde voltar (link direto, recarga da página
+/// no navegador, rota aberta com `go`), leva para a tela inicial em vez de não
+/// fazer nada — um "Voltar" que não responde é pior do que um que leva ao
+/// Início.
+void _voltar(BuildContext context) {
+  final navigator = Navigator.of(context);
+  if (navigator.canPop()) {
+    navigator.pop();
+    return;
+  }
+  GoRouter.maybeOf(context)?.go('/');
 }

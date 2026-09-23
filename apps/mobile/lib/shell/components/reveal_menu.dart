@@ -39,6 +39,7 @@ class AppRevealMenu extends ConsumerStatefulWidget {
     super.key,
     required this.module,
     required this.onNavigate,
+    this.onPush,
     this.activeRoute,
   });
 
@@ -46,6 +47,11 @@ class AppRevealMenu extends ConsumerStatefulWidget {
 
   /// Recebe a rota absoluta de destino (ex.: `/perfil`, `/notificacoes`, `/login`).
   final ValueChanged<String> onNavigate;
+
+  /// Destinos de tela funda com "Voltar" próprio (Perfil, Notificações)
+  /// chegam aqui em vez de [onNavigate], para quem monta o menu empilhar a
+  /// rota. Ausente, cai em [onNavigate].
+  final ValueChanged<String>? onPush;
 
   /// Rota atual do app, usada só para destacar o item correspondente no menu.
   final String? activeRoute;
@@ -120,6 +126,7 @@ class _AppRevealMenuState extends ConsumerState<AppRevealMenu> {
                             activeRoute: widget.activeRoute,
                             semantic: semantic,
                             onNavigate: widget.onNavigate,
+                            onPush: widget.onPush ?? widget.onNavigate,
                             onToggleTheme: () => ref
                                 .read(themeVariantProvider.notifier)
                                 .toggle(),
@@ -154,6 +161,7 @@ class _MenuContent extends StatelessWidget {
     required this.activeRoute,
     required this.semantic,
     required this.onNavigate,
+    required this.onPush,
     required this.onToggleTheme,
     required this.onToggleOnline,
     required this.onLogout,
@@ -166,6 +174,7 @@ class _MenuContent extends StatelessWidget {
   final String? activeRoute;
   final AppSemanticColors semantic;
   final ValueChanged<String> onNavigate;
+  final ValueChanged<String> onPush;
   final VoidCallback onToggleTheme;
   final VoidCallback onToggleOnline;
   final VoidCallback onLogout;
@@ -188,7 +197,7 @@ class _MenuContent extends StatelessWidget {
         next(),
         AppPressable(
           semanticLabel: 'Abrir perfil de ${user.name}',
-          onPressed: () => onNavigate('/perfil'),
+          onPressed: () => onPush('/perfil'),
           borderRadius: BorderRadius.circular(AppRadius.xl2),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.space2),
@@ -347,7 +356,7 @@ class _MenuContent extends StatelessWidget {
           icon: AppIcons.bell,
           label: 'Notificações',
           trailing: unread > 0 ? AppBadge(child: Text('$unread')) : null,
-          onTap: () => onNavigate('/notificacoes'),
+          onTap: () => onPush('/notificacoes'),
         ),
       ),
       const SizedBox(height: AppSpacing.space1),
@@ -357,7 +366,7 @@ class _MenuContent extends StatelessWidget {
           variant: AppMenuItemVariant.onDark,
           icon: AppIcons.settings,
           label: 'Configurações',
-          onTap: () => onNavigate('/perfil'),
+          onTap: () => onPush('/perfil'),
         ),
       ),
       const SizedBox(height: AppSpacing.space1),

@@ -148,7 +148,7 @@ class PerfilConfigPage extends ConsumerWidget {
                       trailing: shell.unreadCount > 0
                           ? AppBadge(child: Text('${shell.unreadCount}'))
                           : null,
-                      onTap: () => context.go('/notificacoes'),
+                      onTap: () => context.push('/notificacoes'),
                     ),
                     const SizedBox(height: AppSpacing.space2),
                     AppMenuItem(

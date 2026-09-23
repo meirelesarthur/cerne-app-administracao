@@ -10,86 +10,119 @@ class UserProfile {
   final String initials;
 }
 
+/// Tipo da notificação — decide ícone e cor na tela (`NotificacoesPage`).
+enum TipoNotificacao {
+  /// Lançamento concluído em campo (pesagem, NF-e conferida).
+  lancamento,
+
+  /// Movimento financeiro (crédito aprovado, pagamento agendado).
+  financeiro,
+
+  /// Pendência que pede decisão (cotação, aprovação de compra).
+  pendencia,
+
+  /// Algo pede atenção (estoque baixo, prazo vencendo).
+  alerta,
+
+  /// Cancelamento ou falha.
+  cancelamento,
+
+  /// Novidade do aplicativo.
+  novidade,
+}
+
 class AppNotification {
   const AppNotification({
     required this.id,
-    required this.moduleId,
+    required this.tipo,
     required this.title,
     required this.detail,
-    required this.time,
+    required this.dataHora,
     required this.read,
+    this.route,
   });
 
   final String id;
-  final String moduleId;
+  final TipoNotificacao tipo;
   final String title;
   final String detail;
-  final String time;
+
+  /// Quando aconteceu — agrupa por dia e vira "há 5 min" na tela.
+  final DateTime dataHora;
   final bool read;
+
+  /// Tela aberta ao tocar; sem rota, o toque só marca como lida.
+  final String? route;
 
   AppNotification copyWith({bool? read}) => AppNotification(
     id: id,
-    moduleId: moduleId,
+    tipo: tipo,
     title: title,
     detail: detail,
-    time: time,
+    dataHora: dataHora,
     read: read ?? this.read,
+    route: route,
   );
 }
 
-const _mockNotifications = [
+/// Notificações de exemplo, datadas a partir de [agora] para os grupos
+/// "Hoje", "Ontem" e dias anteriores fazerem sentido em qualquer data.
+///
+/// banco-real (onda 2): tipos inspirados nos alertas mais frequentes do dump
+/// gbcerne (estoque abaixo do mínimo, aprovação de compra pendente) — dado
+/// sintético. Três não lidas, cobertas por `shell_store_test.dart`.
+List<AppNotification> _mockNotifications(DateTime agora) => [
   AppNotification(
     id: 'n1',
-    moduleId: 'fazendas',
+    tipo: TipoNotificacao.lancamento,
     title: 'Pesagem registrada',
     detail: 'Lote 42 · Fazenda São Pedro',
-    time: 'há 5 min',
+    dataHora: agora.subtract(const Duration(minutes: 5)),
     read: false,
+    route: '/fazendas',
   ),
   AppNotification(
     id: 'n2',
-    moduleId: 'credito',
+    tipo: TipoNotificacao.financeiro,
     title: 'Crédito pré-aprovado',
     detail: 'R\$ 480.000,00 disponíveis',
-    time: 'há 1 h',
+    dataHora: agora.subtract(const Duration(hours: 1)),
     read: false,
+    route: '/credito',
   ),
   AppNotification(
     id: 'n3',
-    moduleId: 'fazendas',
+    tipo: TipoNotificacao.lancamento,
     title: 'NF-e processada',
     detail: 'Entrada de insumos conferida',
-    time: 'há 3 h',
+    dataHora: agora.subtract(const Duration(hours: 3)),
     read: false,
+    route: '/fazendas',
   ),
   AppNotification(
     id: 'n4',
-    moduleId: 'bank',
+    tipo: TipoNotificacao.financeiro,
     title: 'Pagamento agendado',
     detail: 'Fornecedor Agropecuária Vale',
-    time: 'ontem',
+    dataHora: agora.subtract(const Duration(days: 1, hours: 2)),
     read: true,
+    route: '/bank',
   ),
-  // banco-real (onda 2): tipos de notificação inspirados nos alertas mais
-  // frequentes do dump gbcerne (estoque abaixo do mínimo, aprovação de compra
-  // pendente, vencimento de protocolo sanitário) — dado sintético, não copiado
-  // do banco de produção. Ambas marcadas como lidas para preservar o
-  // `unreadCount` já coberto por `shell_store_test.dart`. Ver
-  // docs/ajustes-banco-real/02-oportunidades-banco-real.md.
   AppNotification(
     id: 'n5',
-    moduleId: 'fazendas',
+    tipo: TipoNotificacao.alerta,
     title: 'Estoque abaixo do mínimo',
     detail: 'Sal Mineral Proteinado · Armazém A',
-    time: 'ontem',
+    dataHora: agora.subtract(const Duration(days: 1, hours: 5)),
     read: true,
+    route: '/armazem',
   ),
   AppNotification(
     id: 'n6',
-    moduleId: 'fazendas',
+    tipo: TipoNotificacao.pendencia,
     title: 'Cotação pendente de aprovação',
     detail: 'Solicitação de compra #4821 · Suprimentos',
-    time: 'há 2 dias',
+    dataHora: agora.subtract(const Duration(days: 3)),
     read: true,
   ),
 ];
@@ -141,9 +174,9 @@ final shellStoreProvider = NotifierProvider<ShellStoreNotifier, ShellState>(
 class ShellStoreNotifier extends Notifier<ShellState> {
   @override
   ShellState build() {
-    return const ShellState(
-      user: UserProfile(name: 'Silvio Ventura', initials: 'SV'),
-      notifications: _mockNotifications,
+    return ShellState(
+      user: const UserProfile(name: 'Silvio Ventura', initials: 'SV'),
+      notifications: _mockNotifications(DateTime.now()),
       isOnline: true,
       balanceHidden: false,
       menuOpen: false,
@@ -156,6 +189,15 @@ class ShellStoreNotifier extends Notifier<ShellState> {
 
   void toggleBalanceHidden() =>
       state = state.copyWith(balanceHidden: !state.balanceHidden);
+
+  void markRead(String id) {
+    state = state.copyWith(
+      notifications: [
+        for (final n in state.notifications)
+          if (n.id == id) n.copyWith(read: true) else n,
+      ],
+    );
+  }
 
   void markAllRead() {
     state = state.copyWith(
