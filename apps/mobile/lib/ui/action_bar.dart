@@ -5,7 +5,6 @@ import 'app_icon.dart';
 import 'button.dart';
 import 'progress_bar.dart';
 import '../design/generated/app_layout.dart';
-import '../design/generated/app_shadows.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
@@ -13,9 +12,11 @@ import '../design/theme/app_theme_extension.dart';
 /// Barra de ação fixa do rodapé — os dois frames de cadastro do Figma
 /// (`Cadastro bottom fixed` `54300:16033` e `Cadastro steps` `54349:2060`).
 ///
-/// Anatomia medida: superfície [AppSemanticColors.bgSheet] com sombra
-/// projetada **para cima** (`AppShadows.actionBar`), `px 16 / py 8`, gap 8, e
-/// um ou dois botões-pílula ocupando a largura inteira. O frame *bottom fixed*
+/// Anatomia: **sem superfície própria** — nem fundo nem sombra —, `px 16 /
+/// py 8`, gap 8, e um ou dois botões-pílula ocupando a largura inteira. Os
+/// botões flutuam sobre o fundo que estiver atrás (a folha da tela, branca ou
+/// cinza); a faixa cinza com sombra do Figma original foi descartada porque
+/// criava uma caixa destacada da folha em toda tela com rodapé fixo. O frame *bottom fixed*
 /// acrescenta acima dos botões uma linha de resumo com dois pares
 /// rótulo/valor e uma barra de progresso ("Fornecido 250kg — Faltam 250kg").
 ///
@@ -58,25 +59,12 @@ class AppActionBar extends StatelessWidget {
   /// conteúdo — e o que cabe ali varia por fluxo.
   final Widget? summary;
 
-  /// `xl` só existe para o CTA flutuante de listagem (ver doc de
-  /// [primarySize]) — nesse caso a barra não tem fundo nem sombra própria: é
-  /// só o botão-pílula flutuando sobre o que já está atrás dele. A superfície
-  /// cinza + sombra continua só no rodapé fixo de cadastro (`lg`, com ou sem
-  /// resumo/ação secundária).
-  bool get _isFloatingCta => primarySize == AppButtonSize.xl;
-
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      decoration: _isFloatingCta
-          ? null
-          : BoxDecoration(
-              color: semantic.bgSheet,
-              boxShadow: AppShadows.actionBar,
-            ),
       child: SafeArea(
         top: false,
         child: Padding(
