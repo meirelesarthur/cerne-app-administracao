@@ -8,18 +8,13 @@ import '../../state/fazendas_store.dart';
 import '../models.dart';
 import '../state/ordem_servico_store.dart';
 import '../widgets.dart';
-
-/// Placeholder de identidade da sessão administrativa — não há RBAC/login
-/// real no protótipo (CLAUDE.md, "Limites do protótipo"), só o rótulo que
-/// aparece no histórico da OS quando o Administrativo cria, avalia ou
-/// cancela.
-const _autorAdm = 'Administrativo';
+import 'os_detail_page.dart';
 
 /// Painel de Ordens de Serviço (Administrativo): lista as OS da fazenda
-/// ativa, filtráveis por status e por data de prazo, com as ações que o
-/// perfil pode tomar (criar, avaliar, cancelar) — mesma fonte de dados de
-/// `operacional/minhas_os_screen.dart` (Lei 2: uma única OS, dois perfis de
-/// leitura/ação).
+/// ativa, filtráveis por status e por data de prazo. Criar fica aqui; avaliar
+/// e cancelar ficam no detalhe em tela cheia ([OsDetailPage]). Mesma OS e
+/// mesmo desenho que o app Operação lê em campo (Lei 2: uma única OS, dois
+/// perfis de leitura/ação).
 ///
 /// Conteúdo puro (sem scaffold/scroll próprio) para caber tanto na aba "OS"
 /// (`OrdemServicoTabScreen`, raiz de aba) quanto no dashboard acessível pela
@@ -86,17 +81,19 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
   List<OrdemServico> _filtrar(List<OrdemServico> ordens) {
     final filtro = _filtros[_filtroIndex];
     final data = _dataFiltro;
-    final filtradas = ordens
-        .where(filtro.aplica)
-        .where((o) => data == null || _mesmoDia(o.prazo, data))
-        .toList()
-      ..sort((a, b) => a.prazo.compareTo(b.prazo));
+    final filtradas =
+        ordens
+            .where(filtro.aplica)
+            .where((o) => data == null || _mesmoDia(o.prazo, data))
+            .toList()
+          ..sort((a, b) => a.prazo.compareTo(b.prazo));
     return filtradas;
   }
 
   @override
   Widget build(BuildContext context) {
     final ordens = ref.watch(ordemServicoStoreProvider.select((s) => s.ordens));
+    final agora = ref.watch(osRelogioProvider)();
     final filtradas = _filtrar(ordens);
     final temFiltroData = _dataFiltro != null;
 
@@ -115,7 +112,9 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
           child: AppDateInput(
             controller: _dataController,
             onChanged: (formatted) {
-              final match = RegExp(r'^(\d{2})/(\d{2})/(\d{4})$').firstMatch(formatted);
+              final match = RegExp(
+                r'^(\d{2})/(\d{2})/(\d{4})$',
+              ).firstMatch(formatted);
               if (match == null) return;
               final dia = int.parse(match.group(1)!);
               final mes = int.parse(match.group(2)!);
@@ -161,142 +160,14 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
           )
         else
           for (final os in filtradas) ...[
-            OsSummaryCard(os: os, onTap: () => _abrirDetalhe(context, os)),
+            OsSummaryCard(
+              os: os,
+              agora: agora,
+              onTap: () => abrirDetalheOs(context, os.id),
+            ),
             const SizedBox(height: AppSpacing.space3),
           ],
       ],
-    );
-  }
-
-  void _abrirDetalhe(BuildContext context, OrdemServico os) {
-    final notifier = ref.read(ordemServicoStoreProvider.notifier);
-
-    showAppBottomSheet<void>(
-      context,
-      title: 'Detalhe da OS',
-      child: StatefulBuilder(
-        builder: (context, setSheetState) {
-          final atual = notifier.byId(os.id);
-          final actions = <Widget>[];
-
-          if (atual.status.emAndamento) {
-            actions.add(
-              AppButton(
-                variant: AppButtonVariant.secondary,
-                onPressed: () => _abrirAvaliar(context, atual.id),
-                child: const Text('Avaliar'),
-              ),
-            );
-            actions.add(
-              AppButton(
-                variant: AppButtonVariant.dangerOutline,
-                onPressed: () => _abrirCancelar(context, atual.id),
-                child: const Text('Cancelar OS'),
-              ),
-            );
-          }
-
-          return OsDetailBody(os: atual, actions: actions);
-        },
-      ),
-    );
-  }
-
-  void _abrirAvaliar(BuildContext context, String osId) {
-    final notifier = ref.read(ordemServicoStoreProvider.notifier);
-    final comentarioController = TextEditingController();
-    var nota = '5';
-
-    showAppBottomSheet<void>(
-      context,
-      title: 'Avaliar OS',
-      child: StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppFormField(
-                label: 'Nota',
-                required: true,
-                child: AppFormSelect(
-                  options: const [
-                    AppFormSelectOption(value: '1', label: '1 — Insatisfatório'),
-                    AppFormSelectOption(value: '2', label: '2 — Abaixo do esperado'),
-                    AppFormSelectOption(value: '3', label: '3 — Dentro do esperado'),
-                    AppFormSelectOption(value: '4', label: '4 — Bom'),
-                    AppFormSelectOption(value: '5', label: '5 — Excelente'),
-                  ],
-                  value: nota,
-                  onChanged: (v) => setSheetState(() => nota = v ?? nota),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Comentário',
-                required: true,
-                child: AppTextarea(
-                  controller: comentarioController,
-                  placeholder: 'Observações sobre o andamento do serviço...',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space5),
-              AppButton(
-                fullWidth: true,
-                onPressed: () {
-                  final comentario = comentarioController.text.trim();
-                  if (comentario.isEmpty) return;
-                  notifier.avaliar(
-                    osId,
-                    avaliador: _autorAdm,
-                    nota: int.parse(nota),
-                    comentario: comentario,
-                  );
-                  Navigator.of(context)
-                    ..pop()
-                    ..pop();
-                },
-                child: const Text('Registrar avaliação'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  void _abrirCancelar(BuildContext context, String osId) {
-    final notifier = ref.read(ordemServicoStoreProvider.notifier);
-    final controller = TextEditingController();
-
-    showAppBottomSheet<void>(
-      context,
-      title: 'Cancelar OS',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppFormField(
-            label: 'Motivo do cancelamento',
-            required: true,
-            child: AppTextarea(controller: controller, placeholder: 'Explique por que a OS está sendo cancelada...'),
-          ),
-          const SizedBox(height: AppSpacing.space5),
-          AppButton(
-            fullWidth: true,
-            variant: AppButtonVariant.danger,
-            onPressed: () {
-              final motivo = controller.text.trim();
-              if (motivo.isEmpty) return;
-              notifier.cancelar(osId, autor: _autorAdm, motivo: motivo);
-              Navigator.of(context)
-                ..pop()
-                ..pop();
-            },
-            child: const Text('Confirmar cancelamento'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -360,7 +231,8 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
                       AppFormSelectOption(value: p.name, label: p.label),
                   ],
                   value: prioridade,
-                  onChanged: (v) => setSheetState(() => prioridade = v ?? prioridade),
+                  onChanged: (v) =>
+                      setSheetState(() => prioridade = v ?? prioridade),
                 ),
               ),
               const SizedBox(height: AppSpacing.space3),
@@ -370,7 +242,9 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
                 child: AppDateInput(
                   controller: prazoController,
                   onChanged: (formatted) {
-                    final match = RegExp(r'^(\d{2})/(\d{2})/(\d{4})$').firstMatch(formatted);
+                    final match = RegExp(
+                      r'^(\d{2})/(\d{2})/(\d{4})$',
+                    ).firstMatch(formatted);
                     if (match == null) return;
                     final dia = int.parse(match.group(1)!);
                     final mes = int.parse(match.group(2)!);
@@ -395,7 +269,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
                   final titulo = tituloController.text.trim();
                   final area = areaController.text.trim();
                   final descricao = descricaoController.text.trim();
-                  if (titulo.isEmpty || area.isEmpty || descricao.isEmpty || prazo == null) {
+                  if (titulo.isEmpty ||
+                      area.isEmpty ||
+                      descricao.isEmpty ||
+                      prazo == null) {
                     return;
                   }
                   notifier.criar(
@@ -406,7 +283,7 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
                     prioridade: PrioridadeOs.values.byName(prioridade),
                     prazo: prazo!,
                     descricao: descricao,
-                    autor: _autorAdm,
+                    autor: autorAdministrativoOs,
                   );
                   Navigator.of(context).pop();
                 },

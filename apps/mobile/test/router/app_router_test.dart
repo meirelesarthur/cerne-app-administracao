@@ -201,8 +201,11 @@ void main() {
         // Lista direto as OS da fazenda — sem a camada intermediária de
         // tiles que as demais abas usam.
         expect(find.text('Criar OS'), findsOneWidget);
-        expect(find.text('OS #2201 · Reparo de cerca do Talhão 04'), findsOneWidget);
-        expect(find.text('OS #2170 · Construção de bebedouro no Piquete 07'), findsOneWidget);
+        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+        expect(
+          find.text('Construção de bebedouro no Piquete 07'),
+          findsOneWidget,
+        );
         expect(find.text('Confinamento'), findsNothing);
         expect(find.text('Pecuária'), findsNothing);
         expect(find.text('Agricultura'), findsNothing);
@@ -220,8 +223,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('OS #2201 · Reparo de cerca do Talhão 04'), findsOneWidget);
-        expect(find.text('OS #2170 · Construção de bebedouro no Piquete 07'), findsNothing);
+        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+        expect(
+          find.text('Construção de bebedouro no Piquete 07'),
+          findsNothing,
+        );
       },
     );
 
@@ -245,9 +251,7 @@ void main() {
       },
     );
 
-    testWidgets('deep link sem sessão retorna direto ao login', (
-      tester,
-    ) async {
+    testWidgets('deep link sem sessão retorna direto ao login', (tester) async {
       // Regressão: o login (`/login`) é a porta de entrada real do
       // protótipo — sem sessão, qualquer rota protegida cai nele, sem passar
       // por uma tela de seleção de ambiente/perfil.

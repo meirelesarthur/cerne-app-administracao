@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cerne_app/design/theme/app_theme.dart';
 import 'package:cerne_app/modules/fazendas/admin/dash_ordem_servico.dart';
+import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_detail_page.dart';
 import 'package:cerne_app/ui/ui.dart';
 
 Widget _wrap(Widget child) => ProviderScope(
@@ -22,12 +23,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Criar OS'), findsOneWidget);
+      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
       expect(
-        find.text('OS #2201 · Reparo de cerca do Talhão 04'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('OS #2170 · Construção de bebedouro no Piquete 07'),
+        find.text('Construção de bebedouro no Piquete 07'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -45,14 +43,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201 · Reparo de cerca do Talhão 04'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('OS #2170 · Construção de bebedouro no Piquete 07'),
-        findsNothing,
-      );
+      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+      expect(find.text('Construção de bebedouro no Piquete 07'), findsNothing);
     });
 
     testWidgets('filtra por data de prazo e permite limpar o filtro', (
@@ -65,19 +57,13 @@ void main() {
       await tester.tap(find.text('Hoje'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201 · Reparo de cerca do Talhão 04'),
-        findsNothing,
-      );
+      expect(find.text('Reparo de cerca do Talhão 04'), findsNothing);
       expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
 
       await tester.tap(find.text('Todas as datas'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201 · Reparo de cerca do Talhão 04'),
-        findsOneWidget,
-      );
+      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
     });
 
     testWidgets('cria uma nova OS a partir do formulário', (tester) async {
@@ -91,10 +77,7 @@ void main() {
         find.byType(AppTextInput).at(0),
         'Reparo do moinho de vento',
       );
-      await tester.enterText(
-        find.byType(AppTextInput).at(1),
-        'Pasto 12',
-      );
+      await tester.enterText(find.byType(AppTextInput).at(1), 'Pasto 12');
       await tester.enterText(find.byType(AppDateInput).last, '30/12/2026');
       await tester.enterText(
         find.byType(AppTextarea),
@@ -113,12 +96,53 @@ void main() {
         find.descendant(
           of: find.ancestor(
             of: find.textContaining('Reparo do moinho de vento'),
-            matching: find.byType(AppCard),
+            matching: find.byType(AppStatusCard),
           ),
           matching: find.text('Aguardando'),
         ),
         findsOneWidget,
       );
+    });
+
+    testWidgets('abre o detalhe em tela cheia com avaliar e cancelar', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Reparo de cerca do Talhão 04'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reparo de cerca do Talhão 04'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OsDetailPage), findsOneWidget);
+      expect(find.text('Serviço'), findsOneWidget);
+      expect(find.text('AVALIAR'), findsOneWidget);
+      expect(find.text('CANCELAR OS'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('cancelar mantém o detalhe aberto e tira as ações do rodapé', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Reparo de cerca do Talhão 04'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Reparo de cerca do Talhão 04'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CANCELAR OS'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(AppTextarea), 'Serviço terceirizado');
+      await tester.tap(find.text('Confirmar cancelamento'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OsDetailPage), findsOneWidget);
+      expect(find.text('Motivo do cancelamento'), findsOneWidget);
+      expect(find.text('CANCELAR OS'), findsNothing);
+      expect(find.text('AVALIAR'), findsNothing);
     });
   });
 }
