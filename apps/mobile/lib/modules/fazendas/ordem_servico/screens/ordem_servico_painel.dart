@@ -145,6 +145,7 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
         ),
         const SizedBox(height: AppSpacing.space4),
         AppSegmentedTabs(
+          scrollable: true,
           labels: [for (final f in _filtros) f.label],
           selectedIndex: _filtroIndex,
           onChanged: (i) => setState(() => _filtroIndex = i),

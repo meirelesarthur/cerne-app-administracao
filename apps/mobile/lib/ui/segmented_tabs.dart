@@ -28,11 +28,18 @@ class AppSegmentedTabs extends StatelessWidget {
     required this.labels,
     required this.selectedIndex,
     required this.onChanged,
+    this.scrollable = false,
   });
 
   final List<String> labels;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
+
+  /// `true` para filtros de listagem: cada segmento ganha a largura do
+  /// próprio rótulo e o trilho rola na horizontal, em vez de dividir a
+  /// largura em partes iguais — rótulos longos ("Em execução") não truncam
+  /// numa tela estreita. O padrão preserva o seletor de seções igualitário.
+  final bool scrollable;
 
   /// Altura do segmento no Figma.
   static const double _itemHeight = AppSpacing.space10;
@@ -41,47 +48,71 @@ class AppSegmentedTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
+    Widget segment(int i) => AppPressable(
+      semanticLabel: labels[i],
+      selected: i == selectedIndex,
+      onPressed: () => onChanged(i),
+      borderRadius: BorderRadius.circular(AppRadius.lgPlus),
+      child: Container(
+        height: _itemHeight,
+        alignment: Alignment.center,
+        padding: scrollable
+            ? const EdgeInsets.symmetric(horizontal: AppSpacing.space4)
+            : EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: i == selectedIndex
+              ? semantic.accentDefault
+              : AppColors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.lgPlus),
+        ),
+        child: Text(
+          labels[i],
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: AppTypography.md,
+            fontWeight: AppTypography.weightSemibold,
+            color: i == selectedIndex
+                ? semantic.accentContrast
+                : semantic.fgMuted,
+          ),
+        ),
+      ),
+    );
+
+    final decoration = BoxDecoration(
+      color: semantic.bgTrack,
+      borderRadius: BorderRadius.circular(AppRadius.tile),
+    );
+
+    if (scrollable) {
+      return Container(
+        decoration: decoration,
+        clipBehavior: Clip.antiAlias,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.all(AppSpacing.space1),
+          child: Row(
+            children: [
+              for (var i = 0; i < labels.length; i++) ...[
+                if (i > 0) const SizedBox(width: AppSpacing.space1),
+                segment(i),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.space1),
-      decoration: BoxDecoration(
-        color: semantic.bgTrack,
-        borderRadius: BorderRadius.circular(AppRadius.tile),
-      ),
+      decoration: decoration,
       child: Row(
         children: [
           for (var i = 0; i < labels.length; i++) ...[
             if (i > 0) const SizedBox(width: AppSpacing.space1),
-            Expanded(
-              child: AppPressable(
-                semanticLabel: labels[i],
-                selected: i == selectedIndex,
-                onPressed: () => onChanged(i),
-                borderRadius: BorderRadius.circular(AppRadius.lgPlus),
-                child: Container(
-                  height: _itemHeight,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: i == selectedIndex
-                        ? semantic.accentDefault
-                        : AppColors.transparent,
-                    borderRadius: BorderRadius.circular(AppRadius.lgPlus),
-                  ),
-                  child: Text(
-                    labels[i],
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: AppTypography.md,
-                      fontWeight: AppTypography.weightSemibold,
-                      color: i == selectedIndex
-                          ? semantic.accentContrast
-                          : semantic.fgMuted,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: segment(i)),
           ],
         ],
       ),
@@ -100,6 +131,13 @@ WidgetbookComponent buildSegmentedTabsWidgetbookComponent() {
         ),
       ),
       WidgetbookUseCase(
+        name: 'Filtros roláveis',
+        builder: (context) => const _SegmentedTabsPreview(
+          labels: ['Todas', 'Aguardando', 'Em execução', 'Finalizadas'],
+          scrollable: true,
+        ),
+      ),
+      WidgetbookUseCase(
         name: 'Abas da home ADM',
         builder: (context) =>
             const _SegmentedTabsPreview(labels: ['Início', 'Carteira', 'Apps']),
@@ -109,9 +147,10 @@ WidgetbookComponent buildSegmentedTabsWidgetbookComponent() {
 }
 
 class _SegmentedTabsPreview extends StatefulWidget {
-  const _SegmentedTabsPreview({required this.labels});
+  const _SegmentedTabsPreview({required this.labels, this.scrollable = false});
 
   final List<String> labels;
+  final bool scrollable;
 
   @override
   State<_SegmentedTabsPreview> createState() => _SegmentedTabsPreviewState();
@@ -128,6 +167,7 @@ class _SegmentedTabsPreviewState extends State<_SegmentedTabsPreview> {
         labels: widget.labels,
         selectedIndex: _index,
         onChanged: (i) => setState(() => _index = i),
+        scrollable: widget.scrollable,
       ),
     );
   }
