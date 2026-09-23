@@ -10,7 +10,7 @@
     },
     {
       "name": "mobile-web",
-      "runtimeExecutable": "C:\\flutter\\bin\\flutter.bat",
+      "runtimeExecutable": "C:\\flutter-sdk\\flutter\\bin\\flutter.bat",
       "runtimeArgs": ["run", "-d", "web-server", "--web-port=5175", "--web-hostname=127.0.0.1"],
       "port": 5175,
       "cwd": "apps/mobile"
@@ -20,18 +20,19 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["tool/serve_web_build.mjs"],
       "port": 5176,
+      "autoPort": true,
       "cwd": "apps/mobile"
     },
     {
       "name": "mobile-web-preview",
-      "runtimeExecutable": "C:\\flutter\\bin\\flutter.bat",
+      "runtimeExecutable": "C:\\flutter-sdk\\flutter\\bin\\flutter.bat",
       "runtimeArgs": ["run", "-d", "web-server", "--web-port=5178", "--web-hostname=127.0.0.1"],
       "port": 5178,
       "cwd": "apps/mobile"
     },
     {
       "name": "widgetbook",
-      "runtimeExecutable": "C:\\flutter\\bin\\flutter.bat",
+      "runtimeExecutable": "C:\\flutter-sdk\\flutter\\bin\\flutter.bat",
       "runtimeArgs": ["run", "-t", "lib/widgetbook_app.dart", "-d", "web-server", "--web-port=5177", "--web-hostname=127.0.0.1"],
       "port": 5177,
       "cwd": "apps/mobile"
