@@ -56,7 +56,7 @@ void main() {
       await tester.tap(find.text('Sair'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Acesso administrativo'), findsOneWidget);
       expect(
         harness.container.read(prototypeSessionProvider).isAuthenticated,

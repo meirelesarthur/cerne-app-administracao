@@ -156,7 +156,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Login Administração'), findsNothing);
       expect(find.text('Login Operacional'), findsNothing);
       expect(tester.takeException(), isNull);

@@ -258,7 +258,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Acesso administrativo'), findsOneWidget);
     });
 
@@ -271,7 +271,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Acesso administrativo'), findsOneWidget);
     });
   });

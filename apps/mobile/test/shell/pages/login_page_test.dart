@@ -21,7 +21,7 @@ void main() {
 
       expect(find.bySemanticsLabel('GB CERNE'), findsOneWidget);
       expect(find.text('Bem-vindo de volta!'), findsOneWidget);
-      expect(find.text('Entrar'), findsOneWidget);
+      expect(find.text('ENTRAR'), findsOneWidget);
       expect(find.text('Login Administração'), findsNothing);
       expect(find.text('Login Operacional'), findsNothing);
       expect(tester.takeException(), isNull);
@@ -60,7 +60,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Entrar'));
+      await tester.tap(find.text('ENTRAR'));
       await tester.pumpAndSettle();
 
       expect(find.text('Conta GB Banking'), findsOneWidget);

@@ -112,7 +112,7 @@ class _LoginPatternExampleState extends State<_LoginPatternExample> {
                 fullWidth: true,
                 size: AppButtonSize.lg,
                 onPressed: () => _submit(context),
-                child: const Text('Entrar'),
+                child: const Text('ENTRAR', semanticsLabel: 'Entrar'),
               ),
             ],
           ),

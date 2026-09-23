@@ -13,7 +13,7 @@ void main() {
 
     // Porta de entrada real do protótipo: o login direto (ver
     // `initialLocation`), sem tela de seleção de ambiente/perfil.
-    expect(find.text('Entrar'), findsOneWidget);
+    expect(find.text('ENTRAR'), findsOneWidget);
     expect(find.text('Acesso administrativo'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
