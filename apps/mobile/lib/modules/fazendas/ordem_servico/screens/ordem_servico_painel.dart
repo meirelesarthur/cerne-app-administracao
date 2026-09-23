@@ -154,6 +154,8 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
         if (filtradas.isEmpty)
           AppEmptyState(
             icon: AppIcons.fileText,
+            badgeIcon: AppIcons.filter,
+            tone: AppEmptyStateTone.brand,
             title: 'Nenhuma OS encontrada',
             description: temFiltroData
                 ? 'Nenhuma ordem de serviço com prazo em ${_dataController.text} nesse status.'

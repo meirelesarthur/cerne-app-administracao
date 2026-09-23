@@ -158,11 +158,14 @@ AppStatusCardSituation osSituacao(OrdemServico os, DateTime agora) {
   );
 }
 
-/// Card resumido da OS: o `AppStatusCard` do catálogo, na variante padrão
-/// das listas — status no topo, código em destaque, título e local abaixo,
-/// prazo e prioridade à direita e, no rodapé, a situação do momento
-/// ([osSituacao]). Sem ação rápida: iniciar, pausar e retomar são do
-/// Operacional; a Administração age no detalhe (avaliar, cancelar).
+/// Card resumido da OS: o `AppStatusCard` do catálogo na variante
+/// [AppStatusCardVariant.featured], a mesma da lista do app Operação — o nome
+/// da tarefa é o que se lê primeiro (é o que diz o que fazer); local abaixo,
+/// "responsável · OS #N" na linha de apoio para conferir o número, status,
+/// prazo e prioridade com ícone à direita e a situação do momento
+/// ([osSituacao]) em faixa tingida. Sem ação rápida: iniciar, pausar e
+/// retomar são do Operacional; a Administração age no detalhe (avaliar,
+/// cancelar).
 class OsSummaryCard extends StatelessWidget {
   const OsSummaryCard({
     super.key,
@@ -183,17 +186,23 @@ class OsSummaryCard extends StatelessWidget {
         os.prioridade == PrioridadeOs.alta ||
         os.prioridade == PrioridadeOs.urgente;
     return AppStatusCard(
+      variant: AppStatusCardVariant.featured,
       statusLabel: os.status.label,
       statusTone: osStatusTone(os.status),
-      title: os.codigo,
-      subtitle: os.titulo,
-      caption: os.areaOuTalhao,
+      title: os.titulo,
+      subtitle: os.areaOuTalhao,
+      caption: '${os.responsavelExecucao} · ${os.codigo}',
       meta: [
-        AppStatusCardMeta(label: 'Prazo', value: _fmtDataCurta(os.prazo)),
+        AppStatusCardMeta(
+          label: 'Prazo',
+          value: _fmtDataCurta(os.prazo),
+          icon: AppIcons.calendar,
+        ),
         AppStatusCardMeta(
           label: 'Prioridade',
           value: os.prioridade.label,
           highlight: urgente,
+          icon: AppIcons.alertCircle,
         ),
       ],
       situation: osSituacao(os, agora),
@@ -207,9 +216,9 @@ class OsSummaryCard extends StatelessWidget {
 /// histórico. `actions` é uma lista opcional de botões ao fim do conteúdo; o
 /// detalhe em tela cheia usa o rodapé fixo do `AppPageScaffold`.
 ///
-/// Hierarquia (a mesma do app Operação): cabeçalho com status e
-/// prioridade em chips, o título grande, e cada grupo de dados numa
-/// [AppDetailSection] com ícone próprio e bloco cinza — o olho acha o grupo
+/// Hierarquia (a mesma do app Operação): número e título grande no topo,
+/// status e prioridade em chips logo abaixo do título, e cada grupo de dados
+/// numa [AppDetailSection] com ícone próprio e bloco cinza — o olho acha o grupo
 /// pelo ícone antes de ler. Instruções de segurança vêm em tom de atenção
 /// logo depois dos dados do serviço.
 ///
@@ -239,21 +248,6 @@ class _OsDetailBodyState extends State<OsDetailBody> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Wrap(
-          spacing: AppSpacing.space2,
-          runSpacing: AppSpacing.space2,
-          children: [
-            AppChip(
-              tone: osStatusTone(os.status),
-              child: Text(os.status.label),
-            ),
-            AppChip(
-              tone: osPrioridadeTone(os.prioridade),
-              child: Text('Prioridade ${os.prioridade.label.toLowerCase()}'),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.space3),
         Text(
           os.codigo,
           style: TextStyle(
@@ -275,7 +269,22 @@ class _OsDetailBodyState extends State<OsDetailBody> {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.space2),
+        const SizedBox(height: AppSpacing.space3),
+        Wrap(
+          spacing: AppSpacing.space2,
+          runSpacing: AppSpacing.space2,
+          children: [
+            AppChip(
+              tone: osStatusTone(os.status),
+              child: Text(os.status.label),
+            ),
+            AppChip(
+              tone: osPrioridadeTone(os.prioridade),
+              child: Text('Prioridade ${os.prioridade.label.toLowerCase()}'),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.space3),
         Text(
           os.descricao,
           style: TextStyle(
@@ -293,6 +302,7 @@ class _OsDetailBodyState extends State<OsDetailBody> {
         if (_aba == 1 && os.historico.isEmpty) ...[
           const SizedBox(height: AppSpacing.space5),
           const AppEmptyState(
+            size: AppEmptyStateSize.compact,
             icon: AppIcons.clock,
             title: 'Sem histórico ainda',
             description:
