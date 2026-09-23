@@ -51,6 +51,7 @@ export 'metric_grid.dart';
 export 'mini_app_tile.dart';
 export 'modal.dart';
 export 'module_tile.dart';
+export 'notification_tile.dart';
 export 'page_dots.dart';
 export 'page_scaffold.dart';
 export 'pagination.dart';

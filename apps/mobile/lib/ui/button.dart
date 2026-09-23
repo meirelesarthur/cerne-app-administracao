@@ -206,7 +206,12 @@ class AppButton extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.space1,
                 ),
-                child: Center(child: content),
+                // Mesmo critério das demais variantes: só a largura do
+                // conteúdo (mín. 44), sem se esticar sobre os vizinhos.
+                child: Center(
+                  widthFactor: width == null && !fullWidth ? 1 : null,
+                  child: content,
+                ),
               ),
             ),
           ),
@@ -228,12 +233,19 @@ class AppButton extends StatelessWidget {
           onTap: _disabled ? null : onPressed,
           canRequestFocus: !_disabled,
           borderRadius: BorderRadius.circular(_borderRadius),
+          // `Center(widthFactor: 1)` e não `Container(alignment:)`: um
+          // Container alinhado se estica até a largura máxima que o pai
+          // oferece, e o botão "compacto" virava uma faixa invisível por cima
+          // dos vizinhos — era o "Marcar lidas" cobrindo o "Voltar" da barra
+          // de Notificações. Agora só `fullWidth`/`width` alargam o botão.
           child: Container(
             height: height ?? _height,
             width: width ?? (fullWidth ? double.infinity : null),
             padding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
-            alignment: Alignment.center,
-            child: content,
+            child: Center(
+              widthFactor: width == null && !fullWidth ? 1 : null,
+              child: content,
+            ),
           ),
         ),
       ),

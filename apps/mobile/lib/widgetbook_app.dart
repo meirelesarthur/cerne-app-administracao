@@ -100,6 +100,7 @@ class CerneWidgetbook extends StatelessWidget {
                 buildKpiStatCardWidgetbookComponent(),
                 buildMetricGridWidgetbookComponent(),
                 buildBalanceCardWidgetbookComponent(),
+                buildNotificationTileWidgetbookComponent(),
               ],
             ),
             WidgetbookFolder(
