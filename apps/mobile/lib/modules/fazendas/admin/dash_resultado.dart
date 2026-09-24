@@ -39,6 +39,7 @@ class DashResultado extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const AppMetricGrid(
+            equalRowHeight: true,
             children: [
               AppKpiStatCard(
                 label: 'A Receber',

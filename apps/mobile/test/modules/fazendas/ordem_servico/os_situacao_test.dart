@@ -40,7 +40,7 @@ void main() {
 
     test('aguardando mostra há quanto tempo foi liberada', () {
       final s = osSituacao(_os('os-2201'), DateTime(2026, 9, 15, 10));
-      expect(s.label, 'Liberada há 2 dias');
+      expect(s.label, 'Esperando início há 2 dias');
       expect(s.tone, AppStatusCardTone.neutral);
     });
 
@@ -84,7 +84,7 @@ void main() {
       );
       expect(
         osSituacao(_os('os-2160'), DateTime(2026, 9, 23)).label,
-        startsWith('Refeita · '),
+        startsWith('Precisa refazer · '),
       );
     });
   });

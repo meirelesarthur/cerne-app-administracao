@@ -21,22 +21,6 @@ void abrirCriarOs(BuildContext context) {
   ).push<void>(MaterialPageRoute<void>(builder: (_) => const OsCreatePage()));
 }
 
-/// O "+" de criar OS, encostado à direita do título da lista — fonte única
-/// para a aba "OS" e para o dashboard da busca global (Lei 2).
-class OsCriarButton extends StatelessWidget {
-  const OsCriarButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppIconButton(
-      icon: const AppIcon(AppIcons.plus, size: AppSize.iconMd),
-      label: 'Criar OS',
-      variant: AppIconButtonVariant.solid,
-      onPressed: () => abrirCriarOs(context),
-    );
-  }
-}
-
 /// Tela cheia de criação de OS (Administrativo). O envio fica no rodapé fixo
 /// (`AppActionBar`). Mesmo padrão de validação do app Operação: enviar com
 /// algo faltando **mostra o erro no campo** (nunca "não faz nada"), e sair com

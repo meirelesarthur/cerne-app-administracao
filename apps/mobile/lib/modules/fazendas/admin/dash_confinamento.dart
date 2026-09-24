@@ -139,6 +139,7 @@ class _VisaoGeral extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AppMetricGrid(
+          equalRowHeight: true,
           children: [
             AppKpiStatCard(
               label: 'Cabeças confinadas',

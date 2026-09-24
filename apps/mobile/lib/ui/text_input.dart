@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
+import '../design/generated/app_layout.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
+import 'app_icon.dart';
 import 'field_capsule.dart';
+import 'icon_button.dart';
 
 /// Espelha `TextInput.tsx` — campo-cápsula (Nova UI): pílula cheia (`rounded-full`),
 /// fundo sutil, sem borda dura. Encapsula `TextFormField` para cumprir a Lei 1
@@ -60,6 +63,9 @@ class _AppTextInputState extends State<AppTextInput> {
   FocusNode? _internalFocusNode;
   bool _focused = false;
 
+  /// Senha começa oculta; o olho alterna. Só existe com `obscureText`.
+  bool _revealed = false;
+
   FocusNode get _focusNode =>
       widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
@@ -97,18 +103,33 @@ class _AppTextInputState extends State<AppTextInput> {
   Widget build(BuildContext context) {
     final inputColors = appInputColors(context);
 
+    // Todo campo de senha tem o olho para conferir o que foi digitado.
+    final trailing = widget.obscureText
+        ? AppIconButton(
+            label: _revealed ? 'Ocultar senha' : 'Mostrar senha',
+            onPressed: widget.enabled
+                ? () => setState(() => _revealed = !_revealed)
+                : null,
+            icon: AppIcon(
+              _revealed ? AppIcons.eyeOff : AppIcons.eye,
+              size: AppSize.iconMd,
+              color: inputColors.muted,
+            ),
+          )
+        : widget.suffixIcon;
+
     return AppFieldCapsule(
       focused: _focused,
       invalid: widget.invalid,
       leading: widget.prefixIcon,
-      trailing: widget.suffixIcon,
+      trailing: trailing,
       child: TextFormField(
         controller: widget.controller,
         initialValue: widget.initialValue,
         onChanged: widget.onChanged,
         onFieldSubmitted: widget.onSubmitted,
         enabled: widget.enabled,
-        obscureText: widget.obscureText,
+        obscureText: widget.obscureText && !_revealed,
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
         focusNode: _focusNode,
@@ -122,10 +143,15 @@ class _AppTextInputState extends State<AppTextInput> {
         decoration: InputDecoration(
           // Decorator sem nenhuma decoração: fundo, borda e altura são da
           // cápsula. Aqui ele é só o editor de texto.
-          isCollapsed: true,
+          // 12 px acima e abaixo da linha: o editor ocupa a altura útil da
+          // cápsula e o toque vale no campo inteiro, também ao lado do olho
+          // da senha (alvo mínimo de 44 px).
+          isDense: true,
           filled: false,
           border: InputBorder.none,
-          contentPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.space3,
+          ),
           hintText: widget.placeholder,
           hintStyle: TextStyle(
             fontFamily: AppTypography.fontFamily,
@@ -179,6 +205,8 @@ class _TextInputUseCaseState extends State<_TextInputUseCase> {
               controller: _controller,
               placeholder: 'Digite algo...',
             ),
+            const SizedBox(height: AppSpacing.space4),
+            const AppTextInput(placeholder: 'Senha', obscureText: true),
             const SizedBox(height: AppSpacing.space4),
             const AppTextInput(placeholder: 'Campo inválido', invalid: true),
             const SizedBox(height: AppSpacing.space4),

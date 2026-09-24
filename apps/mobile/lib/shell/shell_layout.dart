@@ -295,12 +295,10 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                         ),
                         if (!hideChrome)
                           Positioned(
-                            left: 0,
-                            right: 0,
-                            // soma o respiro do token à safe-area inferior real do
-                            // aparelho (home indicator/gesture bar) — sem isso a
-                            // cápsula flutuante fica colada/sobreposta pela área do
-                            // sistema em telas com esse recurso.
+                            left: AppComponentMetrics.tabbarInset,
+                            right: AppComponentMetrics.tabbarInset,
+                            // Soma o respiro inferior à safe-area real do aparelho;
+                            // o hexágono ativo também ocupa a altura elevada da barra.
                             bottom:
                                 AppComponentMetrics.tabbarInset +
                                 MediaQuery.of(context).padding.bottom,

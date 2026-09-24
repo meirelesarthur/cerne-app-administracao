@@ -11,8 +11,8 @@ import 'os_detail_page.dart';
 
 /// Painel de Ordens de Serviço (Administrativo): lista as OS da fazenda
 /// ativa, filtráveis por status e por data de prazo. Criar abre em tela cheia
-/// pelo [OsCriarButton] que a moldura (`DashOrdemServico`) põe à direita do
-/// título; avaliar e cancelar ficam no detalhe em tela cheia ([OsDetailPage]).
+/// pelo "+ Nova O.S" que a moldura (`DashOrdemServico`) fixa no rodapé;
+/// avaliar e cancelar ficam no detalhe em tela cheia ([OsDetailPage]).
 /// Mesma OS e mesmo desenho que o app Operação lê em campo (Lei 2: uma única
 /// OS, dois perfis de leitura/ação).
 ///
@@ -104,34 +104,42 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
       children: [
         AppFormField(
           label: 'Data do prazo',
-          child: AppDateInput(
-            controller: _dataController,
-            // Data incompleta ou impossível (31/02) não filtra: antes o
-            // 31/02 virava março em silêncio.
-            onChanged: (formatted) =>
-                setState(() => _dataFiltro = osLerData(formatted)),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.space2),
-        Row(
-          children: [
-            AppButton(
-              variant: AppButtonVariant.secondary,
-              size: AppButtonSize.sm,
-              onPressed: () => _definirData(DateTime.now()),
-              child: const Text('Hoje'),
-            ),
-            if (temFiltroData) ...[
+          // "Hoje" ao lado do campo, não numa linha própria abaixo: é o
+          // atalho mais usado do filtro, e ficar colado à seleção de data
+          // deixa claro o que ele preenche.
+          child: Row(
+            children: [
+              Expanded(
+                child: AppDateInput(
+                  controller: _dataController,
+                  // Data incompleta ou impossível (31/02) não filtra: antes o
+                  // 31/02 virava março em silêncio.
+                  onChanged: (formatted) =>
+                      setState(() => _dataFiltro = osLerData(formatted)),
+                ),
+              ),
               const SizedBox(width: AppSpacing.space2),
               AppButton(
-                variant: AppButtonVariant.link,
+                variant: AppButtonVariant.secondary,
                 size: AppButtonSize.sm,
-                onPressed: _limparData,
-                child: const Text('Todas as datas'),
+                onPressed: () => _definirData(DateTime.now()),
+                child: const Text('Hoje'),
               ),
             ],
-          ],
+          ),
         ),
+        if (temFiltroData) ...[
+          const SizedBox(height: AppSpacing.space2),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppButton(
+              variant: AppButtonVariant.link,
+              size: AppButtonSize.sm,
+              onPressed: _limparData,
+              child: const Text('Todas as datas'),
+            ),
+          ),
+        ],
         const SizedBox(height: AppSpacing.space4),
         AppSegmentedTabs(
           scrollable: true,

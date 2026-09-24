@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../design/generated/app_radius.dart';
 import '../../../design/generated/app_spacing.dart';
@@ -6,7 +7,6 @@ import '../../../design/generated/app_typography.dart';
 import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/rise_in.dart';
 import '../../../ui/ui.dart';
-import '../components/activity_detail_sheet.dart';
 import '../components/activity_list_item.dart';
 import '../mocks/atividades.dart';
 import '../types.dart';
@@ -64,7 +64,7 @@ class _AtividadesScreenState extends State<AtividadesScreen> {
                   ActivityListItem(
                     activity: a,
                     showDivider: a != pageActivities.last,
-                    onTap: () => showActivityDetailSheet(context, activity: a),
+                    onTap: () => context.push(kindRoute[a.kind]!),
                   ),
               ],
             ),

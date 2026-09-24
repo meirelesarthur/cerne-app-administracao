@@ -121,15 +121,16 @@ class AppFieldCapsule extends StatelessWidget {
     final inputColors = appInputColors(context);
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
-    // Em repouso o campo tem borda visível (auditoria de UX): o preenchimento
-    // cinza-claro sozinho sumia na folha branca sob sol (1,09:1).
+    // Em repouso o campo tem borda cinza visível (auditoria de UX): o
+    // preenchimento cinza-claro sozinho sumia na folha branca sob sol
+    // (1,09:1). Verde fica reservado ao foco.
     final Color borderColor;
     if (invalid) {
       borderColor = semantic.toneRedFg;
     } else if (focused) {
       borderColor = inputColors.focus;
     } else {
-      borderColor = semantic.borderStrong;
+      borderColor = semantic.fieldBorder;
     }
 
     return Container(

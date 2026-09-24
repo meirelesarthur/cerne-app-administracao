@@ -56,7 +56,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Pede atenção hoje'), findsOneWidget);
+      expect(find.text('Radar da fazenda'), findsOneWidget);
       expect(find.byType(AppContextTabs), findsOneWidget);
       expect(find.byType(AppBottomTabBar), findsOneWidget);
     });
@@ -136,7 +136,7 @@ void main() {
         expect(aba('Visão geral').width, closeTo(aba('Painéis').width, 0.1));
         expect(aba('Visão geral').width, closeTo(aba('Consultas').width, 0.1));
         // "/fazendas" abre a Visão geral, com um grupo por painel.
-        expect(find.text('Pede atenção hoje'), findsOneWidget);
+        expect(find.text('Radar da fazenda'), findsOneWidget);
         expect(find.text('Resultado'), findsOneWidget);
 
         // A aba Painéis traz os painéis de decisão completos.
@@ -218,11 +218,16 @@ void main() {
         await tester.tap(find.byType(AppModuleTile).first);
         await tester.pumpAndSettle();
 
-        // Lista as OS da fazenda, com o "+" de criar na faixa do topo.
-        expect(find.byTooltip('Criar OS'), findsOneWidget);
-        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+        // Lista as OS da fazenda, com o "+ Nova O.S" fixo no rodapé.
+        expect(find.text('+ NOVA O.S'), findsOneWidget);
         expect(
-          find.text('Construção de bebedouro no Piquete 07'),
+          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          ),
           findsOneWidget,
         );
         expect(find.text('Confinamento'), findsNothing);
@@ -242,9 +247,14 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
-          find.text('Construção de bebedouro no Piquete 07'),
+          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          ),
           findsNothing,
         );
       },

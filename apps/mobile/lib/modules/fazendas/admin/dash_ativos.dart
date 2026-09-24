@@ -98,6 +98,7 @@ class _DashAtivosState extends State<DashAtivos> {
           ),
           const SizedBox(height: AppSpacing.space4),
           AppMetricGrid(
+            equalRowHeight: true,
             children: [
               AppKpiStatCard(
                 label: 'Aquisição',

@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../design/generated/app_layout.dart';
 import '../../../design/generated/app_spacing.dart';
+import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/simulated_load.dart';
 import '../../../shell/components/sub_page_header.dart';
 import '../../../shell/state/shell_store.dart';
-import '../../../design/theme/app_theme_extension.dart';
 import '../../../ui/ui.dart';
+import '../components/farm_picker.dart';
 import '../state/fazendas_store.dart';
 
 /// Scaffold comum dos dashboards administrativos de Fazendas (spec §7.1):
@@ -28,6 +29,7 @@ class DashboardScreen extends ConsumerWidget {
     this.restricted = false,
     this.hideOfflineBanner = false,
     this.action,
+    this.bottomBar,
   });
 
   final String title;
@@ -39,9 +41,14 @@ class DashboardScreen extends ConsumerWidget {
   /// Oculta o banner de dados em cache (ex.: telas não cacheáveis offline).
   final bool hideOfflineBanner;
 
-  /// Ação à direita da faixa do topo (ex.: o "+" de criar). O selo de acesso
+  /// Ação à direita da faixa do topo (ex.: um filtro). O selo de acesso
   /// restrito ([restricted]) tem precedência sobre ela.
   final Widget? action;
+
+  /// CTA fixo no rodapé, fora da área rolável (ex.: `AppActionBar` com
+  /// "+ Nova O.S"). Largura total, sempre visível — a lista deles rola por
+  /// baixo, o botão não.
+  final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,6 +60,15 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // O seletor de fazenda substitui o antigo texto fixo "de qual
+        // fazenda são estes números": bem no topo da tela, acima até do
+        // "Voltar" — sempre visível e alcançável primeiro, para trocar de
+        // fazenda sem entrar no painel (o dashboard inteiro já observa
+        // `fazendasStoreProvider` e atualiza sozinho).
+        _FarmSelectorBand(
+          farmName: fazenda,
+          onTap: () => openFarmPicker(context, ref),
+        ),
         SubPageHeader(
           title: title,
           action: restricted
@@ -72,37 +88,14 @@ class DashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // De qual fazenda são estes números: nas telas fundas o
-                // seletor global de fazenda não aparece.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.space4,
-                    AppSpacing.space3,
-                    AppSpacing.space4,
-                    0,
-                  ),
-                  child: Row(
-                    children: [
-                      AppIcon(
-                        AppIcons.mapPin,
-                        size: AppSize.iconSm,
-                        color: Theme.of(
-                          context,
-                        ).extension<AppSemanticColors>()!.fgMuted,
-                      ),
-                      const SizedBox(width: AppSpacing.space1),
-                      Expanded(
-                        child: Text(
-                          fazenda,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 if (!isOnline && !hideOfflineBanner)
                   const Padding(
-                    padding: EdgeInsets.only(bottom: AppSpacing.space2),
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.space4,
+                      AppSpacing.space3,
+                      AppSpacing.space4,
+                      0,
+                    ),
                     child: AppBanner(
                       icon: AppIcon(AppIcons.cloudOff, size: AppSize.iconXs),
                       child: Text(
@@ -137,7 +130,38 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
+        ?bottomBar,
       ],
+    );
+  }
+}
+
+/// Faixa branca do seletor de fazenda no topo da tela funda — mesmo fundo e
+/// respiro do header de [AppContentSheet] (Lei 3: nenhuma cor nova), só que
+/// acima do "Voltar" em vez de colado à folha.
+class _FarmSelectorBand extends StatelessWidget {
+  const _FarmSelectorBand({required this.farmName, required this.onTap});
+
+  final String farmName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerBg = isDark ? semantic.bgCanvas : semantic.bgSurface;
+
+    return ColoredBox(
+      color: headerBg,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppContentSheet.contentInset,
+          AppSpacing.space2,
+          AppContentSheet.contentInset,
+          AppSpacing.space3,
+        ),
+        child: AppFarmSelector(farmName: farmName, onTap: onTap),
+      ),
     );
   }
 }

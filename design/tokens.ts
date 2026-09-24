@@ -177,7 +177,7 @@ export interface ThemePalette {
    * convergem para `bg.raised` — o campo continua dentro da paleta escura,
    * nunca vira um retângulo branco sobre o tema escuro.
    */
-  field: { onSurface: string; onCanvas: string }
+  field: { onSurface: string; onCanvas: string; border: string }
   border: { default: string; strong: string; subtle: string; tint: string }
   accent: { default: string; hover: string; subtle: string; contrast: string }
   /** superfície escura de destaque (hero cards / canvas invertido da referência) */
@@ -263,7 +263,7 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     // para se destacar (neutral[100]) — `bg.subtle`/`bg.raised` são brancos
     // aqui e não serviriam. Sobre o cinza do canvas/folha, o branco puro já
     // contrasta, e é a leitura histórica do campo de busca do app.
-    field: { onSurface: primitive.neutral[100], onCanvas: primitive.neutral[0] },
+    field: { onSurface: primitive.neutral[100], onCanvas: primitive.neutral[0], border: primitive.neutral[300] },
     // `strong` escurecido na auditoria de UX: é a borda de repouso dos campos,
     // que antes sumiam na folha branca (1,09:1).
     border: { default: '#e8e9e1', strong: '#c4c7bb', subtle: '#f0f1ea', tint: primitive.brand[100] },
@@ -344,7 +344,7 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     // `bg.raised` (o mesmo verde elevado dos cards), corrigindo o campo que
     // antes virava branco puro sobre o tema escuro (quebra de contraste
     // reportada: busca com fill branco total no GB mode).
-    field: { onSurface: '#123a28', onCanvas: '#123a28' },
+    field: { onSurface: '#123a28', onCanvas: '#123a28', border: 'rgba(255,255,255,0.18)' },
     border: { default: 'rgba(255,255,255,0.10)', strong: 'rgba(255,255,255,0.18)', subtle: 'rgba(255,255,255,0.06)', tint: 'rgba(255,255,255,0.10)' },
     accent: { default: '#10b981', hover: '#34d399', subtle: 'rgba(16,185,129,0.14)', contrast: '#051008' },
     ink: {
@@ -566,10 +566,8 @@ export const layout = {
   moduleBarH: '48px',
   tabBarH: '68px',
   gutter: '16px',
-  /** folga inferior dos scrollers para o conteúdo não morrer sob a tab bar flutuante.
-   * Reduzido de 104 (ver plano de melhorias de UX): a folga anterior era maior que o
-   * necessário — dock (68px) + respiro (14px) já cobrem a cápsula flutuante. */
-  tabBarClearance: '88px',
+  /** Folga para o conteúdo passar acima da tab bar e do hexágono ativo flutuante. */
+  tabBarClearance: '112px',
 } as const
 
 // paleta categórica para gráficos SVG próprios
@@ -667,14 +665,21 @@ export const component = {
   kpi: {
     bg: '#f8fffe',
   },
-  /** Nova UI — tab bar flutuante em cápsula translúcida sobre o conteúdo */
+  /** Tab bar com hexágono ativo flutuante e ondulação sob a seleção. */
   tabbar: {
     blur: '20px',
     height: '68px',
-    /** respiro lateral/inferior da cápsula dentro do frame */
+    /** respiro lateral/inferior da barra dentro do frame */
     inset: '14px',
-    /** diâmetro dos botões circulares internos */
+    /** diâmetro das áreas interativas internas */
     itemSize: '48px',
+    /** caixa hexagonal do item ativo */
+    hexSize: '52px',
+    /** quanto o hexágono ativo sobe acima da barra */
+    lift: '24px',
+    /** largura e profundidade da ondulação sob o item ativo */
+    notchWidth: '104px',
+    notchDepth: '32px',
   },
   /** card de primeiro nível para menus extensos (mosaico 2×N com lista interna) */
   navigationCard: {

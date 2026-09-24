@@ -8,6 +8,8 @@ import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_create_page.
 import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_detail_page.dart';
 import 'package:cerne_app/ui/ui.dart';
 
+import '../../../helpers/cta_finder.dart';
+
 Widget _wrap(Widget child) => ProviderScope(
   child: MaterialApp(
     theme: buildAppTheme(AppThemeVariant.light),
@@ -23,11 +25,15 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      expect(find.byType(OsCriarButton), findsOneWidget);
-      expect(find.byTooltip('Criar OS'), findsOneWidget);
-      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+      expect(findCta('+ Nova O.S'), findsOneWidget);
       expect(
-        find.text('Construção de bebedouro no Piquete 07'),
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+        ),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -45,8 +51,16 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
-      expect(find.text('Construção de bebedouro no Piquete 07'), findsNothing);
+      expect(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+        ),
+        findsNothing,
+      );
     });
 
     testWidgets('filtra por data de prazo e permite limpar o filtro', (
@@ -59,13 +73,19 @@ void main() {
       await tester.tap(find.text('Hoje'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Reparo de cerca do Talhão 04'), findsNothing);
+      expect(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        findsNothing,
+      );
       expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
 
       await tester.tap(find.text('Todas as datas'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+      expect(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('cria uma nova OS pelo formulário em tela cheia', (
@@ -74,7 +94,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       expect(find.byType(OsCreatePage), findsOneWidget);
@@ -121,9 +141,13 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Reparo de cerca do Talhão 04'));
+      await tester.ensureVisible(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Reparo de cerca do Talhão 04'));
+      await tester.tap(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(OsDetailPage), findsOneWidget);
@@ -139,9 +163,13 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('Reparo de cerca do Talhão 04'));
+      await tester.ensureVisible(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Reparo de cerca do Talhão 04'));
+      await tester.tap(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.text('CANCELAR OS'));
       await tester.pumpAndSettle();
@@ -166,7 +194,7 @@ void main() {
     ) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('CRIAR OS'));
@@ -184,7 +212,7 @@ void main() {
     testWidgets('prazo no passado ou impossível não é aceito', (tester) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(AppDateInput), '01/01/2020');
@@ -208,7 +236,7 @@ void main() {
     ) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(AppTextInput).first, 'Rascunho');
@@ -224,8 +252,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Fazenda padrão (São Pedro): a vacinação é da Santa Rita.
-      expect(find.text('Vacinação contra aftosa — Lote 12'), findsNothing);
-      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
+      expect(find.text('Vacinação — Lote 12 - Recria'), findsNothing);
+      expect(
+        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        findsOneWidget,
+      );
     });
   });
 }

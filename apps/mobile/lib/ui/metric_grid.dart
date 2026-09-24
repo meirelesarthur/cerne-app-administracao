@@ -16,6 +16,16 @@ import 'kpi_stat_card.dart';
 /// Aqui as colunas saem de [minTileWidth] e a altura vem do próprio conteúdo:
 /// não há proporção para estourar. [tileHeight] existe para o caso em que a
 /// altura precisa ser travada de propósito.
+///
+/// [equalRowHeight] iguala a altura de todo bloco da mesma linha à do maior
+/// vizinho (`IntrinsicHeight` + `stretch`) — para um card com legenda ao lado
+/// de um sem legenda não deixar a linha com alturas desencontradas.
+///
+/// Fica `false` por padrão porque `IntrinsicHeight` exige medir a altura
+/// intrínseca dos filhos, e widgets com `LayoutBuilder`/gráfico interno (ex.:
+/// `AppDashboardCard` com `spark`) não sabem responder isso e derrubam o
+/// layout. Ligue só quando os blocos da linha são "achatáveis" — na prática,
+/// grades de `AppKpiStatCard` (texto simples, sem gráfico).
 class AppMetricGrid extends StatelessWidget {
   const AppMetricGrid({
     super.key,
@@ -24,6 +34,7 @@ class AppMetricGrid extends StatelessWidget {
     this.tileHeight,
     this.spacing = AppSpacing.space3,
     this.maxColumns = 4,
+    this.equalRowHeight = false,
   });
 
   final List<Widget> children;
@@ -40,6 +51,9 @@ class AppMetricGrid extends StatelessWidget {
   /// Teto de colunas: numa TV o conteúdo não deve virar uma fita de 8 colunas.
   final int maxColumns;
 
+  /// Ver documentação da classe.
+  final bool equalRowHeight;
+
   @override
   Widget build(BuildContext context) {
     if (children.isEmpty) return const SizedBox.shrink();
@@ -51,12 +65,42 @@ class AppMetricGrid extends StatelessWidget {
         final columns = fits.clamp(1, maxColumns).clamp(1, children.length);
         final tileWidth = (available - spacing * (columns - 1)) / columns;
 
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
+        if (!equalRowHeight) {
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: [
+              for (final child in children)
+                SizedBox(width: tileWidth, height: tileHeight, child: child),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            for (final child in children)
-              SizedBox(width: tileWidth, height: tileHeight, child: child),
+            for (var i = 0; i < children.length; i += columns) ...[
+              if (i > 0) SizedBox(height: spacing),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (
+                      var j = i;
+                      j < (i + columns).clamp(0, children.length);
+                      j++
+                    ) ...[
+                      if (j > i) SizedBox(width: spacing),
+                      SizedBox(
+                        width: tileWidth,
+                        height: tileHeight,
+                        child: children[j],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ],
         );
       },

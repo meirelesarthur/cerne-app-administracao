@@ -148,6 +148,7 @@ class _DashUsoState extends ConsumerState<DashUso> {
           ),
           const SizedBox(height: AppSpacing.space3),
           AppMetricGrid(
+            equalRowHeight: true,
             children: [
               AppKpiStatCard(
                 label: 'Usuários online',

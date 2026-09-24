@@ -7,7 +7,6 @@ import '../../../design/generated/app_spacing.dart';
 import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/rise_in.dart';
 import '../../../ui/ui.dart';
-import '../components/activity_detail_sheet.dart';
 import '../components/activity_list_item.dart';
 import '../confinamento/mocks.dart' as confinamento_mocks;
 import '../confinamento/models.dart';
@@ -16,8 +15,6 @@ import '../mocks/dashboards_mocks.dart';
 import '../ordem_servico/models.dart';
 import '../ordem_servico/state/ordem_servico_store.dart';
 import '../state/fazendas_store.dart';
-import '../types.dart';
-import 'package:cerne_app/design/generated/app_typography.dart';
 import '../../../design/generated/app_layout.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
@@ -154,49 +151,22 @@ class FazendasHome extends ConsumerWidget {
     var ordem = 0;
     Widget rise(Widget child) => RiseIn(index: ordem++, child: child);
 
-    return _ActivityAwareList(
-      builder: (context, onActivityTap) => ListView(
+    return Builder(
+      builder: (context) => ListView(
         padding: const EdgeInsets.all(AppSpacing.space4),
         children: [
+          rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
+          const SizedBox(height: AppSpacing.space2),
           rise(
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AppHeading(
-                        level: AppHeadingLevel.h3,
-                        child: Text('Visão geral'),
-                      ),
-                      const SizedBox(height: AppSpacing.half),
-                      Text(
-                        fazenda,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                const _SafraPill(),
-              ],
-            ),
+            AppAlertStrip(items: _alertas(context, osAtrasadas), maxItems: 2),
           ),
-          const SizedBox(height: AppSpacing.space2),
-          Text(
-            'Os principais números de cada painel. Toque em "Ver painel" '
-            'para o detalhe completo.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppSpacing.space4),
-          rise(const AppSectionTitle(child: Text('Pede atenção hoje'))),
-          const SizedBox(height: AppSpacing.space2),
-          rise(AppAlertStrip(items: _alertas(context, osAtrasadas))),
           const SizedBox(height: AppSpacing.space5),
 
           // --- Resultado -------------------------------------------------
           rise(const _Grupo(titulo: 'Resultado', rota: _resultado)),
           rise(
             const AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'A receber',
@@ -280,6 +250,7 @@ class FazendasHome extends ConsumerWidget {
           ),
           rise(
             AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'Em andamento',
@@ -305,6 +276,7 @@ class FazendasHome extends ConsumerWidget {
           rise(const _Grupo(titulo: 'Suprimentos', rota: _suprimentos)),
           rise(
             AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'Aguardando decisão',
@@ -404,7 +376,7 @@ class FazendasHome extends ConsumerWidget {
                             ActivityListItem(
                               activity: a,
                               showDivider: a != recentes.last,
-                              onTap: () => onActivityTap(a),
+                              onTap: () => context.push(kindRoute[a.kind]!),
                             ),
                         ],
                       ),
@@ -442,57 +414,6 @@ class _Grupo extends StatelessWidget {
           child: Text(acao ?? 'Ver painel'),
         ),
         child: Text(titulo),
-      ),
-    );
-  }
-}
-
-/// Encapsula o acionamento do `ActivityDetailSheet` — equivalente ao
-/// `useState<Activity | null>` do React, sem precisar de `StatefulWidget` na
-/// tela inteira (o bottom sheet já é a fonte de estado "aberto/fechado").
-class _ActivityAwareList extends StatelessWidget {
-  const _ActivityAwareList({required this.builder});
-
-  final Widget Function(
-    BuildContext context,
-    void Function(Activity activity) onActivityTap,
-  )
-  builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(
-      context,
-      (activity) => showActivityDetailSheet(context, activity: activity),
-    );
-  }
-}
-
-/// Safra de referência dos números da Visão geral. Só leitura: não abre
-/// seletor (o chevron antigo prometia uma troca que não existia).
-class _SafraPill extends StatelessWidget {
-  const _SafraPill();
-
-  @override
-  Widget build(BuildContext context) {
-    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.space3,
-        vertical: AppSpacing.space1,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: semantic.borderDefault),
-        color: semantic.bgSurface,
-      ),
-      child: Text(
-        'Safra 24/25',
-        style: TextStyle(
-          fontWeight: AppTypography.weightSemibold,
-          fontSize: AppTypography.base,
-          color: semantic.fgDefault,
-        ),
       ),
     );
   }

@@ -50,7 +50,24 @@ class AppPressable extends StatelessWidget {
         overlayColor: showVisualFeedback
             ? null
             : const WidgetStatePropertyAll(AppColors.transparent),
-        child: child,
+        // Com `minTouchTarget`, o `ConstrainedBox` abaixo força um alvo de
+        // 48dp mesmo quando `child` é um glifo menor (ex.: o "?" do
+        // `AppHelpButton`, 16px). Sem este `Center`, a constraint mínima de
+        // 48 cascateia pelo `SizedBox` interno do ícone (`enforce`) e o
+        // desenho é esticado para preencher os 48px — o ícone "cresce" em
+        // vez de só ganhar uma área de toque maior ao redor. `Center` corta
+        // essa cascata: solta o mínimo para o filho, que volta a desenhar no
+        // seu tamanho real, centralizado dentro do alvo de toque.
+        //
+        // `widthFactor`/`heightFactor: 1` importam aqui: um `Center()` puro
+        // (sem fator) se expande para preencher todo o espaço disponível, o
+        // que faria o alvo de toque estourar para o tamanho do container ao
+        // redor em vez de ficar travado nos 48px — o mesmo defeito, só que no
+        // layout em vez do desenho. Com o fator, a caixa volta a se ajustar
+        // ao conteúdo (aqui, ao mínimo de 48).
+        child: minTouchTarget
+            ? Center(widthFactor: 1, heightFactor: 1, child: child)
+            : child,
       ),
     );
 

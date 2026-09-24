@@ -29,6 +29,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.bgKpi,
     required this.fieldOnSurface,
     required this.fieldOnCanvas,
+    required this.fieldBorder,
     required this.borderDefault,
     required this.borderStrong,
     required this.borderSubtle,
@@ -112,6 +113,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   /// sobre o tema escuro.
   final Color fieldOnSurface;
   final Color fieldOnCanvas;
+
+  /// Borda do campo em repouso: cinza neutro (não o `borderStrong`, que é
+  /// oliva e lia como verde). Verde só no foco (`accentDefault`).
+  final Color fieldBorder;
 
   final Color borderDefault;
   final Color borderStrong;
@@ -198,6 +203,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     bgKpi: AppColorsLight.bgKpi,
     fieldOnSurface: AppColorsLight.fieldOnSurface,
     fieldOnCanvas: AppColorsLight.fieldOnCanvas,
+    fieldBorder: AppColorsLight.fieldBorder,
     borderDefault: AppColorsLight.borderDefault,
     borderStrong: AppColorsLight.borderStrong,
     borderSubtle: AppColorsLight.borderSubtle,
@@ -272,6 +278,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     bgKpi: AppColorsGbMode.bgKpi,
     fieldOnSurface: AppColorsGbMode.fieldOnSurface,
     fieldOnCanvas: AppColorsGbMode.fieldOnCanvas,
+    fieldBorder: AppColorsGbMode.fieldBorder,
     borderDefault: AppColorsGbMode.borderDefault,
     borderStrong: AppColorsGbMode.borderStrong,
     borderSubtle: AppColorsGbMode.borderSubtle,
@@ -347,6 +354,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? bgKpi,
     Color? fieldOnSurface,
     Color? fieldOnCanvas,
+    Color? fieldBorder,
     Color? borderDefault,
     Color? borderStrong,
     Color? borderSubtle,
@@ -420,6 +428,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       bgKpi: bgKpi ?? this.bgKpi,
       fieldOnSurface: fieldOnSurface ?? this.fieldOnSurface,
       fieldOnCanvas: fieldOnCanvas ?? this.fieldOnCanvas,
+      fieldBorder: fieldBorder ?? this.fieldBorder,
       borderDefault: borderDefault ?? this.borderDefault,
       borderStrong: borderStrong ?? this.borderStrong,
       borderSubtle: borderSubtle ?? this.borderSubtle,
@@ -499,6 +508,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       bgKpi: c(bgKpi, other.bgKpi),
       fieldOnSurface: c(fieldOnSurface, other.fieldOnSurface),
       fieldOnCanvas: c(fieldOnCanvas, other.fieldOnCanvas),
+      fieldBorder: c(fieldBorder, other.fieldBorder),
       borderDefault: c(borderDefault, other.borderDefault),
       borderStrong: c(borderStrong, other.borderStrong),
       borderSubtle: c(borderSubtle, other.borderSubtle),

@@ -10,7 +10,7 @@ class AppLayout {
   static const double moduleBarH = 48;
   static const double tabBarH = 68;
   static const double gutter = 16;
-  static const double tabBarClearance = 88;
+  static const double tabBarClearance = 112;
 }
 
 class AppSize {
@@ -58,6 +58,10 @@ class AppComponentMetrics {
   static const double tabbarHeight = 68;
   static const double tabbarInset = 14;
   static const double tabbarItemSize = 48;
+  static const double tabbarHexSize = 52;
+  static const double tabbarLift = 24;
+  static const double tabbarNotchWidth = 104;
+  static const double tabbarNotchDepth = 32;
   static const double navigationCardHeight = 140;
   static const double emptyStateArt = 112;
   static const double emptyStateArtIcon = 56;
