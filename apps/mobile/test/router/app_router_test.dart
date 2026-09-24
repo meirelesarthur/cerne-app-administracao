@@ -218,8 +218,8 @@ void main() {
         await tester.tap(find.byType(AppModuleTile).first);
         await tester.pumpAndSettle();
 
-        // Lista as OS da fazenda, com o "+" de criar na faixa do topo.
-        expect(find.byTooltip('Criar OS'), findsOneWidget);
+        // Lista as OS da fazenda, com o "+ Nova O.S" fixo no rodapé.
+        expect(find.text('+ NOVA O.S'), findsOneWidget);
         expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
           find.text('Construção de bebedouro no Piquete 07'),

@@ -28,6 +28,7 @@ class DashboardScreen extends ConsumerWidget {
     this.restricted = false,
     this.hideOfflineBanner = false,
     this.action,
+    this.bottomBar,
   });
 
   final String title;
@@ -39,9 +40,14 @@ class DashboardScreen extends ConsumerWidget {
   /// Oculta o banner de dados em cache (ex.: telas não cacheáveis offline).
   final bool hideOfflineBanner;
 
-  /// Ação à direita da faixa do topo (ex.: o "+" de criar). O selo de acesso
+  /// Ação à direita da faixa do topo (ex.: um filtro). O selo de acesso
   /// restrito ([restricted]) tem precedência sobre ela.
   final Widget? action;
+
+  /// CTA fixo no rodapé, fora da área rolável (ex.: `AppActionBar` com
+  /// "+ Nova O.S"). Largura total, sempre visível — a lista deles rola por
+  /// baixo, o botão não.
+  final Widget? bottomBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -123,6 +129,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ),
+        ?bottomBar,
       ],
     );
   }

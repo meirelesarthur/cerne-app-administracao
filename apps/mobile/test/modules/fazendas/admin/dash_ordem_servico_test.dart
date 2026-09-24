@@ -8,6 +8,8 @@ import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_create_page.
 import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_detail_page.dart';
 import 'package:cerne_app/ui/ui.dart';
 
+import '../../../helpers/cta_finder.dart';
+
 Widget _wrap(Widget child) => ProviderScope(
   child: MaterialApp(
     theme: buildAppTheme(AppThemeVariant.light),
@@ -23,8 +25,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      expect(find.byType(OsCriarButton), findsOneWidget);
-      expect(find.byTooltip('Criar OS'), findsOneWidget);
+      expect(findCta('+ Nova O.S'), findsOneWidget);
       expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
       expect(
         find.text('Construção de bebedouro no Piquete 07'),
@@ -74,7 +75,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       expect(find.byType(OsCreatePage), findsOneWidget);
@@ -166,7 +167,7 @@ void main() {
     ) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('CRIAR OS'));
@@ -184,7 +185,7 @@ void main() {
     testWidgets('prazo no passado ou impossível não é aceito', (tester) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(AppDateInput), '01/01/2020');
@@ -208,7 +209,7 @@ void main() {
     ) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(OsCriarButton));
+      await tester.tap(findCta('+ Nova O.S'));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(AppTextInput).first, 'Rascunho');
