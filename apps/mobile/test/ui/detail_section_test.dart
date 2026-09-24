@@ -78,5 +78,72 @@ void main() {
       expect(find.text('Apoio'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+      'campo tocável trunca a legenda e abre o texto completo ao tocar',
+      (tester) async {
+        var aberto = false;
+        const observacaoLonga =
+            'Refeita: cerca elétrica provisória não resistiu à chuva da '
+            'noite seguinte e o lote voltou a se aproximar da estrada.';
+
+        await tester.pumpWidget(
+          _wrap(
+            AppDetailSection(
+              icon: AppIcons.clock,
+              title: 'Histórico',
+              child: AppDetailFields(
+                fields: [
+                  AppDetailField(
+                    label: '03/09/2026 às 06:30',
+                    value: 'OS marcada como refeita',
+                    caption: observacaoLonga,
+                    captionMaxLines: 2,
+                    onTap: () => aberto = true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final caption = tester.widget<Text>(find.text(observacaoLonga));
+        expect(caption.maxLines, 2);
+        expect(caption.overflow, TextOverflow.ellipsis);
+
+        await tester.tap(find.text('OS marcada como refeita'));
+        await tester.pump();
+
+        expect(aberto, isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('sem onTap, o campo continua só leitura e sem truncar', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(
+          const AppDetailSection(
+            icon: AppIcons.clock,
+            title: 'Histórico',
+            child: AppDetailFields(
+              fields: [
+                AppDetailField(
+                  label: '02/09/2026 às 07:20',
+                  value: 'Execução iniciada',
+                  caption: 'João Oliveira',
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final caption = tester.widget<Text>(find.text('João Oliveira'));
+      expect(caption.maxLines, isNull);
+      expect(find.byType(AppIcon), findsNWidgets(1));
+      expect(tester.takeException(), isNull);
+    });
   });
 }

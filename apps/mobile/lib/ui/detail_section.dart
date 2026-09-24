@@ -3,6 +3,7 @@ import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
 import 'chip.dart';
+import 'pressable.dart';
 import '../design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
@@ -133,11 +134,25 @@ class AppDetailField {
     required this.label,
     required this.value,
     this.caption,
+    this.captionMaxLines,
+    this.onTap,
   });
 
   final String label;
   final String value;
   final String? caption;
+
+  /// Trunca [caption] com reticências a partir desta contagem de linhas —
+  /// para uma lista que precisa caber em poucas linhas mesmo quando o texto
+  /// (ex.: a observação de um evento de histórico) é longo. `null` (padrão)
+  /// mantém o comportamento de sempre: a legenda quebra livremente, sem
+  /// limite.
+  final int? captionMaxLines;
+
+  /// Torna o campo tocável — o par mais comum é truncar [caption] com
+  /// [captionMaxLines] e abrir aqui o texto completo numa folha. `null`
+  /// (padrão) deixa o campo como leitura simples, sem alvo de toque.
+  final VoidCallback? onTap;
 }
 
 /// Campos de leitura empilhados dentro de uma [AppDetailSection], separados
@@ -189,16 +204,30 @@ class _FieldCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    return Column(
+    final maxLines = field.captionMaxLines;
+
+    final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          field.label,
-          style: TextStyle(
-            fontSize: AppTypography.base,
-            color: semantic.fgMuted,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                field.label,
+                style: TextStyle(
+                  fontSize: AppTypography.base,
+                  color: semantic.fgMuted,
+                ),
+              ),
+            ),
+            if (field.onTap != null)
+              AppIcon(
+                AppIcons.chevronRight,
+                size: AppSize.iconSm,
+                color: semantic.fgSubtle,
+              ),
+          ],
         ),
         const SizedBox(height: AppSpacing.half),
         Text(
@@ -214,6 +243,8 @@ class _FieldCell extends StatelessWidget {
           const SizedBox(height: AppSpacing.half),
           Text(
             field.caption!,
+            maxLines: maxLines,
+            overflow: maxLines == null ? null : TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: AppTypography.base,
               color: semantic.fgMuted,
@@ -221,6 +252,16 @@ class _FieldCell extends StatelessWidget {
           ),
         ],
       ],
+    );
+
+    final onTap = field.onTap;
+    if (onTap == null) return content;
+
+    return AppPressable(
+      semanticLabel: '${field.value}. Ver texto completo',
+      onPressed: onTap,
+      minTouchTarget: false,
+      child: content,
     );
   }
 }

@@ -53,6 +53,27 @@ String _fmtDataCurta(DateTime d) =>
 String _fmtDataHora(DateTime d) =>
     '${_fmtData(d)} às ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 
+/// Evento do histórico com observação: a legenda vem truncada em 2 linhas
+/// (`AppDetailField.captionMaxLines`), então o toque abre aqui o texto
+/// completo — mesmo padrão do `AppHelpButton` (`showAppBottomSheet`), sem
+/// inventar uma segunda folha de detalhe só para isso (Lei 2).
+void _abrirHistoricoEvento(BuildContext context, EventoOs evento) {
+  showAppBottomSheet<void>(
+    context,
+    title: evento.acao,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.space4),
+      child: AppReviewList(
+        items: [
+          AppReviewItem(label: 'Quando', value: _fmtDataHora(evento.dataHora)),
+          AppReviewItem(label: 'Responsável', value: evento.autor),
+          AppReviewItem(label: 'Observação', value: evento.observacao!),
+        ],
+      ),
+    ),
+  );
+}
+
 /// Duração legível para a linha de situação: "40 min", "2h15", "3 dias".
 String osDuracao(Duration d) {
   if (d.isNegative) return '0 min';
@@ -339,6 +360,12 @@ class _OsDetailBodyState extends State<OsDetailBody> {
                     caption: evento.observacao == null
                         ? evento.autor
                         : '${evento.autor} · ${evento.observacao}',
+                    // Observação pode ser longa — trunca em 2 linhas e o
+                    // toque abre o evento inteiro numa folha.
+                    captionMaxLines: evento.observacao == null ? null : 2,
+                    onTap: evento.observacao == null
+                        ? null
+                        : () => _abrirHistoricoEvento(context, evento),
                   ),
               ],
             ),

@@ -42,6 +42,25 @@ void main() {
     expect(recente.dy, lessThan(antigo.dy));
   });
 
+  testWidgets(
+    'evento do histórico com observação abre o texto completo ao tocar',
+    (tester) async {
+      await pump(tester);
+      await tester.tap(find.text('Histórico (${os.historico.length})'));
+      await tester.pumpAndSettle();
+
+      final evento = os.historico.firstWhere((e) => e.observacao != null);
+
+      await tester.tap(find.text(evento.acao));
+      await tester.pumpAndSettle();
+
+      // O texto completo da observação só existe na folha — a legenda da
+      // lista está truncada e não o mostra por inteiro.
+      expect(find.text(evento.observacao!), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('mostra a avaliação do administrativo quando registrada', (
     tester,
   ) async {
