@@ -26,6 +26,10 @@ import 'state/prototype_session_store.dart';
 /// Com o menu aberto, o app inteiro encolhe (scale+translateX) revelando o
 /// `AppRevealMenu` à direita — únicas responsabilidades deste widget que os
 /// componentes filhos documentaram como "de quem monta o shell".
+/// Módulos cujo conteúdo depende da fazenda ativa — só neles o shell mostra
+/// o seletor de fazenda no topo.
+const _modulosPorFazenda = {'fazendas', 'armazem'};
+
 class ShellLayout extends ConsumerStatefulWidget {
   const ShellLayout({
     super.key,
@@ -145,6 +149,11 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final reduceMotion = MediaQuery.of(context).disableAnimations;
     final showGlobalContext = !hideChrome && profile != null;
+    // O seletor de fazenda só aparece onde a fazenda muda o conteúdo. No
+    // Início, Bank, Crédito e Marketplace ele era ruído: trocar de fazenda
+    // ali não mudava nada na tela.
+    final showFarmSelector =
+        showGlobalContext && _modulosPorFazenda.contains(moduleId);
 
     return Scaffold(
       body: Stack(
@@ -209,7 +218,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                               ? _content(state, reserveTabBar: false)
                               : AppContentSheet(
                                   padded: false,
-                                  header: showGlobalContext
+                                  header: showFarmSelector
                                       ? AppFarmSelector(
                                           farmName: activeFarm.name,
                                           onTap: () =>

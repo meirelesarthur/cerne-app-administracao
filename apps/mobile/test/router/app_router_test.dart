@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:cerne_app/shell/components/bottom_tab_bar.dart';
 import 'package:cerne_app/shell/components/context_tabs.dart';
 import 'package:cerne_app/shell/state/prototype_session_store.dart';
+import 'package:cerne_app/ui/farm_selector.dart';
 import 'package:cerne_app/ui/module_tile.dart';
 import 'package:cerne_app/ui/pressable.dart';
 import 'package:cerne_app/ui/search_field.dart';
@@ -31,6 +32,22 @@ void main() {
   });
 
   group('appRouter', () {
+    testWidgets(
+      'seletor de fazenda só aparece onde a fazenda muda o conteúdo',
+      (tester) async {
+        await setTallSurface(tester);
+        harness.router.go('/fazendas/visao-geral');
+        await tester.pumpWidget(harness.buildApp());
+        await tester.pumpAndSettle();
+        expect(find.byType(AppFarmSelector), findsOneWidget);
+
+        harness.router.go('/inicio');
+        await _settleHubTimers(tester);
+        await tester.pumpAndSettle();
+        expect(find.byType(AppFarmSelector), findsNothing);
+      },
+    );
+
     testWidgets('"/" redireciona para a central do perfil autenticado', (
       tester,
     ) async {
