@@ -121,6 +121,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               itemBuilder: (context, index) {
                 final slide = _slides[index];
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   // `Clip.none` (padrão do Flex) é o que permite a folha
                   // abaixo pintar por cima da base da imagem — ver o
                   // `Transform.translate` nela.
