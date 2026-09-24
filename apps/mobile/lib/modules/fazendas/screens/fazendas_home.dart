@@ -21,8 +21,8 @@ import '../state/recent_access_store.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
 ///
-/// É a leitura que o gestor faz no desktop: primeiro o que pede atenção hoje
-/// (faixa de alertas), depois um bloco por painel de decisão, na mesma ordem
+/// É a leitura que o gestor faz no desktop: primeiro os atalhos mais usados,
+/// depois um bloco por painel de decisão, na mesma ordem
 /// da aba Painéis, cada um com os um ou dois números que resumem o painel e
 /// um "Ver painel" (no título do grupo, único atalho — os cards não repetem
 /// "Abrir painel") que abre o painel completo.
@@ -40,67 +40,6 @@ class FazendasHome extends ConsumerWidget {
   static const _ativos = '/fazendas/dashboards/ativos';
   static const _uso = '/fazendas/dashboards/uso';
   static const _os = '/fazendas/dashboards/ordem-servico';
-
-  /// Só entra na faixa o que pede decisão hoje — e cada cápsula leva ao painel
-  /// que explica o número. Indicador dentro do esperado não vira alerta: vira
-  /// bloco mais abaixo.
-  List<AppAlertItem> _alertas(BuildContext context, int osAtrasadas) {
-    final currais = confinamento_mocks.currais;
-    final lotados = currais
-        .where(
-          (c) =>
-              c.ocupado &&
-              c.capacidade > 0 &&
-              c.ocupacaoAtual / c.capacidade >= 0.9,
-        )
-        .length;
-    final ocorrencias = confinamento_mocks.leituraCochoRecente.avaliacoes
-        .expand((a) => a.ocorrencias)
-        .length;
-    final aguardando = cotacoes
-        .where((c) => c.status == CotacaoStatus.cotacao)
-        .length;
-
-    return [
-      AppAlertItem(
-        label: 'em contas vencidas',
-        value: FinanceiroKpis.atrasados,
-        icon: AppIcons.circleAlert,
-        tone: AppAlertTone.critical,
-        onTap: () => context.push(_resultado),
-      ),
-      if (osAtrasadas > 0)
-        AppAlertItem(
-          label: 'OS com prazo vencido',
-          value: '$osAtrasadas',
-          icon: AppIcons.fileText,
-          tone: AppAlertTone.critical,
-          onTap: () => context.push(_os),
-        ),
-      if (ocorrencias > 0)
-        AppAlertItem(
-          label: 'ocorrências no cocho',
-          value: '$ocorrencias',
-          icon: AppIcons.triangleAlert,
-          onTap: () => context.push(_confinamento),
-        ),
-      if (lotados > 0)
-        AppAlertItem(
-          label: 'currais acima de 90%',
-          value: '$lotados',
-          icon: AppIcons.warehouse,
-          onTap: () => context.push(_confinamento),
-        ),
-      if (aguardando > 0)
-        AppAlertItem(
-          label: 'cotações a decidir',
-          value: '$aguardando',
-          icon: AppIcons.receipt,
-          tone: AppAlertTone.info,
-          onTap: () => context.push(_suprimentos),
-        ),
-    ];
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -197,12 +136,6 @@ class FazendasHome extends ConsumerWidget {
         ),
         children: [
           rise(AppQuickAccessRail(items: quickAccessItems)),
-          const SizedBox(height: AppSpacing.space5),
-          rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
-          const SizedBox(height: AppSpacing.space2),
-          rise(
-            AppAlertStrip(items: _alertas(context, osAtrasadas), maxItems: 2),
-          ),
           const SizedBox(height: AppSpacing.space5),
 
           // --- Resultado -------------------------------------------------
