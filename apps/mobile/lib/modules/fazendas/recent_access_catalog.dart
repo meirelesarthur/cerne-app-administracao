@@ -2,6 +2,21 @@ import '../../ui/ui.dart';
 import 'functional_catalog.dart';
 import 'group_icons.dart';
 
+/// Atalhos populares da fazenda para completar o histórico recente até dez
+/// opções, incluindo os cinco painéis principais e as tarefas operacionais.
+const farmQuickAccessDefaultIds = <String>[
+  'farm:activities',
+  'consulta-os',
+  'painel-financeiro',
+  'lotacao-currais',
+  'suprimentos',
+  'ativos',
+  'analise-uso',
+  'consultas-gerenciais',
+  'saldo-estoque',
+  'consulta-produtos',
+];
+
 class FarmQuickAccessDefinition {
   const FarmQuickAccessDefinition({
     required this.id,

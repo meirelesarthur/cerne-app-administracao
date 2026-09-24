@@ -124,6 +124,19 @@ class FazendasHome extends ConsumerWidget {
             onPressed: () => context.push(recent.route),
           ),
     ];
+    final recentIds = recentItems.map((item) => item.id).toSet();
+    final quickAccessItems = [
+      ...recentItems,
+      for (final id in farmQuickAccessDefaultIds)
+        if (!recentIds.contains(id))
+          if (farmQuickAccessDefinitionForId(id) case final function?)
+            AppQuickAccessItem(
+              id: function.id,
+              label: function.label,
+              icon: function.icon,
+              onPressed: () => context.push(function.route),
+            ),
+    ].take(farmRecentAccessLimit).toList(growable: false);
     final ordens = ref
         .watch(ordemServicoStoreProvider.select((s) => s.ordens))
         .where((o) => o.fazenda == fazenda)
@@ -183,7 +196,7 @@ class FazendasHome extends ConsumerWidget {
           scrollEndPadding,
         ),
         children: [
-          rise(AppQuickAccessRail(items: recentItems)),
+          rise(AppQuickAccessRail(items: quickAccessItems)),
           const SizedBox(height: AppSpacing.space5),
           rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
           const SizedBox(height: AppSpacing.space2),

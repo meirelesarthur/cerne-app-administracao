@@ -8,7 +8,6 @@ import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
 import 'app_icon.dart';
-import 'heading.dart';
 import 'hexagon.dart';
 import 'pressable.dart';
 
@@ -38,32 +37,8 @@ class AppQuickAccessRail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: AppSectionTitle(child: Text('Acesso rápido')),
-            ),
-            Text(
-              'Nesta fazenda',
-              style: TextStyle(
-                fontSize: AppTypography.sm,
-                color: semantic.fgMuted,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.space2),
         if (items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.space2),
-            child: Text(
-              'As funções que você abrir nesta fazenda aparecerão aqui.',
-              style: TextStyle(
-                fontSize: AppTypography.sm,
-                color: semantic.fgMuted,
-              ),
-            ),
-          )
+          const SizedBox.shrink()
         else
           SizedBox(
             height: AppSpacing.space14 + AppSpacing.space12,
@@ -96,8 +71,10 @@ class _QuickAccessTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: SizedBox(
         width: AppSpacing.space14 + AppSpacing.space8,
+        height: AppSpacing.space14 + AppSpacing.space12,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             AppHexagon(
               size: AppSpacing.space14,
@@ -111,17 +88,20 @@ class _QuickAccessTile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.space2),
-            ExcludeSemantics(
-              child: Text(
-                item.label,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: AppTypography.sm,
-                  fontWeight: AppTypography.weightMedium,
-                  height: AppTypography.lineHeightTight,
-                  color: semantic.fgMuted,
+            SizedBox(
+              height: AppTypography.sm * AppTypography.lineHeightTight * 2,
+              child: ExcludeSemantics(
+                child: Text(
+                  item.label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: AppTypography.sm,
+                    fontWeight: AppTypography.weightMedium,
+                    height: AppTypography.lineHeightTight,
+                    color: semantic.fgMuted,
+                  ),
                 ),
               ),
             ),
