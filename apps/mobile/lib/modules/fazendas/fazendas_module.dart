@@ -139,12 +139,9 @@ GoRoute buildFazendasModuleRoute() {
 /// flex-col">` de `FazendasModule.tsx`): `SyncBanner` fixo no topo + conteúdo
 /// do módulo abaixo.
 ///
-/// Desvio consciente do React: lá, o próprio `FazendasModule` aplica o padding
-/// inferior (`AppLayout.tabBarClearance`) na área rolável. Na porta Flutter,
-/// esse respiro para o dock de módulos é aplicado uma única vez, de forma
-/// global, pelo `ShellLayout` quando a rota está rasa e o dock está visível.
-/// Rotas profundas de cadastro usam a área liberada integralmente — sem
-/// duplicar o respiro por módulo (Lei 2 — fonte única do espaçamento).
+/// A navbar global é sobreposta ao conteúdo pela `Stack` do `ShellLayout`; este
+/// scaffold não reduz o viewport para abrir espaço para ela. Espaçamento para
+/// rolar itens por baixo da navbar pertence ao conteúdo rolável da tela.
 class _FazendasScaffold extends StatelessWidget {
   const _FazendasScaffold({required this.child});
 

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/generated/app_colors.dart';
-import '../design/generated/app_layout.dart';
 import '../design/generated/app_motion.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
@@ -106,10 +105,9 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
   void _openSearch(BuildContext context, WidgetRef ref) =>
       _push(context, ref, '/busca');
 
-  /// Corpo do módulo: faixa de offline (quando aplicável) e a tela em si, com
-  /// o respiro do dock flutuante. É o mesmo em rota rasa e funda — só muda se
-  /// a folha de conteúdo vem do shell ou da própria tela.
-  Widget _content(ShellState state, {required bool reserveTabBar}) {
+  /// Corpo do módulo: faixa de offline (quando aplicável) e a tela em si.
+  /// Ocupa toda a altura disponível; a navbar é desenhada por cima na Stack.
+  Widget _content(ShellState state) {
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
       child: Column(
@@ -122,14 +120,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                 'Você está offline — os lançamentos serão sincronizados quando a conexão voltar.',
               ),
             ),
-          Expanded(
-            child: Padding(
-              padding: reserveTabBar
-                  ? const EdgeInsets.only(bottom: AppLayout.tabBarClearance)
-                  : EdgeInsets.zero,
-              child: widget.child,
-            ),
-          ),
+          Expanded(child: widget.child),
         ],
       ),
     );
@@ -215,7 +206,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                           // abre a folha aqui, com o cabeçalho e as abas
                           // dentro — como nas duas homes da referência.
                           child: hideChrome
-                              ? _content(state, reserveTabBar: false)
+                              ? _content(state)
                               : AppContentSheet(
                                   padded: false,
                                   header: showFarmSelector
@@ -284,10 +275,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                                           ),
                                         ),
                                       Expanded(
-                                        child: _content(
-                                          state,
-                                          reserveTabBar: !hideChrome,
-                                        ),
+                                        child: _content(state),
                                       ),
                                     ],
                                   ),
