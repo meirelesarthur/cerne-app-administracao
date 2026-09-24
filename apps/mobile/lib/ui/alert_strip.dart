@@ -8,6 +8,7 @@ import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
 import 'pressable.dart';
 import '../design/generated/app_layout.dart';
+import 'metric_grid.dart';
 
 /// Gravidade do alerta — define a cor da cápsula.
 enum AppAlertTone { critical, warning, info, neutral }
@@ -35,16 +36,16 @@ class AppAlertItem {
   final VoidCallback? onTap;
 }
 
-/// Lista vertical de alertas no topo de uma home de gestão ("Radar").
+/// Grade compacta de alertas no topo de uma home de gestão ("Radar").
 ///
 /// A regra é: só entra aqui o que pede uma decisão hoje. Um indicador que está
 /// dentro do esperado não vira alerta — vira gráfico mais abaixo. Alerta que
 /// não leva a lugar nenhum é ruído, por isso [AppAlertItem.onTap] é o caminho
 /// normal de uso.
 ///
-/// Cada alerta é uma linha branca, um abaixo do outro: a gravidade aparece só
-/// no quadrado do ícone, para a pilha não virar um mosaico de cores e o número
-/// continuar legível.
+/// Cada alerta ocupa um card retangular; a grade usa duas colunas quando há
+/// largura suficiente e volta a uma coluna em telas estreitas. A gravidade
+/// aparece só no quadrado do ícone, para a área não virar um mosaico de cores.
 class AppAlertStrip extends StatelessWidget {
   const AppAlertStrip({super.key, required this.items, this.maxItems});
 
@@ -59,14 +60,11 @@ class AppAlertStrip extends StatelessWidget {
     final visible = maxItems == null ? items : items.take(maxItems!).toList();
     if (visible.isEmpty) return const SizedBox.shrink();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < visible.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.space2),
-          _AlertRow(item: visible[i]),
-        ],
-      ],
+    return AppMetricGrid(
+      minTileWidth: 168,
+      maxColumns: 2,
+      spacing: AppSpacing.space2,
+      children: [for (final item in visible) _AlertRow(item: item)],
     );
   }
 }
@@ -92,64 +90,81 @@ class _AlertRow extends StatelessWidget {
     final tone = _tone(semantic);
     final radius = BorderRadius.circular(AppRadius.lgPlus);
 
-    final row = Container(
-      padding: const EdgeInsets.all(AppSpacing.space3),
-      decoration: BoxDecoration(
-        color: semantic.bgSurface,
-        borderRadius: radius,
-        border: Border.all(color: semantic.borderDefault),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: _tileSize,
-            height: _tileSize,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: tone.bg,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            child: AppIcon(item.icon, size: AppSize.iconSmPlus, color: tone.fg),
+    final row = LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < AppSize.phone;
+        final padding = compact ? AppSpacing.space2 : AppSpacing.space3;
+        final iconSize = compact ? AppSpacing.space8 : _tileSize;
+        final gap = compact ? AppSpacing.space2 : AppSpacing.space3;
+
+        return Container(
+          padding: EdgeInsets.all(padding),
+          decoration: BoxDecoration(
+            color: semantic.bgSurface,
+            borderRadius: radius,
+            border: Border.all(color: semantic.borderDefault),
           ),
-          const SizedBox(width: AppSpacing.space3),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.value,
-                  style: TextStyle(
-                    fontSize: AppTypography.lg,
-                    fontWeight: AppTypography.weightBold,
-                    height: AppTypography.lineHeightTight,
-                    color: semantic.fgDefault,
-                  ),
+          child: Row(
+            children: [
+              Container(
+                width: iconSize,
+                height: iconSize,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: tone.bg,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                const SizedBox(height: AppSpacing.half),
-                Text(
-                  item.label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: AppTypography.sm,
-                    height: AppTypography.lineHeightTight,
-                    color: semantic.fgMuted,
-                  ),
+                child: AppIcon(
+                  item.icon,
+                  size: AppSize.iconSmPlus,
+                  color: tone.fg,
+                ),
+              ),
+              SizedBox(width: gap),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: compact ? AppTypography.md : AppTypography.lg,
+                        fontWeight: AppTypography.weightBold,
+                        height: AppTypography.lineHeightTight,
+                        color: semantic.fgDefault,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.half),
+                    Text(
+                      item.label,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: AppTypography.sm,
+                        height: AppTypography.lineHeightTight,
+                        color: semantic.fgMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (item.onTap != null) ...[
+                SizedBox(
+                  width: compact ? AppSpacing.space1 : AppSpacing.space2,
+                ),
+                AppIcon(
+                  AppIcons.chevronRight,
+                  size: compact ? AppSize.iconXs : AppSize.iconSm,
+                  color: semantic.fgQuiet,
                 ),
               ],
-            ),
+            ],
           ),
-          if (item.onTap != null) ...[
-            const SizedBox(width: AppSpacing.space2),
-            AppIcon(
-              AppIcons.chevronRight,
-              size: AppSize.iconSm,
-              color: semantic.fgQuiet,
-            ),
-          ],
-        ],
-      ),
+        );
+      },
     );
 
     if (item.onTap == null) return row;
