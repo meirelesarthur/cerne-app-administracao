@@ -8,6 +8,7 @@ import '../design/theme/app_theme_extension.dart';
 import 'button.dart';
 import 'card.dart';
 import 'chip.dart';
+import 'empty_state.dart';
 import 'heading.dart';
 import 'help_button.dart';
 import '../design/generated/app_layout.dart';
@@ -32,6 +33,8 @@ class AppChartCard extends StatelessWidget {
     this.onExpand,
     this.expandLabel = 'Abrir painel',
     this.help,
+    this.isEmpty = false,
+    this.emptyMessage = 'Sem dados no período. Ajuste o filtro acima.',
   });
 
   final String title;
@@ -59,6 +62,11 @@ class AppChartCard extends StatelessWidget {
   /// Como ler o gráfico (o que é cada série, o que é bom), aberto pelo
   /// [AppHelpButton] ao lado do título.
   final String? help;
+
+  /// Sem dados para o recorte atual (filtro, período): no lugar de um
+  /// gráfico em branco — que parece erro — mostra [emptyMessage].
+  final bool isEmpty;
+  final String emptyMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +134,15 @@ class AppChartCard extends StatelessWidget {
               ],
             ),
           ),
-          child,
-          if (footnote != null)
+          if (isEmpty)
+            AppEmptyState(
+              size: AppEmptyStateSize.compact,
+              icon: AppIcons.barChart3,
+              title: emptyMessage,
+            )
+          else
+            child,
+          if (footnote != null && !isEmpty)
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.space3),
               child: Text(
@@ -212,6 +227,19 @@ WidgetbookComponent buildChartCardWidgetbookComponent() {
                 height: 120,
                 child: Center(child: Text('Gráfico aqui')),
               ),
+            ),
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Sem dados',
+        builder: (context) => const Center(
+          child: SizedBox(
+            width: 320,
+            child: AppChartCard(
+              title: 'Valor cotado por tipo',
+              isEmpty: true,
+              child: SizedBox.shrink(),
             ),
           ),
         ),

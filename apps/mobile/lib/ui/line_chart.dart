@@ -39,7 +39,13 @@ class AppLineSeries {
 /// rótulos nos dois eixos e marcação do último ponto de cada série.
 ///
 /// Pintado via [CustomPainter], como os demais gráficos do projeto.
-class AppLineChart extends StatelessWidget {
+///
+/// **Leitura por toque:** tocar (ou arrastar) no gráfico marca o ponto mais
+/// próximo e mostra, acima da curva, o rótulo e o valor exato de cada série —
+/// a curva sozinha só dá a tendência, e o gestor perguntava "quanto foi em
+/// maio?". Tocar de novo no mesmo ponto limpa a marcação. Leitores de tela
+/// recebem um resumo (primeiro e último valor de cada série).
+class AppLineChart extends StatefulWidget {
   const AppLineChart({
     super.key,
     required this.series,
@@ -72,6 +78,31 @@ class AppLineChart extends StatelessWidget {
   final int maxPoints;
 
   @override
+  State<AppLineChart> createState() => _AppLineChartState();
+}
+
+class _AppLineChartState extends State<AppLineChart> {
+  int? _selecionado;
+
+  List<AppLineSeries> get series => widget.series;
+  List<String> get labels => widget.labels;
+  double get height => widget.height;
+  String Function(double value)? get formatValue => widget.formatValue;
+  bool get showLegend => widget.showLegend;
+  bool get compact => widget.compact;
+  int get maxPoints => widget.maxPoints;
+
+  /// Ponto mais próximo de [dx], na mesma geometria do painter.
+  int? _indiceEm(double dx, double largura, int count, double eixo) {
+    if (count == 0) return null;
+    final plotWidth = largura - eixo;
+    if (plotWidth <= 0) return null;
+    if (count == 1) return 0;
+    final t = ((dx - eixo) / plotWidth).clamp(0.0, 1.0);
+    return (t * (count - 1)).round();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final palette = semantic.chartSeries;
@@ -100,30 +131,102 @@ class AppLineChart extends StatelessWidget {
 
     final scale = ChartScale.forValues(visibleSeries.expand((s) => s.points));
 
-    final chart = SizedBox(
-      height: height,
-      width: double.infinity,
-      child: CustomPaint(
-        painter: _LineChartPainter(
-          series: visibleSeries,
-          labels: visibleLabels,
-          scale: scale,
-          colorOf: colorOf,
-          formatValue: fmt,
-          gridColor: semantic.chartGrid,
-          axisColor: semantic.chartAxis,
-          showValueAxis: !compact,
-          showLabels: !compact,
+    final count = visibleSeries.isEmpty
+        ? 0
+        : visibleSeries.map((s) => s.points.length).reduce(math.min);
+    final selecionado = _selecionado != null && _selecionado! < count
+        ? _selecionado
+        : null;
+    final eixo = _LineChartPainter.axisWidthFor(
+      scale,
+      fmt,
+      semantic.chartAxis,
+      showValueAxis: !compact,
+    );
+
+    void marcar(double dx, double largura, {bool alternar = false}) {
+      final i = _indiceEm(dx, largura, count, eixo);
+      setState(() => _selecionado = alternar && i == _selecionado ? null : i);
+    }
+
+    final resumo = [
+      for (final s in visibleSeries)
+        if (s.points.isNotEmpty)
+          '${s.label} de ${fmt(s.points.first)} a ${fmt(s.points.last)}',
+    ].join('; ');
+
+    final chart = Semantics(
+      label: 'Gráfico de linha. $resumo.',
+      // Largura lida no toque (e não por LayoutBuilder): LayoutBuilder não
+      // informa tamanho intrínseco e quebrava o gráfico dentro de tabelas e
+      // IntrinsicHeight.
+      child: Builder(
+        builder: (context) => GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (d) => marcar(
+            d.localPosition.dx,
+            context.size?.width ?? 0,
+            alternar: true,
+          ),
+          onHorizontalDragUpdate: (d) =>
+              marcar(d.localPosition.dx, context.size?.width ?? 0),
+          child: SizedBox(
+            height: height,
+            width: double.infinity,
+            child: CustomPaint(
+              painter: _LineChartPainter(
+                series: visibleSeries,
+                labels: visibleLabels,
+                scale: scale,
+                colorOf: colorOf,
+                formatValue: fmt,
+                gridColor: semantic.chartGrid,
+                axisColor: semantic.chartAxis,
+                showValueAxis: !compact,
+                showLabels: !compact,
+                selectedIndex: selecionado,
+              ),
+            ),
+          ),
         ),
       ),
     );
 
-    if (compact || !showLegend || visibleSeries.isEmpty) return chart;
+    final leitura = selecionado == null
+        ? null
+        : _Leitura(
+            rotulo: selecionado < visibleLabels.length
+                ? visibleLabels[selecionado]
+                : null,
+            itens: [
+              for (var i = 0; i < visibleSeries.length; i++)
+                (
+                  visibleSeries[i].label,
+                  fmt(visibleSeries[i].points[selecionado]),
+                  colorOf(i),
+                ),
+            ],
+          );
+
+    if (compact || !showLegend || visibleSeries.isEmpty) {
+      if (leitura == null) return chart;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          leitura,
+          const SizedBox(height: AppSpacing.space2),
+          chart,
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        ?leitura,
+        if (leitura != null) const SizedBox(height: AppSpacing.space2),
         chart,
         const SizedBox(height: AppSpacing.space3),
         AppChartLegend(
@@ -155,7 +258,11 @@ class _LineChartPainter extends CustomPainter {
     required this.axisColor,
     required this.showValueAxis,
     required this.showLabels,
+    this.selectedIndex,
   });
+
+  /// Ponto marcado pelo toque: recebe uma guia vertical e um ponto por série.
+  final int? selectedIndex;
 
   final List<AppLineSeries> series;
   final List<String> labels;
@@ -171,6 +278,29 @@ class _LineChartPainter extends CustomPainter {
   static const double _dotRadius = AppSpacing.oneHalf / 2;
   static const double _axisGap = AppSpacing.space2;
   static const double _xAxisHeight = AppSpacing.space5;
+
+  /// Largura reservada ao eixo Y — medida no texto real dos rótulos. Pública
+  /// para o gesto de toque usar exatamente a mesma geometria do desenho.
+  static double axisWidthFor(
+    ChartScale scale,
+    String Function(double value) formatValue,
+    Color axisColor, {
+    required bool showValueAxis,
+  }) {
+    if (!showValueAxis) return 0;
+    var width = 0.0;
+    for (final tick in scale.ticks) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: formatValue(tick),
+          style: TextStyle(fontSize: AppTypography.sm, color: axisColor),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      width = math.max(width, painter.width);
+    }
+    return width + _axisGap;
+  }
 
   TextPainter _text(String value, Color color) => TextPainter(
     text: TextSpan(
@@ -188,16 +318,12 @@ class _LineChartPainter extends CustomPainter {
 
     // Reserva de espaço para os eixos, medida no texto real dos rótulos — não
     // numa largura chutada, que corta valores longos como "R$ 1.200".
-    var axisWidth = 0.0;
-    if (showValueAxis) {
-      for (final tick in ticks) {
-        axisWidth = math.max(
-          axisWidth,
-          _text(formatValue(tick), axisColor).width,
-        );
-      }
-      axisWidth += _axisGap;
-    }
+    final axisWidth = axisWidthFor(
+      scale,
+      formatValue,
+      axisColor,
+      showValueAxis: showValueAxis,
+    );
     final bottom = showLabels && labels.isNotEmpty ? _xAxisHeight : 0.0;
 
     final plot = Rect.fromLTWH(
@@ -213,6 +339,29 @@ class _LineChartPainter extends CustomPainter {
 
     for (var i = 0; i < series.length; i++) {
       _paintSeries(canvas, plot, series[i], colorOf(i));
+    }
+    if (selectedIndex case final index?) _paintSelection(canvas, plot, index);
+  }
+
+  void _paintSelection(Canvas canvas, Rect plot, int index) {
+    final count = series.map((s) => s.points.length).reduce(math.min);
+    if (index >= count) return;
+    final x = _xFor(plot, index, count);
+    canvas.drawLine(
+      Offset(x, plot.top),
+      Offset(x, plot.bottom),
+      Paint()
+        ..color = axisColor
+        ..strokeWidth = AppSpacing.quarter,
+    );
+    for (var i = 0; i < series.length; i++) {
+      final y =
+          plot.bottom - scale.fraction(series[i].points[index]) * plot.height;
+      canvas.drawCircle(
+        Offset(x, y),
+        _dotRadius * 1.6,
+        Paint()..color = colorOf(i),
+      );
     }
   }
 
@@ -325,7 +474,54 @@ class _LineChartPainter extends CustomPainter {
       old.gridColor != gridColor ||
       old.axisColor != axisColor ||
       old.showValueAxis != showValueAxis ||
-      old.showLabels != showLabels;
+      old.showLabels != showLabels ||
+      old.selectedIndex != selectedIndex;
+}
+
+/// Leitura do ponto tocado: rótulo do eixo X e o valor de cada série, com a
+/// cor da série como marcador (o texto carrega o dado, não só a cor).
+class _Leitura extends StatelessWidget {
+  const _Leitura({required this.rotulo, required this.itens});
+
+  final String? rotulo;
+  final List<(String, String, Color)> itens;
+
+  @override
+  Widget build(BuildContext context) {
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
+    final estilo = TextStyle(
+      fontSize: AppTypography.sm,
+      color: semantic.fgDefault,
+    );
+    return Semantics(
+      liveRegion: true,
+      child: Wrap(
+        spacing: AppSpacing.space3,
+        runSpacing: AppSpacing.space1,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          if (rotulo != null)
+            Text(
+              rotulo!,
+              style: estilo.copyWith(fontWeight: AppTypography.weightSemibold),
+            ),
+          for (final (label, valor, cor) in itens)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: AppSpacing.space2,
+                  height: AppSpacing.space2,
+                  decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
+                ),
+                const SizedBox(width: AppSpacing.space1),
+                Text('$label $valor', style: estilo),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 WidgetbookComponent buildLineChartWidgetbookComponent() {
