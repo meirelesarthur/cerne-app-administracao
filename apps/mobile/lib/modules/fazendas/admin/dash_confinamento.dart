@@ -605,7 +605,7 @@ class _Relatorios extends StatelessWidget {
                         OcorrenciaPrioridade.media => AppChipTone.amber,
                         OcorrenciaPrioridade.baixa => AppChipTone.neutral,
                       },
-                      child: Text(item.ocorrencia.prioridade.name),
+                      child: Text(item.ocorrencia.prioridade.label),
                     ),
                     const SizedBox(width: AppSpacing.space2),
                     Expanded(

@@ -34,9 +34,10 @@ class MappedFeatureScreen extends StatelessWidget {
     if (feature == null || feature.profile != profile) {
       return AppEmptyState(
         icon: AppIcons.shieldAlert,
-        title: 'Funcionalidade fora deste perfil',
+        title: 'Disponível no app Operação',
         description:
-            'Volte ao ambiente correspondente para acessar esta responsabilidade.',
+            'Este lançamento é feito em campo, pelo app Operação. Aqui na '
+            'Administração você acompanha o resultado pelas consultas.',
         action: AppButton(
           onPressed: () => context.go(resolvedCenterRoute),
           child: const Text('Voltar'),
