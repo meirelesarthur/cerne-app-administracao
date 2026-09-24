@@ -26,6 +26,7 @@ class AppFormSelect extends StatelessWidget {
     this.onChanged,
     this.placeholder,
     this.enabled = true,
+    this.invalid = false,
   });
 
   final List<AppFormSelectOption> options;
@@ -33,6 +34,7 @@ class AppFormSelect extends StatelessWidget {
   final ValueChanged<String?>? onChanged;
   final String? placeholder;
   final bool enabled;
+  final bool invalid;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,7 @@ class AppFormSelect extends StatelessWidget {
     // `InputDecorator` dimensiona `fillColor`/`border` pelo conteúdo, não pelas
     // constraints, então pintar por ele deixava a pílula com a altura do texto.
     return AppFieldCapsule(
+      invalid: invalid,
       child: DropdownButtonFormField<String>(
         // `DropdownButtonFormField` não é totalmente "controlado" como `TextFormField`
         // (ignora mudanças externas de `initialValue` após o primeiro build); a

@@ -42,6 +42,8 @@ class AppSearchSelect extends StatelessWidget {
     this.placeholder = 'Selecionar',
     this.searchPlaceholder = 'Buscar...',
     this.label,
+    this.enabled = true,
+    this.invalid = false,
   });
 
   final List<AppSearchSelectOption> options;
@@ -53,6 +55,12 @@ class AppSearchSelect extends StatelessWidget {
   /// Título exibido no topo do dock — em geral o mesmo rótulo do campo
   /// (`AppFormField.label`), para orientar a busca. Opcional.
   final String? label;
+
+  /// Permite manter uma etapa em cascata visível até o campo pai ser escolhido.
+  final bool enabled;
+
+  /// Borda de erro após a primeira tentativa de validação do formulário.
+  final bool invalid;
 
   AppSearchSelectOption? get _selected {
     if (value == null || value!.isEmpty) return null;
@@ -71,20 +79,22 @@ class AppSearchSelect extends StatelessWidget {
     // de busca e a seta eram zonas mortas nas bordas).
     return AppPressable(
       semanticLabel:
-          '${label ?? placeholder}: ${selected?.label ?? 'nada escolhido'}',
-      onPressed: () => _open(context),
+          '${label ?? placeholder}: ${selected?.label ?? 'nada escolhido'}'
+          '${enabled ? '' : ', indisponível'}',
+      onPressed: enabled ? () => _open(context) : null,
       borderRadius: BorderRadius.circular(AppRadius.tile),
       minTouchTarget: false,
       child: AppFieldCapsule(
+        invalid: invalid,
         leading: AppIcon(
           AppIcons.search,
           size: AppSize.iconSm,
-          color: inputColors.placeholder,
+          color: enabled ? inputColors.placeholder : inputColors.muted,
         ),
         trailing: AppIcon(
           AppIcons.chevronDown,
           size: AppSize.iconSm,
-          color: inputColors.placeholder,
+          color: enabled ? inputColors.placeholder : inputColors.muted,
         ),
         child: Text(
           selected?.label ?? placeholder,
@@ -93,7 +103,9 @@ class AppSearchSelect extends StatelessWidget {
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.md,
-            color: selected == null
+            color: !enabled
+                ? inputColors.muted
+                : selected == null
                 ? inputColors.placeholder
                 : inputColors.foreground,
           ),
@@ -103,6 +115,7 @@ class AppSearchSelect extends StatelessWidget {
   }
 
   Future<void> _open(BuildContext context) async {
+    if (!enabled) return;
     final result = await showAppSearchSelectDock(
       context,
       options: options,
@@ -318,6 +331,23 @@ WidgetbookComponent buildSearchSelectWidgetbookComponent() {
       WidgetbookUseCase(
         name: 'Interativo (dock)',
         builder: (context) => const _SearchSelectUseCase(),
+      ),
+      WidgetbookUseCase(
+        name: 'Desabilitado até escolher o campo anterior',
+        builder: (context) => Center(
+          child: SizedBox(
+            width: 320,
+            child: AppSearchSelect(
+              options: const [
+                AppSearchSelectOption(value: 'atividade', label: 'Aração'),
+              ],
+              enabled: false,
+              onChanged: (_) {},
+              placeholder: 'Escolha uma operação primeiro',
+              label: 'Atividade',
+            ),
+          ),
+        ),
       ),
     ],
   );

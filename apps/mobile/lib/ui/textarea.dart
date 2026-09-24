@@ -4,6 +4,7 @@ import 'package:widgetbook/widgetbook.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
+import '../design/theme/app_theme_extension.dart';
 import 'package:cerne_app/design/generated/app_colors.dart';
 import 'field_capsule.dart';
 
@@ -19,6 +20,7 @@ class AppTextarea extends StatelessWidget {
     this.onChanged,
     this.placeholder,
     this.enabled = true,
+    this.invalid = false,
     this.minLines = 4,
     this.maxLines = 8,
   }) : assert(
@@ -31,12 +33,15 @@ class AppTextarea extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final String? placeholder;
   final bool enabled;
+  final bool invalid;
   final int minLines;
   final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     final inputColors = appInputColors(context);
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
+    final borderColor = invalid ? semantic.toneRedFg : AppColors.transparent;
     final radius = BorderRadius.circular(AppRadius.xl2);
 
     OutlineInputBorder border(Color color, {double width = 1}) =>
@@ -71,10 +76,13 @@ class AppTextarea extends StatelessWidget {
           horizontal: AppSpacing.space5,
           vertical: AppSpacing.space3,
         ),
-        border: border(AppColors.transparent),
-        enabledBorder: border(AppColors.transparent),
+        border: border(borderColor),
+        enabledBorder: border(borderColor),
         disabledBorder: border(AppColors.transparent),
-        focusedBorder: border(inputColors.focus, width: 2),
+        focusedBorder: border(
+          invalid ? semantic.toneRedFg : inputColors.focus,
+          width: 2,
+        ),
       ),
     );
   }

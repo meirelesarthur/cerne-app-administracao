@@ -220,6 +220,7 @@ class CategoriaZootecnicaOsCadastro {
 const categoriasZootecnicasOs = <CategoriaZootecnicaOsCadastro>[
   CategoriaZootecnicaOsCadastro(especie: 'Bovinos', categoria: 'Bezerros'),
   CategoriaZootecnicaOsCadastro(especie: 'Bovinos', categoria: 'Novilhas'),
+  CategoriaZootecnicaOsCadastro(especie: 'Bovinos', categoria: 'Machos'),
   CategoriaZootecnicaOsCadastro(especie: 'Bovinos', categoria: 'Vacas'),
   CategoriaZootecnicaOsCadastro(especie: 'Bovinos', categoria: 'Touros'),
   CategoriaZootecnicaOsCadastro(especie: 'Suínos', categoria: 'Matrizes'),
@@ -229,7 +230,7 @@ const categoriasZootecnicasOs = <CategoriaZootecnicaOsCadastro>[
 ];
 
 const categoriasPorEspecieOs = <String, List<String>>{
-  'Bovinos': ['Bezerros', 'Novilhas', 'Vacas', 'Touros'],
+  'Bovinos': ['Bezerros', 'Novilhas', 'Novilhos', 'Machos', 'Vacas', 'Touros'],
   'Suínos': ['Matrizes', 'Terminação'],
   'Aves': ['Poedeiras', 'Frangos de corte'],
 };
@@ -485,6 +486,12 @@ const produtosProducaoOs = <ProdutoProducaoOsCadastro>[
   ProdutoProducaoOsCadastro(produto: 'Café beneficiado', unidade: 'Saca'),
   ProdutoProducaoOsCadastro(produto: 'Bezerro desmamado', unidade: 'Cabeça'),
 ];
+
+const produtosPorArmazemProducaoOs = <String, List<String>>{
+  'Armazém de Grãos': ['Soja em grão', 'Milho em grão'],
+  'Silo 01': ['Soja em grão', 'Milho em grão', 'Café beneficiado'],
+  'Tanque de Leite': ['Leite resfriado'],
+};
 
 const episOs = <String>[
   'Luvas nitrílicas',
