@@ -31,16 +31,22 @@ class AppIconData {
   /// Entrada do set Hugeicons *stroke-rounded*.
   const AppIconData.glyph(List<List<dynamic>> data)
     : glyph = data,
-      asset = null;
+      asset = null,
+      visualScale = 1;
 
   /// Vetor autoral do GB CERNE, por caminho de asset.
-  const AppIconData.asset(String path) : asset = path, glyph = null;
+  const AppIconData.asset(String path, {this.visualScale = 1})
+    : asset = path,
+      glyph = null;
 
   /// Estrutura JSON do SVG quando a origem é o pacote; nula para vetor autoral.
   final List<List<dynamic>>? glyph;
 
   /// Caminho do asset quando a origem é autoral; nulo para ícone do pacote.
   final String? asset;
+
+  /// Ajuste óptico para vetores cuja geometria parece menor no mesmo slot.
+  final double visualScale;
 }
 
 /// Catálogo semântico de ícones do GB CERNE — **fonte única** (Lei 2).
@@ -533,6 +539,7 @@ class AppIcons {
   /// Confinamento — curral e bovino, desenho da marca.
   static const AppIconData confinamentoAutoral = AppIconData.asset(
     'assets/icons/confinamento.svg',
+    visualScale: 1.15,
   );
 
   /// Pecuária de corte — bovino, desenho da marca.
@@ -653,7 +660,7 @@ class AppIcon extends StatelessWidget {
       // pintá-lo: `srcIn` recolore preenchimento e traço de uma vez. Ressalva
       // registrada na esteira: os desenhos oficiais são contorno vetorizado,
       // e não traço — a espessura fica fixada no desenho e não segue o token.
-      drawing = SvgPicture.asset(
+      final asset = SvgPicture.asset(
         path,
         // `fit` fica no padrão (`contain`): encaixar o vetor autoral na caixa
         // quadrada do ícone preserva a proporção do desenho, qualquer que
@@ -662,6 +669,9 @@ class AppIcon extends StatelessWidget {
         height: resolvedSize,
         colorFilter: ColorFilter.mode(resolvedColor, BlendMode.srcIn),
       );
+      drawing = icon!.visualScale == 1
+          ? asset
+          : Transform.scale(scale: icon!.visualScale, child: asset);
     } else {
       drawing = null;
     }

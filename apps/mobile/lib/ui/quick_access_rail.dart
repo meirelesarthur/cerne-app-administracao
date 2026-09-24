@@ -70,7 +70,7 @@ class _QuickAccessTile extends StatelessWidget {
       onPressed: item.onPressed,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: SizedBox(
-        width: AppSpacing.space14 + AppSpacing.space8,
+        width: AppSpacing.space14 + AppSpacing.space6,
         height: AppSpacing.space14 + AppSpacing.space12,
         child: Column(
           mainAxisSize: MainAxisSize.min,
