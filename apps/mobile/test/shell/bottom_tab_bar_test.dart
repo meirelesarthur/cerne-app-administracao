@@ -11,19 +11,27 @@ Widget _wrap(Widget child) => MaterialApp(
 
 void main() {
   group('AppBottomTabBar', () {
-    testWidgets('renderiza os 6 módulos sem exceção', (tester) async {
-      await tester.pumpWidget(
-        _wrap(AppBottomTabBar(activeId: 'inicio', onModuleSelected: (_) {})),
-      );
+    testWidgets(
+      'renderiza os 5 módulos visíveis sem o hub Início',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrap(
+            AppBottomTabBar(
+              activeId: 'fazendas',
+              onModuleSelected: (_) {},
+            ),
+          ),
+        );
 
-      expect(find.byTooltip('Início'), findsOneWidget);
-      expect(find.byTooltip('Fazendas'), findsOneWidget);
-      expect(find.byTooltip('Bank'), findsOneWidget);
-      expect(find.byTooltip('Crédito'), findsOneWidget);
-      expect(find.byTooltip('Marketplace'), findsOneWidget);
-      expect(find.byTooltip('Armazém'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.byTooltip('Início'), findsNothing);
+        expect(find.byTooltip('Fazendas'), findsOneWidget);
+        expect(find.byTooltip('Bank'), findsOneWidget);
+        expect(find.byTooltip('Crédito'), findsOneWidget);
+        expect(find.byTooltip('Market'), findsOneWidget);
+        expect(find.byTooltip('Armazém'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('dispara onModuleSelected com o id do módulo tocado', (
       tester,
@@ -32,7 +40,7 @@ void main() {
       await tester.pumpWidget(
         _wrap(
           AppBottomTabBar(
-            activeId: 'inicio',
+            activeId: 'fazendas',
             onModuleSelected: (id) => selected = id,
           ),
         ),

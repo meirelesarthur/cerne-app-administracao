@@ -141,7 +141,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
     final activeTab = widget.activeTab;
     final hideChrome = widget.hideChrome;
     final compactChrome = widget.compactChrome;
-    final module = getModule(moduleId) ?? modules.first;
+    final module = getModule(moduleId) ?? getModule('fazendas')!;
     final state = ref.watch(shellStoreProvider);
     final profile = ref.watch(prototypeSessionProvider).profile;
     final activeFarm = ref.watch(fazendasStoreProvider).activeFarm;
@@ -150,7 +150,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
     final showGlobalContext = !hideChrome && profile != null;
     // O seletor de fazenda só aparece onde a fazenda muda o conteúdo. No
-    // Início, Bank, Crédito e Marketplace ele era ruído: trocar de fazenda
+    // Início, Bank, Crédito e Market ele era ruído: trocar de fazenda
     // ali não mudava nada na tela.
     final showFarmSelector =
         showGlobalContext && _modulosPorFazenda.contains(moduleId);

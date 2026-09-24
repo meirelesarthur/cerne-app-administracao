@@ -135,7 +135,8 @@ String moduleHomeRoute(ModuleDef module, UserAccessProfile? profile) {
 }
 
 const List<ModuleDef> modules = [
-  // New-UI — hub agregador: porta de entrada do superapp, Banking central.
+  // Hub agregador do ADM. Continua registrado para preservar rotas e deep links,
+  // mas fica temporariamente fora da navbar global; o login entra em Fazendas.
   ModuleDef(
     id: 'inicio',
     label: 'Início',
@@ -348,7 +349,7 @@ const List<ModuleDef> modules = [
   ),
   ModuleDef(
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Market',
     icon: AppIcons.shoppingBag,
     homeRoute: '/marketplace',
     bottomTabs: [
@@ -455,6 +456,13 @@ const List<ModuleDef> modules = [
     ],
   ),
 ];
+
+/// Destinos da navbar global do ADM. O hub Início segue registrado para
+/// preservar suas rotas, mas fica temporariamente oculto: o login abre
+/// Fazendas e o conteúdo financeiro se repete em parte no Bank.
+final List<ModuleDef> globalNavigationModules = modules
+    .where((module) => module.id != 'inicio')
+    .toList();
 
 final Map<String, ModuleDef> moduleMap = {for (final m in modules) m.id: m};
 

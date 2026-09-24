@@ -40,11 +40,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return redirectForSession(state.uri.path, session);
     },
     routes: [
-      GoRoute(path: '/', redirect: (context, state) => '/inicio'),
+      GoRoute(
+        path: '/',
+        redirect: (context, state) => '/fazendas/visao-geral',
+      ),
       ShellRoute(
         builder: (context, state, child) {
           final segments = state.uri.pathSegments;
-          final moduleId = segments.isNotEmpty ? segments.first : 'inicio';
+          final moduleId = segments.isNotEmpty ? segments.first : 'fazendas';
           final tab = segments.length > 1 ? segments[1] : '';
           // A central de um grupo é um estado intermediário: mantém o
           // seletor de fazenda e o dock global, mas remove a saudação e

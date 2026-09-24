@@ -19,16 +19,19 @@ void main() {
       expect(getModule(null), isNull);
     });
 
-    test('o dock global mostra os seis módulos do superapp', () {
-      expect(modules.map((module) => module.id), [
-        'inicio',
-        'fazendas',
-        'bank',
-        'credito',
-        'marketplace',
-        'armazem',
-      ]);
-    });
+    test(
+      'a navbar omite temporariamente Início e chama Marketplace de Market',
+      () {
+        expect(globalNavigationModules.map((module) => module.id), [
+          'fazendas',
+          'bank',
+          'credito',
+          'marketplace',
+          'armazem',
+        ]);
+        expect(getModule('marketplace')?.label, 'Market');
+      },
+    );
 
     test('getMenuSections usa menuSections quando definido', () {
       final bank = getModule('bank')!;
