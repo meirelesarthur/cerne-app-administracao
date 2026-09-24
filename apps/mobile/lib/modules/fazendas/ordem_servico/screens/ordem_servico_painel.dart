@@ -25,22 +25,21 @@ class OrdemServicoPainel extends ConsumerStatefulWidget {
   ConsumerState<OrdemServicoPainel> createState() => _OrdemServicoPainelState();
 }
 
-enum _FiltroStatus { todas, aguardando, emExecucao, pausada, encerradas }
+enum _FiltroStatus { todas, emAndamento, encerradas }
 
 extension on _FiltroStatus {
   String get label => switch (this) {
     _FiltroStatus.todas => 'Todas',
-    _FiltroStatus.aguardando => 'Aguardando',
-    _FiltroStatus.emExecucao => 'Em execução',
-    _FiltroStatus.pausada => 'Pausada',
+    _FiltroStatus.emAndamento => 'Em andamento',
     _FiltroStatus.encerradas => 'Encerradas',
   };
 
+  // Aguardando/Em execução/Pausada eram três abas para uma distinção que só
+  // interessa dentro do detalhe — aqui, o gestor só precisa saber se a OS
+  // ainda pede acompanhamento ou já fechou.
   bool aplica(OrdemServico os) => switch (this) {
     _FiltroStatus.todas => true,
-    _FiltroStatus.aguardando => os.status == OrdemServicoStatus.aguardando,
-    _FiltroStatus.emExecucao => os.status == OrdemServicoStatus.emExecucao,
-    _FiltroStatus.pausada => os.status == OrdemServicoStatus.pausada,
+    _FiltroStatus.emAndamento => os.status.emAndamento,
     _FiltroStatus.encerradas => os.status.encerrada,
   };
 }

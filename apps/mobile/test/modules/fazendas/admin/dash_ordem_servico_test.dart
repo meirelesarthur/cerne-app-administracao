@@ -31,9 +31,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text(
-          'Manutenções de Currais — Curral de manejo 1',
-        ),
+        find.text('Manutenções de Currais — Curral de manejo 1'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -43,24 +41,20 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
+      // Nenhuma OS da fazenda ativa está encerrada — o filtro esvazia a lista.
       await tester.tap(
         find.descendant(
           of: find.byType(AppSegmentedTabs),
-          matching: find.text('Aguardando'),
+          matching: find.text('Encerradas'),
         ),
       );
       await tester.pumpAndSettle();
 
       expect(
         find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
-        findsOneWidget,
-      );
-      expect(
-        find.text(
-          'Manutenções de Currais — Curral de manejo 1',
-        ),
         findsNothing,
       );
+      expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
     });
 
     testWidgets('filtra por data de prazo e permite limpar o filtro', (

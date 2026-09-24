@@ -238,18 +238,18 @@ void main() {
         expect(find.text('Sincronizar aplicativo'), findsNothing);
         expect(tester.takeException(), isNull);
 
-        // Filtro por status: só a OS aguardando permanece.
+        // Filtro por status: nenhuma OS da fazenda está encerrada.
         await tester.tap(
           find.descendant(
             of: find.byType(AppSegmentedTabs),
-            matching: find.text('Aguardando'),
+            matching: find.text('Encerradas'),
           ),
         );
         await tester.pumpAndSettle();
 
         expect(
           find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
-          findsOneWidget,
+          findsNothing,
         );
         expect(
           find.text('Manutenções de Currais — Curral de manejo 1'),
