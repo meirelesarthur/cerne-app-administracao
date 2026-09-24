@@ -117,6 +117,7 @@ class CerneWidgetbook extends StatelessWidget {
                 buildFormFieldWidgetbookComponent(),
                 buildFormSelectWidgetbookComponent(),
                 buildSearchSelectWidgetbookComponent(),
+                buildInlineSelectWidgetbookComponent(),
                 buildCheckboxWidgetbookComponent(),
                 buildToggleSwitchWidgetbookComponent(),
                 buildFileUploadWidgetbookComponent(),

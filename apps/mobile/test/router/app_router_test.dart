@@ -6,10 +6,10 @@ import 'package:cerne_app/shell/components/bottom_tab_bar.dart';
 import 'package:cerne_app/shell/components/context_tabs.dart';
 import 'package:cerne_app/shell/state/prototype_session_store.dart';
 import 'package:cerne_app/ui/farm_selector.dart';
+import 'package:cerne_app/ui/inline_select.dart';
 import 'package:cerne_app/ui/module_tile.dart';
 import 'package:cerne_app/ui/pressable.dart';
 import 'package:cerne_app/ui/search_field.dart';
-import 'package:cerne_app/ui/segmented_tabs.dart';
 
 import '../support/router_test_harness.dart';
 import '../support/test_viewport.dart';
@@ -239,12 +239,9 @@ void main() {
         expect(tester.takeException(), isNull);
 
         // Filtro por status: nenhuma OS da fazenda está encerrada.
-        await tester.tap(
-          find.descendant(
-            of: find.byType(AppSegmentedTabs),
-            matching: find.text('Encerradas'),
-          ),
-        );
+        await tester.tap(find.byType(AppInlineSelect));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Encerradas'));
         await tester.pumpAndSettle();
 
         expect(

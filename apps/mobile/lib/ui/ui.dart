@@ -47,6 +47,7 @@ export 'hexagon.dart';
 export 'help_button.dart';
 export 'icon_button.dart';
 export 'illustration_slot.dart';
+export 'inline_select.dart';
 export 'leave_guard.dart';
 export 'line_chart.dart';
 export 'kpi_stat_card.dart';

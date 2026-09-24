@@ -140,11 +140,32 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
           ),
         ],
         const SizedBox(height: AppSpacing.space4),
-        AppSegmentedTabs(
-          scrollable: true,
-          labels: [for (final f in _filtros) f.label],
-          selectedIndex: _filtroIndex,
-          onChanged: (i) => setState(() => _filtroIndex = i),
+        // Mesmo padrão da lista "Minhas OS" do Operacional: contagem à
+        // esquerda, filtro discreto à direita — o status escolhido abre
+        // numa folha, sem um trilho de abas ocupando uma faixa inteira.
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                filtradas.length == 1
+                    ? '1 ordem de serviço'
+                    : '${filtradas.length} ordens de serviço',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+            ),
+            AppInlineSelect(
+              sheetTitle: 'Status da OS',
+              semanticLabel: 'Status da OS',
+              value: _filtros[_filtroIndex].name,
+              options: [
+                for (final f in _filtros)
+                  AppFormSelectOption(value: f.name, label: f.label),
+              ],
+              onChanged: (v) => setState(
+                () => _filtroIndex = _filtros.indexWhere((f) => f.name == v),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: AppSpacing.space4),
         if (filtradas.isEmpty)

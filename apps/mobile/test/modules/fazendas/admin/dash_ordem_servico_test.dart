@@ -42,12 +42,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Nenhuma OS da fazenda ativa está encerrada — o filtro esvazia a lista.
-      await tester.tap(
-        find.descendant(
-          of: find.byType(AppSegmentedTabs),
-          matching: find.text('Encerradas'),
-        ),
-      );
+      await tester.tap(find.byType(AppInlineSelect));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Encerradas'));
       await tester.pumpAndSettle();
 
       expect(
