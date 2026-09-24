@@ -143,6 +143,10 @@ class _DashAtivosState extends State<DashAtivos> {
           AppChartCard(
             title: 'Vida útil consumida',
             subtitle: 'Depreciação acumulada por ativo',
+            help:
+                'Quanto do valor de cada ativo já foi depreciado, em %. Perto '
+                'de 100% o ativo está no fim da vida útil contábil — hora de '
+                'planejar a troca.',
             child: AppBarChart(
               data: [
                 for (final a in maisDepreciados)

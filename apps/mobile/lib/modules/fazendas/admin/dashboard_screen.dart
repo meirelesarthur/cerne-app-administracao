@@ -6,7 +6,9 @@ import '../../../design/generated/app_spacing.dart';
 import '../../../shared/simulated_load.dart';
 import '../../../shell/components/sub_page_header.dart';
 import '../../../shell/state/shell_store.dart';
+import '../../../design/theme/app_theme_extension.dart';
 import '../../../ui/ui.dart';
+import '../state/fazendas_store.dart';
 
 /// Scaffold comum dos dashboards administrativos de Fazendas (spec §7.1):
 /// cabeçalho, chip de "Acesso restrito", banner de dados em cache quando
@@ -44,6 +46,9 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOnline = ref.watch(shellStoreProvider.select((s) => s.isOnline));
+    final fazenda = ref.watch(
+      fazendasStoreProvider.select((s) => s.activeFarm.name),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -67,13 +72,42 @@ class DashboardScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // De qual fazenda são estes números: nas telas fundas o
+                // seletor global de fazenda não aparece.
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.space4,
+                    AppSpacing.space3,
+                    AppSpacing.space4,
+                    0,
+                  ),
+                  child: Row(
+                    children: [
+                      AppIcon(
+                        AppIcons.mapPin,
+                        size: AppSize.iconSm,
+                        color: Theme.of(
+                          context,
+                        ).extension<AppSemanticColors>()!.fgMuted,
+                      ),
+                      const SizedBox(width: AppSpacing.space1),
+                      Expanded(
+                        child: Text(
+                          fazenda,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 if (!isOnline && !hideOfflineBanner)
                   const Padding(
                     padding: EdgeInsets.only(bottom: AppSpacing.space2),
                     child: AppBanner(
                       icon: AppIcon(AppIcons.cloudOff, size: AppSize.iconXs),
                       child: Text(
-                        'Dados de 01/07 às 08:00 — última sincronização.',
+                        'Sem conexão: os números são os da última '
+                        'atualização e podem estar desatualizados.',
                       ),
                     ),
                   ),

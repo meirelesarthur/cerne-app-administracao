@@ -148,6 +148,9 @@ class _VisaoGeral extends StatelessWidget {
             AppKpiStatCard(
               label: 'Custo médio/kg',
               value: 'R\$ ${custoMedioKg.toStringAsFixed(2)}',
+              help:
+                  'Custo da dieta por quilo, na média simples das dietas em '
+                  'uso nos currais. Quanto menor, mais barato engordar.',
             ),
             AppKpiStatCard(
               label: 'GMD médio',
@@ -156,6 +159,10 @@ class _VisaoGeral extends StatelessWidget {
                   ? AppKpiStatTone.positive
                   : AppKpiStatTone.warning,
               caption: 'previsto ${gmdPrevistoMedio.toStringAsFixed(2)}',
+              help:
+                  'Ganho médio diário: quantos quilos cada animal ganha por '
+                  'dia, na média dos lotes. Igual ou acima do previsto do '
+                  'lote é bom; abaixo pede revisão da dieta ou da sanidade.',
             ),
             AppKpiStatCard(
               label: 'Ocorrências abertas',
@@ -163,6 +170,10 @@ class _VisaoGeral extends StatelessWidget {
               tone: ocorrenciasAbertas > 0
                   ? AppKpiStatTone.negative
                   : AppKpiStatTone.neutral,
+              help:
+                  'Problemas registrados pela operação na leitura de cocho '
+                  '(animal, estrutura, ambiente) que ainda não foram '
+                  'resolvidos.',
             ),
           ],
         ),
@@ -173,6 +184,9 @@ class _VisaoGeral extends StatelessWidget {
         // aqui, em `IndicadoresLote`. Ver docs/ESTEIRA-DASHBOARDS-ADM.md, §2.
         AppChartCard(
           title: 'Ocupação e desempenho',
+          help:
+              'À esquerda, quanto da capacidade dos currais está ocupada. À '
+              'direita, o GMD observado; o traço no medidor é o previsto.',
           footnote:
               'GMD observado × previsto do lote; o traço no medidor é a meta.',
           child: Row(

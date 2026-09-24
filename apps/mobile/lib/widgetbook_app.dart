@@ -82,6 +82,7 @@ class CerneWidgetbook extends StatelessWidget {
               name: 'Ações',
               children: [
                 buildButtonWidgetbookComponent(),
+                buildHelpButtonWidgetbookComponent(),
                 buildIconButtonWidgetbookComponent(),
                 buildQuickActionWidgetbookComponent(),
                 buildAppIconTileWidgetbookComponent(),

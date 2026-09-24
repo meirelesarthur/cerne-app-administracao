@@ -43,6 +43,7 @@ export 'gauge.dart';
 export 'greeting_header.dart';
 export 'hardware_simulator.dart';
 export 'heading.dart';
+export 'help_button.dart';
 export 'icon_button.dart';
 export 'illustration_slot.dart';
 export 'leave_guard.dart';

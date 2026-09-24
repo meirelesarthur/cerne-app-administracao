@@ -159,6 +159,10 @@ class _DashUsoState extends ConsumerState<DashUso> {
                 label: 'Adoção',
                 value: '$adocaoPct%',
                 caption: 'ativos agora',
+                help:
+                    'Parte das pessoas cadastradas que está usando o app '
+                    'neste momento. Baixa adoção costuma indicar falta de '
+                    'treinamento ou de conexão na fazenda.',
               ),
               AppKpiStatCard(
                 label: 'Fazendas ativas',
@@ -168,7 +172,6 @@ class _DashUsoState extends ConsumerState<DashUso> {
                     ? AppKpiStatTone.warning
                     : AppKpiStatTone.neutral,
               ),
-              AppKpiStatCard(label: 'Período', value: _periodo),
             ],
           ),
           const SizedBox(height: AppSpacing.space4),
