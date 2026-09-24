@@ -79,7 +79,7 @@ class ContratosScreen extends StatelessWidget {
                   Text(
                     '${contrato.parcelasPagas} de ${contrato.parcelasTotal} parcelas pagas',
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                       color: semantic.fgMuted,
                     ),
                   ),

@@ -72,7 +72,7 @@ class _DashAtivosState extends State<DashAtivos> {
     final todosSelecionados = _ativoId == null;
 
     return DashboardScreen(
-      title: 'Ativos & Manutenção',
+      title: 'Ativos e depreciação',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -143,6 +143,10 @@ class _DashAtivosState extends State<DashAtivos> {
           AppChartCard(
             title: 'Vida útil consumida',
             subtitle: 'Depreciação acumulada por ativo',
+            help:
+                'Quanto do valor de cada ativo já foi depreciado, em %. Perto '
+                'de 100% o ativo está no fim da vida útil contábil — hora de '
+                'planejar a troca.',
             child: AppBarChart(
               data: [
                 for (final a in maisDepreciados)
@@ -237,7 +241,7 @@ class _AtivoCard extends StatelessWidget {
                         Text(
                           ativo.proximaManutencao,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgSubtle,
                           ),
                         ),
@@ -302,7 +306,7 @@ void _showAtivoDetail(BuildContext context, Ativo ativo) {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: AppTypography.xl,
+                          fontSize: AppTypography.md,
                           fontWeight: AppTypography.weightSemibold,
                           color: semantic.fgDefault,
                         ),

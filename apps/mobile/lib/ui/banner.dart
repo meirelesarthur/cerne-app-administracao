@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
-import '../design/generated/app_colors.dart';
+import 'chip.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
+import '../design/theme/app_theme_extension.dart';
 
 /// Espelha `Banner.tsx` — faixa fina no topo do conteúdo (spec §6.10),
 /// usada para avisos offline/sync e contextuais.
@@ -24,37 +25,20 @@ class AppBanner extends StatelessWidget {
   final Widget? icon;
   final Widget? action;
 
-  ({Color bg, Color fg, Color border}) _colors() => switch (tone) {
-    AppBannerTone.info => (
-      bg: AppColors.blue50,
-      fg: AppColors.blue700,
-      border: AppColors.blue200,
-    ),
-    AppBannerTone.warning => (
-      bg: AppColors.amber50,
-      fg: AppColors.amber700,
-      border: AppColors.amber200,
-    ),
-    AppBannerTone.success => (
-      bg: AppColors.brand50,
-      fg: AppColors.brand700,
-      border: AppColors.brand200,
-    ),
-    AppBannerTone.error => (
-      bg: AppColors.red50,
-      fg: AppColors.red700,
-      border: AppColors.red200,
-    ),
-    AppBannerTone.offline => (
-      bg: AppColors.amber100,
-      fg: AppColors.amber800,
-      border: AppColors.amber300,
-    ),
-  };
+  // Tons theme-aware (auditoria de UX): no modo GB o banner deixa de ser um
+  // bloco pastel claro. "offline" usa o âmbar, como o aviso.
+  ({Color bg, Color fg, Color border}) _colors(AppSemanticColors s) =>
+      appToneColors(s, switch (tone) {
+        AppBannerTone.info => AppChipTone.blue,
+        AppBannerTone.warning => AppChipTone.amber,
+        AppBannerTone.success => AppChipTone.brand,
+        AppBannerTone.error => AppChipTone.red,
+        AppBannerTone.offline => AppChipTone.amber,
+      });
 
   @override
   Widget build(BuildContext context) {
-    final colors = _colors();
+    final colors = _colors(Theme.of(context).extension<AppSemanticColors>()!);
 
     return Semantics(
       liveRegion: true,

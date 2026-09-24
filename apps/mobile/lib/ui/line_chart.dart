@@ -175,7 +175,7 @@ class _LineChartPainter extends CustomPainter {
   TextPainter _text(String value, Color color) => TextPainter(
     text: TextSpan(
       text: value,
-      style: TextStyle(fontSize: AppTypography.xs, color: color),
+      style: TextStyle(fontSize: AppTypography.sm, color: color),
     ),
     textDirection: TextDirection.ltr,
   )..layout();

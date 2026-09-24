@@ -75,7 +75,7 @@ ThemeData buildAppTheme(AppThemeVariant variant) {
             ),
             // corpo e texto de input (54349:2016)
             bodyLarge: outfit(
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               fontWeight: AppTypography.weightNormal,
               color: semantic.fgDefault,
             ),
@@ -104,7 +104,7 @@ ThemeData buildAppTheme(AppThemeVariant variant) {
             ),
             // badge de status (54300:16148)
             labelSmall: outfit(
-              fontSize: AppTypography.xs2,
+              fontSize: AppTypography.sm,
               fontWeight: AppTypography.weightMedium,
               color: semantic.fgMuted,
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
+import 'chip.dart';
 import '../design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
@@ -43,31 +44,20 @@ class AppDetailSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    final (
-      Color iconColor,
-      Color bubble,
-      Color block,
-      Color? border,
-    ) = switch (tone) {
-      AppDetailSectionTone.neutral => (
-        semantic.accentDefault,
-        semantic.accentSubtle,
-        semantic.bgSheet,
-        null,
+    // Avisos usam os tons theme-aware do catálogo: no gbMode o bloco fica
+    // translúcido no matiz, e o texto (fgDefault) continua legível.
+    final alert = switch (tone) {
+      AppDetailSectionTone.neutral => null,
+      AppDetailSectionTone.warning => appToneColors(
+        semantic,
+        AppChipTone.amber,
       ),
-      AppDetailSectionTone.warning => (
-        AppColors.feedbackWarningText,
-        AppColors.feedbackWarningBg,
-        AppColors.feedbackWarningBg,
-        AppColors.feedbackWarningBorder,
-      ),
-      AppDetailSectionTone.danger => (
-        AppColors.feedbackErrorText,
-        AppColors.feedbackErrorBg,
-        AppColors.feedbackErrorBg,
-        AppColors.feedbackErrorBorder,
-      ),
+      AppDetailSectionTone.danger => appToneColors(semantic, AppChipTone.red),
     };
+    final iconColor = alert?.fg ?? semantic.accentDefault;
+    final bubble = alert?.bg ?? semantic.accentSubtle;
+    final block = alert?.bg ?? semantic.bgInset;
+    final border = alert?.border;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,7 +94,7 @@ class AppDetailSection extends StatelessWidget {
                   vertical: AppSpacing.half,
                 ),
                 decoration: BoxDecoration(
-                  color: semantic.bgSheet,
+                  color: semantic.bgInset,
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Text(
@@ -214,7 +204,7 @@ class _FieldCell extends StatelessWidget {
         Text(
           field.value,
           style: TextStyle(
-            fontSize: AppTypography.xl,
+            fontSize: AppTypography.md,
             fontWeight: AppTypography.weightSemibold,
             height: AppTypography.lineHeightSnug,
             color: semantic.fgDefault,

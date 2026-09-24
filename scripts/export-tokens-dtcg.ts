@@ -50,11 +50,15 @@ const cubicBezier = (v: string): DTCGToken => {
 
 // Aceita cor simples ou lista ordenada de cores (paleta categórica de gráfico):
 // DTCG permite `$value` array sob `$type: 'color'`, e o exportador Dart já
-// materializa esse caso como `List<Color>`.
-function mapColors(scale: Record<string | number, string | readonly string[]>): DTCGGroup {
+// materializa esse caso como `List<Color>`. Objetos aninhados (ex.: `tone.amber`)
+// viram subgrupos DTCG.
+type ColorScale = { [k: string]: string | readonly string[] | ColorScale }
+function mapColors(scale: ColorScale): DTCGGroup {
   const out: DTCGGroup = {}
   for (const [k, v] of Object.entries(scale)) {
-    out[k] = Array.isArray(v) ? { $value: v, $type: 'color' } : color(v as string)
+    if (Array.isArray(v)) out[k] = { $value: v, $type: 'color' }
+    else if (typeof v === 'object') out[k] = mapColors(v as ColorScale)
+    else out[k] = color(v as string)
   }
   return out
 }
@@ -183,7 +187,7 @@ function mapThemePalette(mode: 'light' | 'gbMode'): DTCGGroup {
         Object.entries(roles as Record<string, string>).map(([k, v]) => [k, parseShadow(v)]),
       )
     } else {
-      out[group] = mapColors(roles as Record<string, string | readonly string[]>)
+      out[group] = mapColors(roles as ColorScale)
     }
   }
   return out

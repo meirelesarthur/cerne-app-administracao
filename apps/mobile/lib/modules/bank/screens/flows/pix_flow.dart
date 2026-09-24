@@ -246,7 +246,7 @@ class _PixFlowState extends ConsumerState<PixFlow> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: AppTypography.xs,
+                              fontSize: AppTypography.sm,
                               color: semantic.fgMuted,
                             ),
                           ),
@@ -308,7 +308,7 @@ class _PixFlowState extends ConsumerState<PixFlow> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgMuted,
                           ),
                         ),

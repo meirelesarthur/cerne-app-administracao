@@ -21,7 +21,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashAtivos()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Ativos & Manutenção'), findsWidgets);
+      expect(find.text('Ativos e depreciação'), findsWidgets);
       expect(find.text('Patrimônio por categoria'), findsOneWidget);
       expect(find.text('Vida útil consumida'), findsOneWidget);
       // "Equipamentos" é tanto o título da seção quanto a categoria do mock

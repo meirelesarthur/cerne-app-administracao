@@ -43,7 +43,14 @@ extension PrioridadeOsLabel on PrioridadeOs {
 /// Ciclo de vida da OS. `entregue` e `refeita` são os dois encerramentos que
 /// só o Operacional decide; `cancelada` só o Administrativo decide — e só
 /// antes de um desses dois encerramentos.
-enum OrdemServicoStatus { aguardando, emExecucao, pausada, entregue, refeita, cancelada }
+enum OrdemServicoStatus {
+  aguardando,
+  emExecucao,
+  pausada,
+  entregue,
+  refeita,
+  cancelada,
+}
 
 extension OrdemServicoStatusLabel on OrdemServicoStatus {
   String get label => switch (this) {
@@ -57,7 +64,8 @@ extension OrdemServicoStatusLabel on OrdemServicoStatus {
 
   /// Só nesses três estados o Operacional ainda pode agir (iniciar, pausar,
   /// retomar, entregar, refazer) e o Administrativo pode avaliar/cancelar.
-  bool get emAndamento => this == OrdemServicoStatus.aguardando ||
+  bool get emAndamento =>
+      this == OrdemServicoStatus.aguardando ||
       this == OrdemServicoStatus.emExecucao ||
       this == OrdemServicoStatus.pausada;
 

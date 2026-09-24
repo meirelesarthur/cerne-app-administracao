@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design/generated/app_radius.dart';
@@ -8,49 +9,43 @@ import '../../../shared/rise_in.dart';
 import '../../../ui/ui.dart';
 import '../components/activity_detail_sheet.dart';
 import '../components/activity_list_item.dart';
-import '../components/credito_banner.dart';
-import '../components/shortcut_grid.dart';
 import '../confinamento/mocks.dart' as confinamento_mocks;
 import '../confinamento/models.dart';
 import '../mocks/atividades.dart';
 import '../mocks/dashboards_mocks.dart';
+import '../ordem_servico/models.dart';
+import '../ordem_servico/state/ordem_servico_store.dart';
+import '../state/fazendas_store.dart';
 import '../types.dart';
 import 'package:cerne_app/design/generated/app_typography.dart';
 import '../../../design/generated/app_layout.dart';
 
-/// Home do módulo Fazendas (aba Dashboard) — espelha `FazendasHome.tsx`.
-/// O CERNE ADM tem um perfil único, então a home é sempre a gerencial.
-class FazendasHome extends StatelessWidget {
+/// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
+///
+/// É a leitura que o gestor faz no desktop: primeiro o que pede atenção hoje
+/// (faixa de alertas), depois um bloco por painel de decisão, na mesma ordem
+/// da aba Painéis, cada um com os um ou dois números que resumem o painel e
+/// um "Ver painel" (no título do grupo, único atalho — os cards não repetem
+/// "Abrir painel") que abre o painel completo.
+///
+/// Regra desta tela: cada bloco reusa o **mesmo widget e o mesmo dado** do
+/// painel de origem — `AppKpiStatCard`/`AppChartCard(compact: true)` sobre os
+/// mocks de `dashboards_mocks.dart`. Nenhum número é recalculado de outro
+/// jeito aqui (Lei 2). Ver docs/ESTEIRA-DASHBOARDS-ADM.md, seção 3.
+class FazendasHome extends ConsumerWidget {
   const FazendasHome({super.key});
-
-  @override
-  Widget build(BuildContext context) => const _HomeGerencial();
-}
-
-/// Home do perfil administrativo — torre de controle.
-///
-/// Era: título, cinco atalhos, banner de crédito, três cartões (receita, custo
-/// e margem com **os mesmos valores** do painel de Pecuária) e uma lista de
-/// atividades. Passou a ser a leitura de decisão do dia, na ordem em que ela é
-/// feita: primeiro o que está fora do lugar (faixa de alertas), depois o mapa
-/// dos painéis, depois o melhor gráfico de cada um.
-///
-/// Regra desta tela: cada bloco reusa o **mesmo widget** do painel de origem —
-/// `AppChartCard(compact: true)` sobre o mesmo gráfico. Nenhum gráfico é
-/// reimplementado aqui (Lei 2). Ver docs/ESTEIRA-DASHBOARDS-ADM.md, seção 3.
-class _HomeGerencial extends StatelessWidget {
-  const _HomeGerencial();
 
   static const _resultado = '/fazendas/dashboards/resultado';
   static const _confinamento = '/fazendas/dashboards/confinamento';
   static const _suprimentos = '/fazendas/dashboards/suprimentos';
   static const _ativos = '/fazendas/dashboards/ativos';
   static const _uso = '/fazendas/dashboards/uso';
+  static const _os = '/fazendas/dashboards/ordem-servico';
 
   /// Só entra na faixa o que pede decisão hoje — e cada cápsula leva ao painel
   /// que explica o número. Indicador dentro do esperado não vira alerta: vira
-  /// gráfico mais abaixo.
-  List<AppAlertItem> _alertas(BuildContext context) {
+  /// bloco mais abaixo.
+  List<AppAlertItem> _alertas(BuildContext context, int osAtrasadas) {
     final currais = confinamento_mocks.currais;
     final lotados = currais
         .where(
@@ -63,34 +58,39 @@ class _HomeGerencial extends StatelessWidget {
     final ocorrencias = confinamento_mocks.leituraCochoRecente.avaliacoes
         .expand((a) => a.ocorrencias)
         .length;
-    final emManutencao = ativos
-        .where((a) => a.estado == AtivoEstado.manutencao)
-        .length;
     final aguardando = cotacoes
         .where((c) => c.status == CotacaoStatus.cotacao)
         .length;
 
     return [
       AppAlertItem(
-        label: 'vencidos',
+        label: 'em contas vencidas',
         value: FinanceiroKpis.atrasados,
         icon: AppIcons.circleAlert,
         tone: AppAlertTone.critical,
-        onTap: () => context.go(_resultado),
+        onTap: () => context.push(_resultado),
       ),
+      if (osAtrasadas > 0)
+        AppAlertItem(
+          label: 'OS com prazo vencido',
+          value: '$osAtrasadas',
+          icon: AppIcons.fileText,
+          tone: AppAlertTone.critical,
+          onTap: () => context.push(_os),
+        ),
       if (ocorrencias > 0)
         AppAlertItem(
           label: 'ocorrências no cocho',
           value: '$ocorrencias',
           icon: AppIcons.triangleAlert,
-          onTap: () => context.go(_confinamento),
+          onTap: () => context.push(_confinamento),
         ),
       if (lotados > 0)
         AppAlertItem(
           label: 'currais acima de 90%',
           value: '$lotados',
           icon: AppIcons.warehouse,
-          onTap: () => context.go(_confinamento),
+          onTap: () => context.push(_confinamento),
         ),
       if (aguardando > 0)
         AppAlertItem(
@@ -98,53 +98,27 @@ class _HomeGerencial extends StatelessWidget {
           value: '$aguardando',
           icon: AppIcons.receipt,
           tone: AppAlertTone.info,
-          onTap: () => context.go(_suprimentos),
-        ),
-      if (emManutencao > 0)
-        AppAlertItem(
-          label: 'ativos em manutenção',
-          value: '$emManutencao',
-          icon: AppIcons.wrench,
-          tone: AppAlertTone.info,
-          onTap: () => context.go(_ativos),
+          onTap: () => context.push(_suprimentos),
         ),
     ];
   }
 
   @override
-  Widget build(BuildContext context) {
-    final adminShortcuts = [
-      Shortcut(
-        id: 'resultado',
-        label: 'Resultado',
-        icon: AppIcons.wallet,
-        onTap: () => context.go(_resultado),
-      ),
-      Shortcut(
-        id: 'confinamento',
-        label: 'Rebanho',
-        icon: AppIcons.warehouse,
-        onTap: () => context.go(_confinamento),
-      ),
-      Shortcut(
-        id: 'suprimentos',
-        label: 'Compras',
-        icon: AppIcons.boxes,
-        onTap: () => context.go(_suprimentos),
-      ),
-      Shortcut(
-        id: 'ativos',
-        label: 'Ativos',
-        icon: AppIcons.package,
-        onTap: () => context.go(_ativos),
-      ),
-      Shortcut(
-        id: 'mais',
-        label: 'Mais',
-        icon: AppIcons.moreHorizontal,
-        onTap: () => context.go('/fazendas/mais'),
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fazenda = ref.watch(
+      fazendasStoreProvider.select((s) => s.activeFarm.name),
+    );
+    final ordens = ref
+        .watch(ordemServicoStoreProvider.select((s) => s.ordens))
+        .where((o) => o.fazenda == fazenda)
+        .toList();
+    final agora = DateTime.now();
+    final hoje = DateTime(agora.year, agora.month, agora.day);
+    final osAbertas = ordens.where((o) => o.status.emAndamento).toList();
+    final osAtrasadas = osAbertas.where((o) => o.prazo.isBefore(hoje)).length;
+    final osAguardando = osAbertas
+        .where((o) => o.status == OrdemServicoStatus.aguardando)
+        .length;
 
     final currais = confinamento_mocks.currais;
     final ocupados = currais.where((c) => c.ocupado).toList();
@@ -164,44 +138,86 @@ class _HomeGerencial extends StatelessWidget {
         : indicadores.map((i) => i.gmdPrevistoKg).reduce((a, b) => a + b) /
               indicadores.length;
 
+    final emCotacao = cotacoes.where((c) => c.status == CotacaoStatus.cotacao);
+    final aprovadas = cotacoes.where((c) => c.status == CotacaoStatus.aprovada);
+    final totalAberto = emCotacao.fold<double>(0, (s, c) => s + c.totalValor);
+    final totalAprovado = aprovadas.fold<double>(0, (s, c) => s + c.totalValor);
+
     final patrimonio = <String, double>{};
     for (final a in ativos) {
       patrimonio[a.categoria] = (patrimonio[a.categoria] ?? 0) + a.aquisicaoMil;
     }
+    final emManutencao = ativos
+        .where((a) => a.estado == AtivoEstado.manutencao)
+        .length;
+
+    var ordem = 0;
+    Widget rise(Widget child) => RiseIn(index: ordem++, child: child);
 
     return _ActivityAwareList(
       builder: (context, onActivityTap) => ListView(
         padding: const EdgeInsets.all(AppSpacing.space4),
         children: [
-          const RiseIn(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          rise(
+            Row(
               children: [
-                AppHeading(
-                  level: AppHeadingLevel.h3,
-                  child: Text('Resumo da safra'),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppHeading(
+                        level: AppHeadingLevel.h3,
+                        child: Text('Visão geral'),
+                      ),
+                      const SizedBox(height: AppSpacing.half),
+                      Text(
+                        fazenda,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
-                _SafraPill(),
+                const _SafraPill(),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space2),
+          Text(
+            'Os principais números de cada painel. Toque em "Ver painel" '
+            'para o detalhe completo.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: AppSpacing.space4),
+          rise(const AppSectionTitle(child: Text('Pede atenção hoje'))),
+          const SizedBox(height: AppSpacing.space2),
+          rise(AppAlertStrip(items: _alertas(context, osAtrasadas))),
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Resultado -------------------------------------------------
+          rise(const _Grupo(titulo: 'Resultado', rota: _resultado)),
+          rise(
+            const AppMetricGrid(
+              children: [
+                AppKpiStatCard(
+                  label: 'A receber',
+                  value: FinanceiroKpis.aReceber,
+                  tone: AppKpiStatTone.positive,
+                ),
+                AppKpiStatCard(
+                  label: 'Contas vencidas',
+                  value: FinanceiroKpis.atrasados,
+                  tone: AppKpiStatTone.negative,
+                  caption: 'Cobrar ou renegociar',
+                ),
               ],
             ),
           ),
           const SizedBox(height: AppSpacing.space3),
-          RiseIn(index: 1, child: AppAlertStrip(items: _alertas(context))),
-          const SizedBox(height: AppSpacing.space4),
-          RiseIn(
-            index: 2,
-            child: ShortcutGrid(items: adminShortcuts, columns: 5),
-          ),
-          const SizedBox(height: AppSpacing.space4),
-          const RiseIn(index: 3, child: CreditoBanner()),
-          const SizedBox(height: AppSpacing.space4),
-          RiseIn(
-            index: 4,
-            child: AppChartCard(
-              title: 'Resultado',
+          rise(
+            AppChartCard(
+              title: 'Receita × custo',
               period: '6 meses',
               compact: true,
-              onExpand: () => context.go(_resultado),
               footnote:
                   'Margem do mês: ${formatMilhares(resultadoMeses.last.margem)}.',
               child: AppLineChart(
@@ -221,13 +237,19 @@ class _HomeGerencial extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.space3),
-          RiseIn(
-            index: 5,
-            child: AppChartCard(
-              title: 'Ocupação e GMD',
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Rebanho e confinamento -----------------------------------
+          rise(
+            const _Grupo(titulo: 'Rebanho e confinamento', rota: _confinamento),
+          ),
+          rise(
+            AppChartCard(
+              title: 'Ocupação dos currais e ganho de peso',
               compact: true,
-              onExpand: () => context.go(_confinamento),
+              footnote:
+                  'GMD = ganho médio diário por cabeça. A marca no medidor é o '
+                  'previsto (${gmdPrevisto.toStringAsFixed(2)} kg/dia).',
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -246,30 +268,72 @@ class _HomeGerencial extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.space3),
-          RiseIn(
-            index: 6,
-            child: AppChartCard(
-              title: 'Despesa por centro de custo',
-              compact: true,
-              onExpand: () => context.go(_resultado),
-              child: AppBarChart(
-                showGrid: false,
-                data: [
-                  for (final c in centrosCusto.take(4))
-                    AppBarDatum(label: c.label, value: c.value),
-                ],
-                formatValue: (v) => '${v.toStringAsFixed(0)}k',
-              ),
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Ordens de serviço ----------------------------------------
+          rise(
+            const _Grupo(
+              titulo: 'Ordens de serviço',
+              rota: _os,
+              acao: 'Ver OS',
             ),
           ),
-          const SizedBox(height: AppSpacing.space3),
-          RiseIn(
-            index: 7,
-            child: AppChartCard(
+          rise(
+            AppMetricGrid(
+              children: [
+                AppKpiStatCard(
+                  label: 'Em andamento',
+                  value: '${osAbertas.length}',
+                  caption: '$osAguardando aguardando início',
+                ),
+                AppKpiStatCard(
+                  label: 'Prazo vencido',
+                  value: '$osAtrasadas',
+                  tone: osAtrasadas > 0
+                      ? AppKpiStatTone.negative
+                      : AppKpiStatTone.positive,
+                  caption: osAtrasadas > 0
+                      ? 'Cobrar a operação'
+                      : 'Tudo dentro do prazo',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Suprimentos ----------------------------------------------
+          rise(const _Grupo(titulo: 'Suprimentos', rota: _suprimentos)),
+          rise(
+            AppMetricGrid(
+              children: [
+                AppKpiStatCard(
+                  label: 'Aguardando decisão',
+                  value: formatMilhares(totalAberto / 1000),
+                  caption: '${emCotacao.length} cotações para aprovar',
+                  tone: AppKpiStatTone.warning,
+                ),
+                AppKpiStatCard(
+                  label: 'Aprovado',
+                  value: formatMilhares(totalAprovado / 1000),
+                  caption: '${aprovadas.length} cotações',
+                  tone: AppKpiStatTone.positive,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Ativos e depreciação -------------------------------------
+          rise(const _Grupo(titulo: 'Ativos e depreciação', rota: _ativos)),
+          rise(
+            AppChartCard(
               title: 'Patrimônio por categoria',
               compact: true,
-              onExpand: () => context.go(_ativos),
+              footnote: switch (emManutencao) {
+                0 => 'Nenhum ativo em manutenção.',
+                1 => '1 ativo em manutenção agora.',
+                _ => '$emManutencao ativos em manutenção agora.',
+              },
               child: Center(
                 child: AppDonutChart(
                   centerValue: AtivosResumo.total,
@@ -282,13 +346,15 @@ class _HomeGerencial extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.space3),
-          RiseIn(
-            index: 8,
-            child: AppChartCard(
-              title: 'Adoção por fazenda',
+          const SizedBox(height: AppSpacing.space5),
+
+          // --- Adoção e governança --------------------------------------
+          rise(const _Grupo(titulo: 'Adoção e governança', rota: _uso)),
+          rise(
+            AppChartCard(
+              title: 'Pessoas usando o app por fazenda',
               compact: true,
-              onExpand: () => context.go(_uso),
+              footnote: 'Barra = usuários ativos agora; traço = cadastrados.',
               child: AppBulletChart(
                 targetLabel: 'cadastrados',
                 data: [
@@ -302,27 +368,19 @@ class _HomeGerencial extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.space4),
-          RiseIn(
-            index: 9,
-            child: Column(
+          const SizedBox(height: AppSpacing.space5),
+          rise(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const AppSectionTitle(child: Text('Atividades recentes')),
-                    AppButton(
-                      variant: AppButtonVariant.ghost,
-                      size: AppButtonSize.sm,
-                      rightIcon: const AppIcon(
-                        AppIcons.arrowRight,
-                        size: AppSize.iconXs,
-                      ),
-                      onPressed: () => context.go('/fazendas/atividades'),
-                      child: const Text('Ver todas'),
-                    ),
-                  ],
+                AppSectionTitle(
+                  action: AppButton(
+                    variant: AppButtonVariant.link,
+                    size: AppButtonSize.sm,
+                    onPressed: () => context.push('/fazendas/atividades'),
+                    child: const Text('Ver todas'),
+                  ),
+                  child: const Text('Atividades recentes'),
                 ),
                 const SizedBox(height: AppSpacing.space2),
                 Builder(
@@ -362,6 +420,33 @@ class _HomeGerencial extends StatelessWidget {
   }
 }
 
+/// Agrupador de um painel na Visão geral: o nome do painel (o mesmo da aba
+/// Painéis) e um "Ver painel" à direita que abre o painel completo.
+class _Grupo extends StatelessWidget {
+  const _Grupo({required this.titulo, required this.rota, this.acao});
+
+  final String titulo;
+  final String rota;
+  final String? acao;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.space2),
+      child: AppSectionTitle(
+        action: AppButton(
+          variant: AppButtonVariant.link,
+          size: AppButtonSize.sm,
+          rightIcon: const AppIcon(AppIcons.arrowRight, size: AppSize.iconXs),
+          onPressed: () => context.push(rota),
+          child: Text(acao ?? 'Ver painel'),
+        ),
+        child: Text(titulo),
+      ),
+    );
+  }
+}
+
 /// Encapsula o acionamento do `ActivityDetailSheet` — equivalente ao
 /// `useState<Activity | null>` do React, sem precisar de `StatefulWidget` na
 /// tela inteira (o bottom sheet já é a fonte de estado "aberto/fechado").
@@ -383,6 +468,8 @@ class _ActivityAwareList extends StatelessWidget {
   }
 }
 
+/// Safra de referência dos números da Visão geral. Só leitura: não abre
+/// seletor (o chevron antigo prometia uma troca que não existia).
 class _SafraPill extends StatelessWidget {
   const _SafraPill();
 
@@ -399,24 +486,13 @@ class _SafraPill extends StatelessWidget {
         border: Border.all(color: semantic.borderDefault),
         color: semantic.bgSurface,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Safra 24/25',
-            style: TextStyle(
-              fontWeight: AppTypography.weightSemibold,
-              fontSize: AppTypography.base,
-              color: semantic.fgDefault,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.space1),
-          AppIcon(
-            AppIcons.chevronDown,
-            size: AppSize.iconXs,
-            color: semantic.fgDefault,
-          ),
-        ],
+      child: Text(
+        'Safra 24/25',
+        style: TextStyle(
+          fontWeight: AppTypography.weightSemibold,
+          fontSize: AppTypography.base,
+          color: semantic.fgDefault,
+        ),
       ),
     );
   }

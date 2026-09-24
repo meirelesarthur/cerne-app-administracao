@@ -102,7 +102,7 @@ class _DashConsultasState extends State<DashConsultas> {
               Text(
                 'Somente leitura — dados espelhados do web.',
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   fontWeight: AppTypography.weightMedium,
                   color: semantic.fgSubtle,
                 ),
@@ -150,7 +150,7 @@ class _DashConsultasState extends State<DashConsultas> {
                       child: Text(
                         'Posições ilustrativas dos lotes ativos — esquema, não georreferenciado.',
                         style: TextStyle(
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                           color: semantic.fgSubtle,
                         ),
                       ),
@@ -336,7 +336,7 @@ class _PinLote extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: AppTypography.xs,
+                fontSize: AppTypography.sm,
                 fontWeight: AppTypography.weightMedium,
                 color: semantic.fgDefault,
               ),

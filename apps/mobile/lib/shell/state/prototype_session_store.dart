@@ -9,10 +9,12 @@ extension UserAccessProfileLabels on UserAccessProfile {
 
   String get roleLabel => 'Administrador';
 
-  String get homeRoute => '/fazendas/administracao';
+  String get homeRoute => '/fazendas/visao-geral';
 
-  /// Primeira tela depois do login: a Administração abre o hub Banking.
-  String get landingRoute => '/inicio';
+  /// Primeira tela depois do login: a Visão geral das fazendas. O MVP é
+  /// focado em Fazendas, e o gestor chega para ler os indicadores — não para
+  /// passar pelo hub Banking (que continua no dock, em Início).
+  String get landingRoute => '/fazendas/visao-geral';
 }
 
 class PrototypeSessionState {

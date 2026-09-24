@@ -41,10 +41,7 @@ void main() {
         await tester.tap(find.text('Localização'));
         await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining('não georreferenciado'),
-          findsOneWidget,
-        );
+        expect(find.textContaining('não georreferenciado'), findsOneWidget);
         expect(find.text('Lote 42 · Curral 02'), findsOneWidget);
         expect(find.text('Lote 33 · Curral 01'), findsOneWidget);
         // Sem busca nem paginação aqui: é um esquema visual, não uma lista.

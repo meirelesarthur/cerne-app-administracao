@@ -175,30 +175,32 @@ const List<ModuleDef> modules = [
     icon: AppIcons.sprout,
     homeRoute: '/fazendas',
     bottomTabs: [
+      // Visão geral: o conjunto dos indicadores mais importantes de cada
+      // painel de decisão, agrupados por painel — a leitura que o gestor faz
+      // no desktop. É a primeira tela depois do login.
+      BottomTab(
+        id: 'visao-geral',
+        label: 'Visão geral',
+        icon: AppIcons.layoutDashboard,
+        path: 'visao-geral',
+        profiles: {UserAccessProfile.administration},
+      ),
+      // Painéis: os painéis de decisão completos (antes a aba "Gestão"). O
+      // path `administracao` foi mantido para não quebrar links salvos.
       BottomTab(
         id: 'dashboard',
-        label: 'Gestão',
-        icon: AppIcons.layoutDashboard,
+        label: 'Painéis',
+        icon: AppIcons.barChart3,
         path: 'administracao',
         profiles: {UserAccessProfile.administration},
       ),
+      // Consultas: Ordem de Serviço em primeiro, depois Apontamentos e as
+      // consultas e auditorias (antes a aba "OS" era separada).
       BottomTab(
         id: 'consultas',
         label: 'Consultas',
         icon: AppIcons.search,
         path: 'consultas',
-        profiles: {UserAccessProfile.administration},
-      ),
-      // Substitui a antiga aba "Operacional": a Administração não acessa mais
-      // os cadastros operacionais de campo por aqui — lista direto as OS da
-      // fazenda (filtráveis por data/status) e permite abrir uma nova
-      // (`admin/dash_ordem_servico.dart`). "OS" (não "Ordens de Serviço"):
-      // rótulo curto de aba, igual às demais.
-      BottomTab(
-        id: 'ordem-servico-adm',
-        label: 'OS',
-        icon: AppIcons.fileText,
-        path: 'ordem-servico',
         profiles: {UserAccessProfile.administration},
       ),
       BottomTab(

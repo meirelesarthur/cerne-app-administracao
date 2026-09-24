@@ -85,7 +85,7 @@ class AppBulletChart extends StatelessWidget {
           Text(
             'Exibindo ${visibleData.length} de ${data.length}. Use os filtros para detalhar.',
             style: TextStyle(
-              fontSize: AppTypography.xs,
+              fontSize: AppTypography.sm,
               color: Theme.of(context).extension<AppSemanticColors>()!.fgSubtle,
             ),
           ),
@@ -165,7 +165,7 @@ class _BulletRow extends StatelessWidget {
         Text(
           '$targetLabel ${formatValue(datum.target)}',
           style: TextStyle(
-            fontSize: AppTypography.xs,
+            fontSize: AppTypography.sm,
             color: semantic.fgSubtle,
           ),
         ),

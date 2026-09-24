@@ -34,12 +34,13 @@ class MappedFeatureScreen extends StatelessWidget {
     if (feature == null || feature.profile != profile) {
       return AppEmptyState(
         icon: AppIcons.shieldAlert,
-        title: 'Funcionalidade fora deste perfil',
+        title: 'Disponível no app Operação',
         description:
-            'Volte ao ambiente correspondente para acessar esta responsabilidade.',
+            'Este lançamento é feito em campo, pelo app Operação. Aqui na '
+            'Administração você acompanha o resultado pelas consultas.',
         action: AppButton(
           onPressed: () => context.go(resolvedCenterRoute),
-          child: const Text('Voltar ao ambiente'),
+          child: const Text('Voltar'),
         ),
       );
     }
@@ -100,15 +101,57 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
     _journey = FunctionalJourneyController(feature);
   }
 
-  void _startForm() => setState(_journey.startForm);
+  /// Valores do formulário logo ao abrir (vazio, datas de hoje ou o registro
+  /// em edição) — diferença contra isto é o que conta como "não salvo".
+  Map<String, String> _formBaseline = const {};
+
+  void _startForm() => setState(() {
+    _journey.startForm();
+    _formBaseline = Map.of(_journey.form.values);
+  });
+
+  bool get _hasUnsavedChanges {
+    if (_journey.mode != FunctionalJourneyMode.form) return false;
+    final form = _journey.form;
+    if (form.groupItems.values.any((items) => items.isNotEmpty)) return true;
+    final keys = {...form.values.keys, ..._formBaseline.keys};
+    return keys.any(
+      (k) => (form.values[k] ?? '').trim() != (_formBaseline[k] ?? '').trim(),
+    );
+  }
+
+  /// Sai do formulário perguntando antes quando há algo preenchido.
+  /// Volta para quem abriu a tela (a busca, um painel, a aba) — e só cai na
+  /// aba de origem quando não há histórico (link direto).
+  void _voltarParaOrigem() =>
+      context.canPop() ? context.pop() : context.go(widget.centerRoute);
+
+  Future<void> _leaveForm(VoidCallback leave) async {
+    if (_hasUnsavedChanges && !await confirmAppLeave(context)) return;
+    if (mounted) leave();
+  }
 
   /// Abre o cadastro pré-preenchido com os dados de [record] — a ação
   /// "Editar" que a visualização do registro oferece ao perfil operacional.
   /// Ver [FunctionalJourneyController.startEditing].
-  void _editRecord(PrototypeRecord record) =>
-      setState(() => _journey.startEditing(record));
+  void _editRecord(PrototypeRecord record) => setState(() {
+    _journey.startEditing(record);
+    _formBaseline = Map.of(_journey.form.values);
+  });
 
   void _showList() => setState(_journey.showList);
+
+  /// Botão de criar da listagem no imperativo, em até duas palavras: o
+  /// `createAction` do catálogo é um título ("Nova transferência de animal"),
+  /// então "Novo/Nova X" vira "Adicionar X".
+  static String _rotuloCriar(String? createAction) {
+    if (createAction == null) return 'Adicionar';
+    final palavras = createAction.split(' ');
+    if ({'Novo', 'Nova'}.contains(palavras.first)) {
+      return palavras.length > 1 ? 'Adicionar ${palavras[1]}' : 'Adicionar';
+    }
+    return palavras.take(2).join(' ');
+  }
 
   /// CTA do rodapé em formulário com etapas: avança enquanto houver etapa e
   /// só salva na última. Sem etapas declaradas, salva direto — o botão do
@@ -298,33 +341,41 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
   Widget build(BuildContext context) {
     if (_journey.mode == FunctionalJourneyMode.success) {
       final wasEditing = _lastEditedTitle != null;
+      final canCreate = feature.fields.isNotEmpty && !feature.readOnly;
+      // Tela de resultado padrão: inclusão em verde, alteração em azul.
+      // Repetir (contorno) em cima, ver a lista (CTA) embaixo.
       return AppSuccessPanel(
+        kind: wasEditing ? AppResultKind.updated : AppResultKind.created,
         title: wasEditing
             ? '${_lastEditedTitle ?? feature.title} atualizado'
             : feature.successTitle ??
                   '${_lastCreated?.title ?? feature.title} salvo',
         description: Text(
           wasEditing
-              ? 'As alterações foram salvas e já estão disponíveis nesta sessão.'
-              : feature.successDescription ??
-                    'O registro foi incluído no protótipo e já está disponível nesta sessão.',
+              ? 'As alterações foram salvas.'
+              : feature.successDescription ?? 'O registro foi salvo.',
         ),
         actions: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (feature.listMode) ...[
+            if (feature.listMode && canCreate) ...[
               AppButton(
                 fullWidth: true,
-                onPressed: _showList,
-                child: const Text('Ver registros'),
+                size: AppButtonSize.lg,
+                variant: AppButtonVariant.outline,
+                onPressed: _startForm,
+                child: Text(_rotuloCriar(feature.createAction).toUpperCase()),
               ),
-              const SizedBox(height: AppSpacing.space2),
+              const SizedBox(height: AppSpacing.space3),
             ],
             AppButton(
               fullWidth: true,
-              variant: AppButtonVariant.secondary,
-              onPressed: () => context.go(widget.centerRoute),
-              child: const Text('Voltar à central'),
+              size: AppButtonSize.lg,
+              onPressed: feature.listMode
+                  ? _showList
+                  : _voltarParaOrigem,
+              child: Text(feature.listMode ? 'VER TODOS' : 'CONCLUIR'),
             ),
           ],
         ),
@@ -373,8 +424,9 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
       onBack: inStep
           ? _retreat
           : backToRecords
-          ? _showList
-          : () => context.go(widget.centerRoute),
+          ? () => _leaveForm(_showList)
+          : () => _leaveForm(_voltarParaOrigem),
+      hasUnsavedChanges: _hasUnsavedChanges,
       actionIcon: showingForm ? AppIcons.moreVertical : null,
       actionLabel: showingForm ? 'Mais opções' : null,
       onAction: showingForm ? () => _showFormDetails(context) : null,
@@ -395,7 +447,7 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
               primaryLabel: _journey.isLastStep
                   ? isEditing
                         ? 'Salvar alterações'
-                        : feature.primaryAction ?? 'Salvar registro'
+                        : feature.primaryAction ?? 'Salvar'
                   : 'Continuar',
               primaryIcon: _journey.isLastStep
                   ? AppIcons.saveAll
@@ -409,12 +461,12 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
               onSecondary: inStep
                   ? _retreat
                   : feature.listMode
-                  ? _showList
+                  ? () => _leaveForm(_showList)
                   : null,
             )
           : isRecordsList && canCreateRecords
           ? AppActionBar(
-              primaryLabel: feature.createAction ?? 'Novo registro',
+              primaryLabel: _rotuloCriar(feature.createAction),
               primaryIcon: AppIcons.plus,
               primarySize: AppButtonSize.xl,
               onPrimary: _startForm,

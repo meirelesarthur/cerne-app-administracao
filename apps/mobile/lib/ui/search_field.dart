@@ -53,7 +53,7 @@ class AppSearchField extends StatelessWidget {
       placeholder,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(fontSize: AppTypography.xl, color: inputColors.muted),
+      style: TextStyle(fontSize: AppTypography.md, color: inputColors.muted),
     );
 
     final capsule = Container(

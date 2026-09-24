@@ -16,6 +16,11 @@ import '../design/theme/app_theme_extension.dart';
 enum AppMenuItemTone { standard, danger }
 
 /// Espelha `MenuItemVariant` (`'light' | 'onDark'`) de `MenuItem.tsx`.
+///
+/// `onDark` é a linha plana do menu lateral (fundo `revealMenuBg`): sem
+/// cápsula, sem bolha de ícone e sem chevron — só ícone e rótulo, com 48 px
+/// de alvo de toque. O menu lista um índice longo (grupos, módulos e conta)
+/// e a cápsula de cada linha o transformava numa pilha de cartões.
 enum AppMenuItemVariant { light, onDark }
 
 // fidelidade-esteira: padrão de listagens — topo cinza (header), card branco
@@ -73,31 +78,31 @@ class AppMenuItem extends StatelessWidget {
               ? AppColors.neutral0.withValues(alpha: 0.15)
               : semantic.accentSubtle)
         : (_isOnDark
-              ? semantic.inkBubble
+              ? AppColors.transparent
               // `bgSubtle` é branco no tema claro (mesmo valor de
               // `bgSurface` — reservado para outro uso); `bgSheet` é o
               // cinza real (#F0F0F0) já usado como fundo de página, por
               // isso é ele que dá contraste contra a folha branca aqui.
               : (surface == AppMenuItemSurface.subtle
-                    ? semantic.bgSheet
+                    ? semantic.bgInset
                     : semantic.bgSurface));
 
     final labelColor = _isDanger
-        ? (_isOnDark ? AppColors.red400 : AppColors.feedbackErrorText)
+        ? (_isOnDark ? AppColors.red400 : semantic.toneRedFg)
         : active
         ? (_isOnDark ? semantic.inkFg : semantic.accentDefault)
         : (_isOnDark ? semantic.inkFg : semantic.fgDefault);
 
     final descriptionColor = _isOnDark ? semantic.inkMuted : semantic.fgMuted;
     final iconBubbleColor = _isDanger
-        ? AppColors.red500.withValues(alpha: 0.1)
+        ? semantic.toneRedBg
         : (_isOnDark
-              ? semantic.inkBubble
+              ? AppColors.transparent
               : (surface == AppMenuItemSurface.subtle
                     ? AppColors.transparent
                     : semantic.bgSubtle));
     final iconColor = _isDanger
-        ? AppColors.red500
+        ? semantic.toneRedFg
         : (_isOnDark ? semantic.inkFg : semantic.fgMuted);
     final chevronBubbleColor = _isOnDark
         ? semantic.inkBubble
@@ -111,7 +116,9 @@ class AppMenuItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.tile),
         child: Container(
-          constraints: const BoxConstraints(minHeight: AppSpacing.space14),
+          constraints: BoxConstraints(
+            minHeight: _isOnDark ? AppSpacing.space12 : AppSpacing.space14,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.space3,
             vertical: AppSpacing.space2,
@@ -126,8 +133,8 @@ class AppMenuItem extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Container(
-                  height: AppSpacing.space10,
-                  width: AppSpacing.space10,
+                  height: _isOnDark ? AppSpacing.space6 : AppSpacing.space10,
+                  width: _isOnDark ? AppSpacing.space6 : AppSpacing.space10,
                   decoration: BoxDecoration(
                     color: iconBubbleColor,
                     borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -144,10 +151,10 @@ class AppMenuItem extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: AppTypography.xl,
+                        fontSize: AppTypography.md,
                         fontWeight: AppTypography.weightMedium,
                         color: labelColor,
                       ),
@@ -155,7 +162,7 @@ class AppMenuItem extends StatelessWidget {
                     if (description != null)
                       Text(
                         description!,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: AppTypography.sm,
@@ -170,7 +177,7 @@ class AppMenuItem extends StatelessWidget {
                   padding: const EdgeInsets.only(left: AppSpacing.space2),
                   child: trailing,
                 )
-              else if (onTap != null)
+              else if (onTap != null && !_isOnDark)
                 Container(
                   height: AppSpacing.space8,
                   width: AppSpacing.space8,

@@ -178,7 +178,7 @@ class _TransactionDetailBodyState extends State<_TransactionDetailBody> {
                     Text(
                       'ID DA OPERAÇÃO',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         fontWeight: AppTypography.weightSemibold,
                         color: semantic.fgSubtle,
                         letterSpacing: 0.4,

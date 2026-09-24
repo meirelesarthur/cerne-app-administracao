@@ -156,6 +156,5 @@ void main() {
       expect(find.text('Nenhuma função encontrada'), findsOneWidget);
       expect(find.byType(AppMenuItem), findsNothing);
     });
-
   });
 }

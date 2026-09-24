@@ -9,6 +9,7 @@ import 'button.dart';
 import 'card.dart';
 import 'chip.dart';
 import 'heading.dart';
+import 'help_button.dart';
 import '../design/generated/app_layout.dart';
 
 /// Card contêiner de um gráfico, com título, período, ação e nota de rodapé.
@@ -30,6 +31,7 @@ class AppChartCard extends StatelessWidget {
     this.compact = false,
     this.onExpand,
     this.expandLabel = 'Abrir painel',
+    this.help,
   });
 
   final String title;
@@ -54,6 +56,10 @@ class AppChartCard extends StatelessWidget {
 
   final String expandLabel;
 
+  /// Como ler o gráfico (o que é cada série, o que é bom), aberto pelo
+  /// [AppHelpButton] ao lado do título.
+  final String? help;
+
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
@@ -74,7 +80,27 @@ class AppChartCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AppHeading(level: AppHeadingLevel.h4, child: Text(title)),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: AppHeading(
+                              level: AppHeadingLevel.h4,
+                              child: Text(title),
+                            ),
+                          ),
+                          if (help case final texto?) ...[
+                            const SizedBox(width: AppSpacing.half),
+                            SizedBox.square(
+                              dimension: AppSize.iconSm,
+                              child: OverflowBox(
+                                maxWidth: AppSize.control,
+                                maxHeight: AppSize.control,
+                                child: AppHelpButton(title: title, text: texto),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                       if (subtitle != null && !compact)
                         Padding(
                           padding: const EdgeInsets.only(
@@ -107,7 +133,7 @@ class AppChartCard extends StatelessWidget {
               child: Text(
                 footnote!,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   color: semantic.fgSubtle,
                 ),
               ),
@@ -180,6 +206,8 @@ WidgetbookComponent buildChartCardWidgetbookComponent() {
               title: 'Despesa por centro de custo',
               period: '30 dias',
               footnote: 'Dados espelhados do AGRO365 web às 08:00.',
+              help:
+                  'Quanto cada centro de custo gastou no período, em R\$ mil.',
               child: SizedBox(
                 height: 120,
                 child: Center(child: Text('Gráfico aqui')),

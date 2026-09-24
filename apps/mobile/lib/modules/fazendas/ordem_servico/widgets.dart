@@ -29,6 +29,21 @@ AppChipTone osPrioridadeTone(PrioridadeOs prioridade) => switch (prioridade) {
   PrioridadeOs.urgente => AppChipTone.red,
 };
 
+/// Lê uma data digitada em `DD/MM/AAAA`. Devolve `null` se estiver
+/// incompleta **ou impossível** (31/02, 00/13): o `DateTime` do Dart rola
+/// 31/02 para março em silêncio, e o filtro/prazo mostrava outro dia sem
+/// avisar. Fonte única para o filtro do painel e o prazo da criação.
+DateTime? osLerData(String texto) {
+  final match = RegExp(r'^(\d{2})/(\d{2})/(\d{4})$').firstMatch(texto.trim());
+  if (match == null) return null;
+  final dia = int.parse(match.group(1)!);
+  final mes = int.parse(match.group(2)!);
+  final ano = int.parse(match.group(3)!);
+  final data = DateTime(ano, mes, dia);
+  if (data.day != dia || data.month != mes || data.year != ano) return null;
+  return data;
+}
+
 String _fmtData(DateTime d) =>
     '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
 
@@ -262,7 +277,7 @@ class _OsDetailBodyState extends State<OsDetailBody> {
           child: Text(
             os.titulo,
             style: TextStyle(
-              fontSize: AppTypography.xl2,
+              fontSize: AppTypography.xlPlus2,
               fontWeight: AppTypography.weightSemibold,
               height: AppTypography.lineHeightTight,
               color: semantic.fgHeading,

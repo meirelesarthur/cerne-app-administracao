@@ -17,8 +17,7 @@ void _preencherTudo(
       field.options.isNotEmpty
           ? field.options.first
           : switch (field.type) {
-              FeatureFieldType.number ||
-              FeatureFieldType.integer => '1',
+              FeatureFieldType.number || FeatureFieldType.integer => '1',
               FeatureFieldType.date => '2026-08-16',
               _ => 'Dado de teste',
             },
@@ -57,7 +56,6 @@ void main() {
       isNull,
     );
   });
-
 
   // fidelidade-campos (onda 0): motor de etapas. `consulta-produtos` é o
   // único cadastro em etapas que sobrou no CERNE ADM — os formulários de

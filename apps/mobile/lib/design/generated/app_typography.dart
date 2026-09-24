@@ -10,8 +10,6 @@ class AppTypography {
 
   static const String fontFamily = 'Outfit';
 
-  static const double xs2 = 10;
-  static const double xs = 11;
   static const double sm = 12;
   static const double base = 13;
   static const double md = 14;

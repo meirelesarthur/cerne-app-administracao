@@ -31,14 +31,12 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('mostra erro no lugar do hint quando error é informado', (
-      tester,
-    ) async {
+    testWidgets('mostra o erro sem esconder a dica', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const AppFormField(
             label: 'CNPJ',
-            hint: 'Não deveria aparecer',
+            hint: 'Só números, 14 dígitos',
             error: 'CNPJ inválido',
             child: AppTextInput(),
           ),
@@ -46,7 +44,7 @@ void main() {
       );
 
       expect(find.text('CNPJ inválido'), findsOneWidget);
-      expect(find.text('Não deveria aparecer'), findsNothing);
+      expect(find.text('Só números, 14 dígitos'), findsOneWidget);
     });
 
     testWidgets('required=true mostra asterisco', (tester) async {

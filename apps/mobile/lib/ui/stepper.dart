@@ -77,12 +77,14 @@ class _AppStepperState extends State<AppStepper> {
         label: label,
         child: InkWell(
           onTap: onTap,
+          // 56 de largura e glifo de 20: o +/- é tocado dezenas de vezes por
+          // lançamento, muitas vezes de luva.
           child: SizedBox(
-            width: AppSize.iconBtnMd,
+            width: AppSpacing.space14,
             height: height,
             child: AppIcon(
               icon,
-              size: AppSize.iconSm,
+              size: AppSize.iconMd,
               color: onTap == null ? semantic.fgSubtle : semantic.fgMuted,
             ),
           ),
@@ -129,7 +131,7 @@ class _AppStepperState extends State<AppStepper> {
                       ),
                       style: TextStyle(
                         fontFamily: AppTypography.fontFamily,
-                        fontSize: AppTypography.xl,
+                        fontSize: AppTypography.md,
                         fontWeight: AppTypography.weightSemibold,
                         color: semantic.fgDefault,
                       ),
@@ -137,9 +139,12 @@ class _AppStepperState extends State<AppStepper> {
                         border: InputBorder.none,
                         isDense: true,
                       ),
+                      // Campo apagado para digitar outro número não salta
+                      // para o mínimo: só valores válidos atualizam.
                       onChanged: (text) {
                         final parsed = num.tryParse(text.replaceAll(',', '.'));
-                        widget.onChanged(_clamp(parsed ?? widget.min));
+                        if (parsed == null) return;
+                        widget.onChanged(_clamp(parsed));
                       },
                     ),
                   ),

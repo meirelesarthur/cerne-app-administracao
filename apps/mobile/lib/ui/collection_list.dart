@@ -4,11 +4,18 @@ import 'package:widgetbook/widgetbook.dart';
 import 'addable_group_list.dart';
 import 'app_icon.dart';
 import 'icon_button.dart';
+import 'pressable.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
+
+/// Rótulo de contagem de uma coleção, sempre por extenso e no plural certo
+/// ("1 item incluído", "3 itens incluídos"). Um número solto num canto é lido
+/// como notificação; o rótulo diz o que é contado.
+String appItemCountLabel(int count) =>
+    count == 1 ? '1 item incluído' : '$count itens incluídos';
 
 /// Uma linha já adicionada a uma coleção, do ponto de vista da tela: um título
 /// e um resumo. Quem monta os dois textos é quem conhece o domínio.
@@ -34,6 +41,9 @@ class AppCollectionItemView {
 /// usado na revisão do cadastro (confirmação antes de salvar) e em fichas de
 /// registro já gravado: mesma caixa por item, sem "Adicionar" nem editar
 /// nem remover.
+///
+/// Com [onEdit], a linha inteira é clicável e abre a edição — o lápis fica
+/// como atalho visível. Remover usa a lixeira (o "×" é lido como "fechar").
 class AppCollectionList extends StatelessWidget {
   const AppCollectionList({
     super.key,
@@ -44,6 +54,8 @@ class AppCollectionList extends StatelessWidget {
     this.onRemove,
     this.editLabel = 'Editar item',
     this.removeLabel = 'Remover item',
+    this.showHeader = true,
+    this.highlightIndex,
   });
 
   /// Nome da coleção, como aparece no contrato e na faixa ("Insumos").
@@ -66,6 +78,14 @@ class AppCollectionList extends StatelessWidget {
   final String editLabel;
   final String removeLabel;
 
+  /// `false` esconde a faixa/rótulo do topo — usado quando quem envolve a
+  /// lista já mostra nome e contagem (ex.: [showAppCollectionManager]).
+  final bool showHeader;
+
+  /// Linha em destaque (borda e fundo de acento) — aponta onde o item recém
+  /// incluído ou editado foi parar. `null` não destaca nenhuma.
+  final int? highlightIndex;
+
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
@@ -73,7 +93,9 @@ class AppCollectionList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (onAdd case final add?)
+        if (!showHeader)
+          const SizedBox.shrink()
+        else if (onAdd case final add?)
           AppAddableGroupList(
             groups: [name],
             counts: {name: items.length},
@@ -90,9 +112,13 @@ class AppCollectionList extends StatelessWidget {
           ),
         for (var index = 0; index < items.length; index++)
           Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.space2),
+            // Sem cabeçalho, a primeira linha encosta no topo.
+            padding: index == 0 && !showHeader
+                ? EdgeInsets.zero
+                : const EdgeInsets.only(top: AppSpacing.space2),
             child: _CollectionRow(
               item: items[index],
+              highlighted: index == highlightIndex,
               editLabel: editLabel,
               removeLabel: removeLabel,
               onEdit: onEdit == null ? null : () => onEdit!(index),
@@ -111,9 +137,11 @@ class _CollectionRow extends StatelessWidget {
     required this.removeLabel,
     this.onEdit,
     this.onRemove,
+    this.highlighted = false,
   });
 
   final AppCollectionItemView item;
+  final bool highlighted;
   final String editLabel;
   final String removeLabel;
   final VoidCallback? onEdit;
@@ -123,53 +151,80 @@ class _CollectionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.space3),
+    final row = Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.space3,
+        AppSpacing.space3,
+        AppSpacing.space1,
+        AppSpacing.space3,
+      ),
       decoration: BoxDecoration(
-        color: semantic.bgSubtle,
+        color: highlighted ? semantic.accentSubtle : semantic.bgSubtle,
         borderRadius: BorderRadius.circular(AppRadius.xl2),
-        border: Border.all(color: semantic.borderDefault),
+        border: Border.all(
+          color: highlighted ? semantic.accentDefault : semantic.borderDefault,
+        ),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: TextStyle(
-                    fontSize: AppTypography.sm,
-                    fontWeight: AppTypography.weightSemibold,
-                    color: semantic.fgDefault,
-                  ),
-                ),
-                if (item.subtitle case final subtitle?)
+            child: ExcludeSemantics(
+              excluding: onEdit != null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    subtitle,
+                    item.title,
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
-                      color: semantic.fgMuted,
+                      fontSize: AppTypography.sm,
+                      fontWeight: AppTypography.weightSemibold,
+                      color: semantic.fgDefault,
                     ),
                   ),
-              ],
+                  if (item.subtitle case final subtitle?)
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: AppTypography.sm,
+                        color: semantic.fgMuted,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
           if (onEdit case final edit?)
             AppIconButton(
-              icon: const AppIcon(AppIcons.pencil, size: AppSize.iconXs),
+              icon: const AppIcon(AppIcons.pencil, size: AppSize.iconSm),
               label: editLabel,
               onPressed: edit,
             ),
+          // Respiro entre editar e excluir: lado a lado sem folga, o toque de
+          // luva acertava a lixeira querendo o lápis.
+          if (onEdit != null && onRemove != null)
+            const SizedBox(width: AppSpacing.space2),
           if (onRemove case final remove?)
             AppIconButton(
-              icon: const AppIcon(AppIcons.x, size: AppSize.iconXs),
+              icon: AppIcon(
+                AppIcons.trash2,
+                size: AppSize.iconSm,
+                color: semantic.toneRedFg,
+              ),
               label: removeLabel,
               onPressed: remove,
             ),
         ],
       ),
+    );
+
+    final edit = onEdit;
+    if (edit == null) return row;
+    return AppPressable(
+      semanticLabel: [item.title, ?item.subtitle, editLabel].join(', '),
+      onPressed: edit,
+      minTouchTarget: false,
+      excludeSemantics: false,
+      child: row,
     );
   }
 }

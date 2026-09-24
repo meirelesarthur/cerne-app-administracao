@@ -21,6 +21,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.fgInverse,
     required this.bgCanvas,
     required this.bgSheet,
+    required this.bgInset,
     required this.bgSurface,
     required this.bgSubtle,
     required this.bgRaised,
@@ -65,6 +66,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.chartTrack,
     required this.chartPositive,
     required this.chartNegative,
+    required this.toneBrandBg,
+    required this.toneBrandBorder,
+    required this.toneBrandFg,
+    required this.toneBlueBg,
+    required this.toneBlueBorder,
+    required this.toneBlueFg,
+    required this.toneAmberBg,
+    required this.toneAmberBorder,
+    required this.toneAmberFg,
+    required this.toneRedBg,
+    required this.toneRedBorder,
+    required this.toneRedFg,
+    required this.toneNeutralBg,
+    required this.toneNeutralBorder,
+    required this.toneNeutralFg,
   });
 
   final Color fgDefault;
@@ -78,6 +94,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color fgInverse;
   final Color bgCanvas;
   final Color bgSheet;
+
+  /// Bloco cinza que agrupa conteúdo sobre a folha branca — visível nos dois
+  /// temas (no Modo GB, `bgSheet` é igual à folha).
+  final Color bgInset;
   final Color bgSurface;
   final Color bgSubtle;
   final Color bgRaised;
@@ -140,6 +160,24 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color chartPositive;
   final Color chartNegative;
 
+  /// Superfícies de tom (chips, blocos de aviso), theme-aware — substituem as
+  /// escalas cruas `*50/200/600`, que viravam blocos pastel claros no gbMode.
+  final Color toneBrandBg;
+  final Color toneBrandBorder;
+  final Color toneBrandFg;
+  final Color toneBlueBg;
+  final Color toneBlueBorder;
+  final Color toneBlueFg;
+  final Color toneAmberBg;
+  final Color toneAmberBorder;
+  final Color toneAmberFg;
+  final Color toneRedBg;
+  final Color toneRedBorder;
+  final Color toneRedFg;
+  final Color toneNeutralBg;
+  final Color toneNeutralBorder;
+  final Color toneNeutralFg;
+
   static const light = AppSemanticColors(
     fgDefault: AppColorsLight.fgDefault,
     fgHeading: AppColorsLight.fgHeading,
@@ -152,6 +190,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     fgInverse: AppColorsLight.fgInverse,
     bgCanvas: AppColorsLight.bgCanvas,
     bgSheet: AppColorsLight.bgSheet,
+    bgInset: AppColorsLight.bgInset,
     bgSurface: AppColorsLight.bgSurface,
     bgSubtle: AppColorsLight.bgSubtle,
     bgRaised: AppColorsLight.bgRaised,
@@ -196,6 +235,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     chartTrack: AppColorsLight.chartTrack,
     chartPositive: AppColorsLight.chartPositive,
     chartNegative: AppColorsLight.chartNegative,
+    toneBrandBg: AppColorsLight.toneBrandBg,
+    toneBrandBorder: AppColorsLight.toneBrandBorder,
+    toneBrandFg: AppColorsLight.toneBrandFg,
+    toneBlueBg: AppColorsLight.toneBlueBg,
+    toneBlueBorder: AppColorsLight.toneBlueBorder,
+    toneBlueFg: AppColorsLight.toneBlueFg,
+    toneAmberBg: AppColorsLight.toneAmberBg,
+    toneAmberBorder: AppColorsLight.toneAmberBorder,
+    toneAmberFg: AppColorsLight.toneAmberFg,
+    toneRedBg: AppColorsLight.toneRedBg,
+    toneRedBorder: AppColorsLight.toneRedBorder,
+    toneRedFg: AppColorsLight.toneRedFg,
+    toneNeutralBg: AppColorsLight.toneNeutralBg,
+    toneNeutralBorder: AppColorsLight.toneNeutralBorder,
+    toneNeutralFg: AppColorsLight.toneNeutralFg,
   );
 
   static const gbMode = AppSemanticColors(
@@ -210,6 +264,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     fgInverse: AppColorsGbMode.fgInverse,
     bgCanvas: AppColorsGbMode.bgCanvas,
     bgSheet: AppColorsGbMode.bgSheet,
+    bgInset: AppColorsGbMode.bgInset,
     bgSurface: AppColorsGbMode.bgSurface,
     bgSubtle: AppColorsGbMode.bgSubtle,
     bgRaised: AppColorsGbMode.bgRaised,
@@ -254,6 +309,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     chartTrack: AppColorsGbMode.chartTrack,
     chartPositive: AppColorsGbMode.chartPositive,
     chartNegative: AppColorsGbMode.chartNegative,
+    toneBrandBg: AppColorsGbMode.toneBrandBg,
+    toneBrandBorder: AppColorsGbMode.toneBrandBorder,
+    toneBrandFg: AppColorsGbMode.toneBrandFg,
+    toneBlueBg: AppColorsGbMode.toneBlueBg,
+    toneBlueBorder: AppColorsGbMode.toneBlueBorder,
+    toneBlueFg: AppColorsGbMode.toneBlueFg,
+    toneAmberBg: AppColorsGbMode.toneAmberBg,
+    toneAmberBorder: AppColorsGbMode.toneAmberBorder,
+    toneAmberFg: AppColorsGbMode.toneAmberFg,
+    toneRedBg: AppColorsGbMode.toneRedBg,
+    toneRedBorder: AppColorsGbMode.toneRedBorder,
+    toneRedFg: AppColorsGbMode.toneRedFg,
+    toneNeutralBg: AppColorsGbMode.toneNeutralBg,
+    toneNeutralBorder: AppColorsGbMode.toneNeutralBorder,
+    toneNeutralFg: AppColorsGbMode.toneNeutralFg,
   );
 
   @override
@@ -269,6 +339,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? fgInverse,
     Color? bgCanvas,
     Color? bgSheet,
+    Color? bgInset,
     Color? bgSurface,
     Color? bgSubtle,
     Color? bgRaised,
@@ -313,6 +384,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? chartTrack,
     Color? chartPositive,
     Color? chartNegative,
+    Color? toneBrandBg,
+    Color? toneBrandBorder,
+    Color? toneBrandFg,
+    Color? toneBlueBg,
+    Color? toneBlueBorder,
+    Color? toneBlueFg,
+    Color? toneAmberBg,
+    Color? toneAmberBorder,
+    Color? toneAmberFg,
+    Color? toneRedBg,
+    Color? toneRedBorder,
+    Color? toneRedFg,
+    Color? toneNeutralBg,
+    Color? toneNeutralBorder,
+    Color? toneNeutralFg,
   }) {
     return AppSemanticColors(
       fgDefault: fgDefault ?? this.fgDefault,
@@ -326,6 +412,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       fgInverse: fgInverse ?? this.fgInverse,
       bgCanvas: bgCanvas ?? this.bgCanvas,
       bgSheet: bgSheet ?? this.bgSheet,
+      bgInset: bgInset ?? this.bgInset,
       bgSurface: bgSurface ?? this.bgSurface,
       bgSubtle: bgSubtle ?? this.bgSubtle,
       bgRaised: bgRaised ?? this.bgRaised,
@@ -370,6 +457,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       chartTrack: chartTrack ?? this.chartTrack,
       chartPositive: chartPositive ?? this.chartPositive,
       chartNegative: chartNegative ?? this.chartNegative,
+      toneBrandBg: toneBrandBg ?? this.toneBrandBg,
+      toneBrandBorder: toneBrandBorder ?? this.toneBrandBorder,
+      toneBrandFg: toneBrandFg ?? this.toneBrandFg,
+      toneBlueBg: toneBlueBg ?? this.toneBlueBg,
+      toneBlueBorder: toneBlueBorder ?? this.toneBlueBorder,
+      toneBlueFg: toneBlueFg ?? this.toneBlueFg,
+      toneAmberBg: toneAmberBg ?? this.toneAmberBg,
+      toneAmberBorder: toneAmberBorder ?? this.toneAmberBorder,
+      toneAmberFg: toneAmberFg ?? this.toneAmberFg,
+      toneRedBg: toneRedBg ?? this.toneRedBg,
+      toneRedBorder: toneRedBorder ?? this.toneRedBorder,
+      toneRedFg: toneRedFg ?? this.toneRedFg,
+      toneNeutralBg: toneNeutralBg ?? this.toneNeutralBg,
+      toneNeutralBorder: toneNeutralBorder ?? this.toneNeutralBorder,
+      toneNeutralFg: toneNeutralFg ?? this.toneNeutralFg,
     );
   }
 
@@ -389,6 +491,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       fgInverse: c(fgInverse, other.fgInverse),
       bgCanvas: c(bgCanvas, other.bgCanvas),
       bgSheet: c(bgSheet, other.bgSheet),
+      bgInset: c(bgInset, other.bgInset),
       bgSurface: c(bgSurface, other.bgSurface),
       bgSubtle: c(bgSubtle, other.bgSubtle),
       bgRaised: c(bgRaised, other.bgRaised),
@@ -441,6 +544,21 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       chartTrack: c(chartTrack, other.chartTrack),
       chartPositive: c(chartPositive, other.chartPositive),
       chartNegative: c(chartNegative, other.chartNegative),
+      toneBrandBg: c(toneBrandBg, other.toneBrandBg),
+      toneBrandBorder: c(toneBrandBorder, other.toneBrandBorder),
+      toneBrandFg: c(toneBrandFg, other.toneBrandFg),
+      toneBlueBg: c(toneBlueBg, other.toneBlueBg),
+      toneBlueBorder: c(toneBlueBorder, other.toneBlueBorder),
+      toneBlueFg: c(toneBlueFg, other.toneBlueFg),
+      toneAmberBg: c(toneAmberBg, other.toneAmberBg),
+      toneAmberBorder: c(toneAmberBorder, other.toneAmberBorder),
+      toneAmberFg: c(toneAmberFg, other.toneAmberFg),
+      toneRedBg: c(toneRedBg, other.toneRedBg),
+      toneRedBorder: c(toneRedBorder, other.toneRedBorder),
+      toneRedFg: c(toneRedFg, other.toneRedFg),
+      toneNeutralBg: c(toneNeutralBg, other.toneNeutralBg),
+      toneNeutralBorder: c(toneNeutralBorder, other.toneNeutralBorder),
+      toneNeutralFg: c(toneNeutralFg, other.toneNeutralFg),
     );
   }
 }

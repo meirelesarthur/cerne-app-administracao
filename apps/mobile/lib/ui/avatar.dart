@@ -29,7 +29,7 @@ class AppAvatar extends StatelessWidget {
   };
 
   double get _fontSize => switch (size) {
-    AppAvatarSize.sm => AppTypography.xs,
+    AppAvatarSize.sm => AppTypography.sm,
     AppAvatarSize.md => AppTypography.sm,
     AppAvatarSize.lg => AppTypography.xlPlus,
   };

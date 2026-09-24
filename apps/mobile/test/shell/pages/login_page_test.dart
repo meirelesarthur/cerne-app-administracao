@@ -53,9 +53,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('login padrão inicia sessão administrativa no Banking', (
-      tester,
-    ) async {
+    testWidgets('login padrão abre a Visão geral das fazendas', (tester) async {
       await setTallSurface(tester);
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
@@ -63,16 +61,14 @@ void main() {
       await tester.tap(find.text('ENTRAR'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Conta GB Banking'), findsOneWidget);
+      expect(find.text('Pede atenção hoje'), findsOneWidget);
       expect(
         harness.container.read(prototypeSessionProvider).profile,
         UserAccessProfile.administration,
       );
     });
 
-    testWidgets('a tela anuncia o acesso administrativo único', (
-      tester,
-    ) async {
+    testWidgets('a tela anuncia o acesso administrativo único', (tester) async {
       await setTallSurface(tester);
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();

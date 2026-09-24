@@ -48,7 +48,9 @@ class ResponsibilityWorkspace extends ConsumerWidget {
     super.key,
     required this.profile,
     this.showLocalContext = true,
-    this.focusGroup,
+    this.focusGroups,
+    this.sectionTitle,
+    this.routeSegment = 'administracao',
   });
 
   final FeatureProfile profile;
@@ -57,11 +59,19 @@ class ResponsibilityWorkspace extends ConsumerWidget {
   /// como padrão para preservar o uso isolado desta tela no Widgetbook/testes.
   final bool showLocalContext;
 
-  /// Quando informado, a central abre diretamente as funções deste grupo em
-  /// vez de mostrar os grupos como uma segunda camada de navegação. A
-  /// Administração usa isso para que as abas Gestão e Consultas entreguem
-  /// conteúdo acionável no primeiro toque.
-  final String? focusGroup;
+  /// Quando informado, a central abre diretamente as funções destes grupos
+  /// (na ordem da lista) em vez de mostrar os grupos como uma segunda camada
+  /// de navegação. A Administração usa isso para que as abas Painéis e
+  /// Consultas entreguem conteúdo acionável no primeiro toque — a aba
+  /// Consultas junta "Ordem de serviço" (primeiro) e "Consultas e auditoria".
+  final List<String>? focusGroups;
+
+  /// Título da seção quando há [focusGroups]. Padrão: o primeiro grupo.
+  final String? sectionTitle;
+
+  /// Segmento de rota das funcionalidades sem `existingRoute`
+  /// (`/fazendas/<segmento>/<id>`) — define para qual aba o voltar retorna.
+  final String routeSegment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,9 +79,13 @@ class ResponsibilityWorkspace extends ConsumerWidget {
       fazendasStoreProvider.select((s) => s.activeFarm),
     );
     const allFeatures = adminFeatures;
-    final features = focusGroup == null
+    final focus = focusGroups;
+    final features = focus == null
         ? allFeatures
-        : allFeatures.where((feature) => feature.group == focusGroup).toList();
+        : [
+            for (final group in focus)
+              ...allFeatures.where((feature) => feature.group == group),
+          ];
     final groups = <String, List<FeatureDefinition>>{};
     for (final feature in features) {
       groups.putIfAbsent(feature.group, () => []).add(feature);
@@ -87,8 +101,8 @@ class ResponsibilityWorkspace extends ConsumerWidget {
         if (byOrder != 0) return byOrder;
         return insertionOrder.indexOf(a).compareTo(insertionOrder.indexOf(b));
       });
-    const segment = 'administracao';
-    final isFocusedGroup = focusGroup != null;
+    final segment = routeSegment;
+    final isFocusedGroup = focus != null;
 
     final content = <Widget>[
       if (showLocalContext) ...[
@@ -101,7 +115,7 @@ class ResponsibilityWorkspace extends ConsumerWidget {
         const SizedBox(height: AppSpacing.space4),
       ],
       if (isFocusedGroup) ...[
-        AppSectionTitle(child: Text(focusGroup!)),
+        AppSectionTitle(child: Text(sectionTitle ?? focus.first)),
         const SizedBox(height: AppSpacing.space2),
         AppModuleTileGrid(
           lastTileFullWidth: false,
@@ -150,9 +164,6 @@ class ResponsibilityWorkspace extends ConsumerWidget {
 
   String _featureRoute(FeatureDefinition feature, String segment) {
     if (feature.existingRoute case final route?) return route;
-    final routeSegment = focusGroup == 'Consultas e auditoria'
-        ? 'consultas'
-        : segment;
-    return '/fazendas/$routeSegment/${feature.id}';
+    return '/fazendas/$segment/${feature.id}';
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
@@ -45,13 +44,13 @@ class AppErrorState extends StatelessWidget {
               height: AppSpacing.space14,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: AppColors.red50,
+                color: semantic.toneRedBg,
                 borderRadius: BorderRadius.circular(AppRadius.xl2),
               ),
-              child: const AppIcon(
+              child: AppIcon(
                 AppIcons.triangleAlert,
                 size: AppSize.iconLg,
-                color: AppColors.red600,
+                color: semantic.toneRedFg,
               ),
             ),
           ),

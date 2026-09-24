@@ -432,6 +432,15 @@ enum OcorrenciaTipo { animal, infraestrutura, ambiente, outro }
 
 enum OcorrenciaPrioridade { baixa, media, alta }
 
+extension OcorrenciaPrioridadeLabel on OcorrenciaPrioridade {
+  /// Rótulo de tela — o `name` do enum ("media") vazava cru no chip.
+  String get label => switch (this) {
+    OcorrenciaPrioridade.baixa => 'Baixa',
+    OcorrenciaPrioridade.media => 'Média',
+    OcorrenciaPrioridade.alta => 'Alta',
+  };
+}
+
 /// Ocorrência registrada durante a leitura de um curral (spec §4.5).
 class Ocorrencia {
   const Ocorrencia({

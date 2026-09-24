@@ -40,7 +40,9 @@ class OrdemServicoStoreNotifier extends Notifier<OrdemServicoState> {
   /// cria também assina como solicitante e autorizador (spec simplificada,
   /// decisão confirmada com o usuário: a Administração passou a poder criar
   /// OS diretamente por aqui, não só consultar).
-  void criar({
+  /// Cria a OS e devolve o `id` — a tela de criação abre o detalhe da OS
+  /// recém-criada como confirmação visível do que foi registrado.
+  String criar({
     required String titulo,
     required TipoServicoOs tipo,
     required String fazenda,
@@ -78,6 +80,7 @@ class OrdemServicoStoreNotifier extends Notifier<OrdemServicoState> {
       ],
     );
     state = state.copyWith(ordens: [nova, ...state.ordens]);
+    return nova.id;
   }
 
   /// Próximo número sequencial de exibição (`OS #2202`, ...), continuando a

@@ -82,6 +82,7 @@ class CerneWidgetbook extends StatelessWidget {
               name: 'Ações',
               children: [
                 buildButtonWidgetbookComponent(),
+                buildHelpButtonWidgetbookComponent(),
                 buildIconButtonWidgetbookComponent(),
                 buildQuickActionWidgetbookComponent(),
                 buildAppIconTileWidgetbookComponent(),
@@ -140,6 +141,7 @@ class CerneWidgetbook extends StatelessWidget {
                 buildEntityRowWidgetbookComponent(),
                 buildActionBarWidgetbookComponent(),
                 buildStepProgressWidgetbookComponent(),
+                buildLeaveGuardWidgetbookComponent(),
                 buildPaginationWidgetbookComponent(),
               ],
             ),
@@ -302,7 +304,7 @@ class _SwatchState extends State<_Swatch> {
               widget.code,
               style: TextStyle(
                 fontFamily: kCodeFontFamily,
-                fontSize: AppTypography.xs,
+                fontSize: AppTypography.sm,
                 color: semantic.fgMuted,
               ),
             ),
@@ -310,7 +312,7 @@ class _SwatchState extends State<_Swatch> {
               _hex,
               style: TextStyle(
                 fontFamily: kCodeFontFamily,
-                fontSize: AppTypography.xs,
+                fontSize: AppTypography.sm,
                 color: semantic.fgSubtle,
               ),
             ),
@@ -485,7 +487,7 @@ class _SpacingAuditPage extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: kCodeFontFamily,
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                         ),
                       ),
                       Text(
@@ -509,7 +511,7 @@ class _TypographyAuditPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sizes = <String, double>{
-      'xs': AppTypography.xs,
+      'xs': AppTypography.sm,
       'sm': AppTypography.sm,
       'base': AppTypography.base,
       'md': AppTypography.md,
@@ -545,7 +547,7 @@ class _TypographyAuditPage extends StatelessWidget {
                     'AppTypography.${e.key}',
                     style: const TextStyle(
                       fontFamily: kCodeFontFamily,
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                     ),
                   ),
                 ),
@@ -573,7 +575,7 @@ class _TypographyAuditPage extends StatelessWidget {
                     'AppTypography.${e.key.split(' ').first}',
                     style: const TextStyle(
                       fontFamily: kCodeFontFamily,
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                     ),
                   ),
                 ),

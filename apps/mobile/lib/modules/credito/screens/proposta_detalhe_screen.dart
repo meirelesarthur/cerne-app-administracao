@@ -199,7 +199,7 @@ class _Timeline extends StatelessWidget {
                               child: Text(
                                 step.date!,
                                 style: TextStyle(
-                                  fontSize: AppTypography.xs,
+                                  fontSize: AppTypography.sm,
                                   color: semantic.fgMuted,
                                 ),
                               ),
@@ -337,7 +337,7 @@ class PropostaDetalheScreen extends StatelessWidget {
                   Text(
                     'Valor solicitado',
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                       color: semantic.fgMuted,
                     ),
                   ),

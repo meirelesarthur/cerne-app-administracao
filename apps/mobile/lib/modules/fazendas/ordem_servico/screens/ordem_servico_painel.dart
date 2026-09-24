@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../design/generated/app_layout.dart';
 import '../../../../design/generated/app_spacing.dart';
 import '../../../../ui/ui.dart';
 import '../../state/fazendas_store.dart';
@@ -11,15 +10,14 @@ import '../widgets.dart';
 import 'os_detail_page.dart';
 
 /// Painel de Ordens de Serviço (Administrativo): lista as OS da fazenda
-/// ativa, filtráveis por status e por data de prazo. Criar fica aqui; avaliar
-/// e cancelar ficam no detalhe em tela cheia ([OsDetailPage]). Mesma OS e
-/// mesmo desenho que o app Operação lê em campo (Lei 2: uma única OS, dois
-/// perfis de leitura/ação).
+/// ativa, filtráveis por status e por data de prazo. Criar abre em tela cheia
+/// pelo [OsCriarButton] que a moldura (`DashOrdemServico`) põe à direita do
+/// título; avaliar e cancelar ficam no detalhe em tela cheia ([OsDetailPage]).
+/// Mesma OS e mesmo desenho que o app Operação lê em campo (Lei 2: uma única
+/// OS, dois perfis de leitura/ação).
 ///
-/// Conteúdo puro (sem scaffold/scroll próprio) para caber tanto na aba "OS"
-/// (`OrdemServicoTabScreen`, raiz de aba) quanto no dashboard acessível pela
-/// busca global e pelo catálogo (`DashOrdemServico`, dentro de um
-/// `DashboardScreen` com voltar) — Lei 2: uma única implementação da lista.
+/// Conteúdo puro (sem scaffold/scroll próprio): a moldura de navegação é do
+/// `DashboardScreen` que o envolve.
 class OrdemServicoPainel extends ConsumerStatefulWidget {
   const OrdemServicoPainel({super.key});
 
@@ -78,11 +76,12 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
     });
   }
 
-  List<OrdemServico> _filtrar(List<OrdemServico> ordens) {
+  List<OrdemServico> _filtrar(List<OrdemServico> ordens, String fazenda) {
     final filtro = _filtros[_filtroIndex];
     final data = _dataFiltro;
     final filtradas =
         ordens
+            .where((o) => o.fazenda == fazenda)
             .where(filtro.aplica)
             .where((o) => data == null || _mesmoDia(o.prazo, data))
             .toList()
@@ -94,33 +93,23 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
   Widget build(BuildContext context) {
     final ordens = ref.watch(ordemServicoStoreProvider.select((s) => s.ordens));
     final agora = ref.watch(osRelogioProvider)();
-    final filtradas = _filtrar(ordens);
+    final fazenda = ref.watch(
+      fazendasStoreProvider.select((s) => s.activeFarm.name),
+    );
+    final filtradas = _filtrar(ordens, fazenda);
     final temFiltroData = _dataFiltro != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppButton(
-          fullWidth: true,
-          leftIcon: const AppIcon(AppIcons.plus, size: AppSize.iconXs),
-          onPressed: () => _abrirCriar(context),
-          child: const Text('Criar OS'),
-        ),
-        const SizedBox(height: AppSpacing.space4),
         AppFormField(
           label: 'Data do prazo',
           child: AppDateInput(
             controller: _dataController,
-            onChanged: (formatted) {
-              final match = RegExp(
-                r'^(\d{2})/(\d{2})/(\d{4})$',
-              ).firstMatch(formatted);
-              if (match == null) return;
-              final dia = int.parse(match.group(1)!);
-              final mes = int.parse(match.group(2)!);
-              final ano = int.parse(match.group(3)!);
-              setState(() => _dataFiltro = DateTime(ano, mes, dia));
-            },
+            // Data incompleta ou impossível (31/02) não filtra: antes o
+            // 31/02 virava março em silêncio.
+            onChanged: (formatted) =>
+                setState(() => _dataFiltro = osLerData(formatted)),
           ),
         ),
         const SizedBox(height: AppSpacing.space2),
@@ -158,8 +147,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
             tone: AppEmptyStateTone.brand,
             title: 'Nenhuma OS encontrada',
             description: temFiltroData
-                ? 'Nenhuma ordem de serviço com prazo em ${_dataController.text} nesse status.'
-                : 'Ordens de serviço registradas nesta sessão aparecem aqui.',
+                ? 'Nenhuma OS da $fazenda com prazo em ${_dataController.text} '
+                      'nesse status. Toque em "Todas as datas" para ampliar.'
+                : 'Nenhuma OS da $fazenda nesse status. Troque o filtro acima '
+                      'ou a fazenda no topo da tela.',
           )
         else
           for (final os in filtradas) ...[
@@ -171,131 +162,6 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
             const SizedBox(height: AppSpacing.space3),
           ],
       ],
-    );
-  }
-
-  void _abrirCriar(BuildContext context) {
-    final notifier = ref.read(ordemServicoStoreProvider.notifier);
-    final fazenda = ref.read(fazendasStoreProvider).activeFarm.name;
-    final tituloController = TextEditingController();
-    final areaController = TextEditingController();
-    final descricaoController = TextEditingController();
-    final prazoController = TextEditingController();
-    var tipo = TipoServicoOs.agricola.name;
-    var prioridade = PrioridadeOs.media.name;
-    DateTime? prazo;
-
-    showAppBottomSheet<void>(
-      context,
-      title: 'Criar OS',
-      child: StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppFormField(
-                label: 'Título',
-                required: true,
-                child: AppTextInput(
-                  controller: tituloController,
-                  placeholder: 'Ex.: Reparo de cerca do Talhão 04',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Tipo de serviço',
-                required: true,
-                child: AppFormSelect(
-                  options: [
-                    for (final t in TipoServicoOs.values)
-                      AppFormSelectOption(value: t.name, label: t.label),
-                  ],
-                  value: tipo,
-                  onChanged: (v) => setSheetState(() => tipo = v ?? tipo),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Área / talhão',
-                required: true,
-                child: AppTextInput(
-                  controller: areaController,
-                  placeholder: 'Ex.: Talhão 04',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Prioridade',
-                required: true,
-                child: AppFormSelect(
-                  options: [
-                    for (final p in PrioridadeOs.values)
-                      AppFormSelectOption(value: p.name, label: p.label),
-                  ],
-                  value: prioridade,
-                  onChanged: (v) =>
-                      setSheetState(() => prioridade = v ?? prioridade),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Prazo',
-                required: true,
-                child: AppDateInput(
-                  controller: prazoController,
-                  onChanged: (formatted) {
-                    final match = RegExp(
-                      r'^(\d{2})/(\d{2})/(\d{4})$',
-                    ).firstMatch(formatted);
-                    if (match == null) return;
-                    final dia = int.parse(match.group(1)!);
-                    final mes = int.parse(match.group(2)!);
-                    final ano = int.parse(match.group(3)!);
-                    setSheetState(() => prazo = DateTime(ano, mes, dia));
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Descrição',
-                required: true,
-                child: AppTextarea(
-                  controller: descricaoController,
-                  placeholder: 'Detalhe o que precisa ser feito...',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space5),
-              AppButton(
-                fullWidth: true,
-                onPressed: () {
-                  final titulo = tituloController.text.trim();
-                  final area = areaController.text.trim();
-                  final descricao = descricaoController.text.trim();
-                  if (titulo.isEmpty ||
-                      area.isEmpty ||
-                      descricao.isEmpty ||
-                      prazo == null) {
-                    return;
-                  }
-                  notifier.criar(
-                    titulo: titulo,
-                    tipo: TipoServicoOs.values.byName(tipo),
-                    fazenda: fazenda,
-                    areaOuTalhao: area,
-                    prioridade: PrioridadeOs.values.byName(prioridade),
-                    prazo: prazo!,
-                    descricao: descricao,
-                    autor: autorAdministrativoOs,
-                  );
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Criar OS'),
-              ),
-            ],
-          );
-        },
-      ),
     );
   }
 }

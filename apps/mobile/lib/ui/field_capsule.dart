@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
@@ -120,14 +119,17 @@ class AppFieldCapsule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inputColors = appInputColors(context);
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
+    // Em repouso o campo tem borda visível (auditoria de UX): o preenchimento
+    // cinza-claro sozinho sumia na folha branca sob sol (1,09:1).
     final Color borderColor;
     if (invalid) {
-      borderColor = AppColors.red500;
+      borderColor = semantic.toneRedFg;
     } else if (focused) {
       borderColor = inputColors.focus;
     } else {
-      borderColor = AppColors.transparent;
+      borderColor = semantic.borderStrong;
     }
 
     return Container(

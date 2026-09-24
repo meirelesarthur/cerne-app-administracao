@@ -110,7 +110,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                 child: Text(
                   'Valor',
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     fontWeight: AppTypography.weightMedium,
                     color: semantic.fgMuted,
                   ),
@@ -141,7 +141,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                 child: Text(
                   'Prazo',
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     fontWeight: AppTypography.weightMedium,
                     color: semantic.fgMuted,
                   ),
@@ -173,7 +173,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                     Text(
                       'Parcela estimada',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         fontWeight: AppTypography.weightMedium,
                         color: semantic.fgMuted,
                       ),
@@ -192,7 +192,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                     Text(
                       'Taxa ${_linhaAtual.taxa} · $_prazoSelecionado parcelas',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         color: semantic.fgSubtle,
                       ),
                     ),
@@ -277,7 +277,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      fontSize: AppTypography.xs,
+                                      fontSize: AppTypography.sm,
                                       color: semantic.fgMuted,
                                     ),
                                   ),
@@ -366,7 +366,7 @@ class _CreditoHomeScreenState extends State<CreditoHomeScreen> {
                                     Text(
                                       proposta.data,
                                       style: TextStyle(
-                                        fontSize: AppTypography.xs,
+                                        fontSize: AppTypography.sm,
                                         color: semantic.fgMuted,
                                       ),
                                     ),

@@ -70,11 +70,11 @@ class AppColors {
   static const Color feedbackSuccessSolid = Color(0xFF059669);
   static const Color feedbackErrorBg = Color(0xFFFEF2F2);
   static const Color feedbackErrorBorder = Color(0xFFFECACA);
-  static const Color feedbackErrorText = Color(0xFFED3437);
+  static const Color feedbackErrorText = Color(0xFFB91C1C);
   static const Color feedbackErrorSolid = Color(0xFFED3437);
   static const Color feedbackWarningBg = Color(0xFFFFFBEB);
   static const Color feedbackWarningBorder = Color(0xFFFDE68A);
-  static const Color feedbackWarningText = Color(0xFFBE9304);
+  static const Color feedbackWarningText = Color(0xFFB45309);
   static const Color feedbackWarningSolid = Color(0xFFBE9304);
   static const Color feedbackInfoBg = Color(0xFFEFF6FF);
   static const Color feedbackInfoBorder = Color(0xFFBFDBFE);
@@ -105,11 +105,11 @@ class AppColorsLight {
   static const Color fgDefault = Color(0xFF141414);
   static const Color fgHeading = Color(0xFF262626);
   static const Color fgSection = Color(0xFF1F1A19);
-  static const Color fgMuted = Color(0xFF6B7280);
+  static const Color fgMuted = Color(0xFF636B78);
   static const Color fgSecondary = Color(0xFF615B58);
-  static const Color fgSubtle = Color(0xFF80807F);
-  static const Color fgQuiet = Color(0xFF80807F);
-  static const Color fgPlaceholder = Color(0x8A023535);
+  static const Color fgSubtle = Color(0xFF686867);
+  static const Color fgQuiet = Color(0xFF686867);
+  static const Color fgPlaceholder = Color(0xA3023535);
   static const Color fgInverse = Color(0xFFFFFFFF);
   static const Color bgCanvas = Color(0xFFF0F0F2);
   static const Color bgSheet = Color(0xFFF0F0F0);
@@ -118,10 +118,11 @@ class AppColorsLight {
   static const Color bgRaised = Color(0xFFFFFFFF);
   static const Color bgTrack = Color(0xFFE6E6E6);
   static const Color bgKpi = Color(0xFFFFFFFF);
+  static const Color bgInset = Color(0xFFF0F0F0);
   static const Color fieldOnSurface = Color(0xFFF5F5F5);
   static const Color fieldOnCanvas = Color(0xFFFFFFFF);
   static const Color borderDefault = Color(0xFFE8E9E1);
-  static const Color borderStrong = Color(0xFFD6D8CE);
+  static const Color borderStrong = Color(0xFFC4C7BB);
   static const Color borderSubtle = Color(0xFFF0F1EA);
   static const Color borderTint = Color(0xFFDCFCE7);
   static const Color accentDefault = Color(0xFF047857);
@@ -151,18 +152,33 @@ class AppColorsLight {
   static const List<Color> chartSeries = [
     Color(0xFF059669),
     Color(0xFF2563EB),
-    Color(0xFFF59E0B),
+    Color(0xFFD97706),
     Color(0xFF7C3AED),
     Color(0xFF0891B2),
     Color(0xFFDC2626),
     Color(0xFF14532D),
-    Color(0xFF9CA3AF),
+    Color(0xFF6B7280),
   ];
   static const Color chartGrid = Color(0xFFF3F4F6);
-  static const Color chartAxis = Color(0xFF9CA3AF);
+  static const Color chartAxis = Color(0xFF6B7280);
   static const Color chartTrack = Color(0xFFE5E7EB);
   static const Color chartPositive = Color(0xFF059669);
   static const Color chartNegative = Color(0xFFDC2626);
+  static const Color toneBrandBg = Color(0xFFF0FDF4);
+  static const Color toneBrandBorder = Color(0xFFBBF7D0);
+  static const Color toneBrandFg = Color(0xFF047857);
+  static const Color toneBlueBg = Color(0xFFEFF6FF);
+  static const Color toneBlueBorder = Color(0xFFBFDBFE);
+  static const Color toneBlueFg = Color(0xFF2563EB);
+  static const Color toneAmberBg = Color(0xFFFFFBEB);
+  static const Color toneAmberBorder = Color(0xFFFDE68A);
+  static const Color toneAmberFg = Color(0xFFB45309);
+  static const Color toneRedBg = Color(0xFFFEF2F2);
+  static const Color toneRedBorder = Color(0xFFFECACA);
+  static const Color toneRedFg = Color(0xFFB91C1C);
+  static const Color toneNeutralBg = Color(0xFFF5F5F5);
+  static const Color toneNeutralBorder = Color(0xFFE5E7EB);
+  static const Color toneNeutralFg = Color(0xFF616161);
 }
 
 class AppColorsGbMode {
@@ -173,7 +189,7 @@ class AppColorsGbMode {
   static const Color fgSection = Color(0xFFE2F0E8);
   static const Color fgMuted = Color(0xFF8FB3A2);
   static const Color fgSecondary = Color(0xFF8FB3A2);
-  static const Color fgSubtle = Color(0xFF5F7D6E);
+  static const Color fgSubtle = Color(0xFF86A696);
   static const Color fgQuiet = Color(0xFF8FB3A2);
   static const Color fgPlaceholder = Color(0x8AE2F0E8);
   static const Color fgInverse = Color(0xFF051008);
@@ -184,6 +200,7 @@ class AppColorsGbMode {
   static const Color bgRaised = Color(0xFF123A28);
   static const Color bgTrack = Color(0x1AFFFFFF);
   static const Color bgKpi = Color(0xFF0E2A1D);
+  static const Color bgInset = Color(0xFF123A28);
   static const Color fieldOnSurface = Color(0xFF123A28);
   static const Color fieldOnCanvas = Color(0xFF123A28);
   static const Color borderDefault = Color(0x1AFFFFFF);
@@ -209,7 +226,7 @@ class AppColorsGbMode {
   static const Color heroLine = Color(0x14FFFFFF);
   static const Color ctaBg = Color(0xFF10B981);
   static const Color ctaHover = Color(0xFF34D399);
-  static const Color ctaFg = Color(0xFFFFFFFF);
+  static const Color ctaFg = Color(0xFF051008);
   static const Color navBg = Color(0xFF0E2A1D);
   static const Color navFg = Color(0xFF8FB3A2);
   static const Color navActive = Color(0xFF10B981);
@@ -225,10 +242,25 @@ class AppColorsGbMode {
     Color(0xFF94A3B8),
   ];
   static const Color chartGrid = Color(0x14FFFFFF);
-  static const Color chartAxis = Color(0x52FFFFFF);
+  static const Color chartAxis = Color(0x8CFFFFFF);
   static const Color chartTrack = Color(0x12FFFFFF);
   static const Color chartPositive = Color(0xFF34D399);
   static const Color chartNegative = Color(0xFFF87171);
+  static const Color toneBrandBg = Color(0x1F34D399);
+  static const Color toneBrandBorder = Color(0x5234D399);
+  static const Color toneBrandFg = Color(0xFF6EE7B7);
+  static const Color toneBlueBg = Color(0x1F60A5FA);
+  static const Color toneBlueBorder = Color(0x5260A5FA);
+  static const Color toneBlueFg = Color(0xFF93C5FD);
+  static const Color toneAmberBg = Color(0x1AFBBF24);
+  static const Color toneAmberBorder = Color(0x52FBBF24);
+  static const Color toneAmberFg = Color(0xFFFCD34D);
+  static const Color toneRedBg = Color(0x1AF87171);
+  static const Color toneRedBorder = Color(0x57F87171);
+  static const Color toneRedFg = Color(0xFFFCA5A5);
+  static const Color toneNeutralBg = Color(0x0FFFFFFF);
+  static const Color toneNeutralBorder = Color(0x24FFFFFF);
+  static const Color toneNeutralFg = Color(0xFFC3D6CB);
 }
 
 class AppComponentColors {

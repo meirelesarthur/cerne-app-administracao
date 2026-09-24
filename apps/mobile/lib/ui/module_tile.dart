@@ -38,7 +38,13 @@ class AppModuleTile extends StatelessWidget {
     this.description,
     this.layout = AppModuleTileLayout.home,
     this.onTap,
+    this.dense = false,
   });
+
+  /// Grade de três colunas (Início do Operacional): respiro lateral de 8 px
+  /// e rótulo de 13 px, para nomes como "Confinamento" caberem inteiros no
+  /// ladrilho estreito em vez de quebrar no meio da palavra.
+  final bool dense;
 
   /// Ícone do módulo — entrada de `AppIcons`, preferencialmente um apelido de
   /// domínio (`AppIcons.confinamento`, `AppIcons.pecuaria`…).
@@ -72,7 +78,9 @@ class AppModuleTile extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: layout == AppModuleTileLayout.module
-            ? AppTypography.xl
+            ? AppTypography.md
+            : dense
+            ? AppTypography.base
             : AppTypography.md,
         fontWeight: layout == AppModuleTileLayout.module
             ? AppTypography.weightSemibold
@@ -121,11 +129,7 @@ class AppModuleTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              AppIcon(
-                icon,
-                size: AppSize.iconXxl,
-                color: semantic.fgSecondary,
-              ),
+              AppIcon(icon, size: AppSize.iconXxl, color: semantic.fgSecondary),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -148,8 +152,8 @@ class AppModuleTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.tile),
       child: Container(
         height: layout == AppModuleTileLayout.module ? moduleHeight : height,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.space3,
+        padding: EdgeInsets.symmetric(
+          horizontal: dense ? AppSpacing.space2 : AppSpacing.space3,
           vertical: AppSpacing.space4,
         ),
         // Cinza do Figma sobre a folha de conteúdo. A divergência registrada na
@@ -184,9 +188,15 @@ class AppModuleTileGrid extends StatelessWidget {
     super.key,
     required this.tiles,
     this.lastTileFullWidth = true,
+    this.columns = 2,
   });
 
   final List<AppModuleTile> tiles;
+
+  /// Colunas da grade. Com 3 (menu da Início do Operacional), a última
+  /// linha incompleta fica **centralizada** com a mesma largura de ladrilho
+  /// — [lastTileFullWidth] só vale para a grade de duas colunas.
+  final int columns;
 
   /// Na home, o último item ímpar é um atalho largo. Na central interna, a
   /// referência deixa o último card na primeira coluna, com a segunda vazia.
@@ -197,6 +207,7 @@ class AppModuleTileGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (columns != 2) return _buildColumns();
     final rows = <Widget>[];
 
     for (var i = 0; i < tiles.length; i += 2) {
@@ -235,6 +246,29 @@ class AppModuleTileGrid extends StatelessWidget {
       children: rows,
     );
   }
+
+  Widget _buildColumns() => LayoutBuilder(
+    builder: (context, constraints) {
+      final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < tiles.length; i += columns) ...[
+            if (i > 0) const SizedBox(height: gap),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var j = i; j < i + columns && j < tiles.length; j++) ...[
+                  if (j > i) const SizedBox(width: gap),
+                  SizedBox(width: width, child: tiles[j]),
+                ],
+              ],
+            ),
+          ],
+        ],
+      );
+    },
+  );
 }
 
 WidgetbookComponent buildModuleTileWidgetbookComponent() {
@@ -307,6 +341,35 @@ WidgetbookComponent buildModuleTileWidgetbookComponent() {
                   layout: AppModuleTileLayout.module,
                   onTap: () {},
                 ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Três colunas (Início do Operacional)',
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(AppSpacing.space4),
+          child: SingleChildScrollView(
+            child: AppModuleTileGrid(
+              columns: 3,
+              tiles: [
+                for (final (icon, label) in const [
+                  (AppIcons.ordemServico, 'Ordens de serviço'),
+                  (AppIcons.confinamento, 'Confinamento'),
+                  (AppIcons.pecuaria, 'Pecuária'),
+                  (AppIcons.agricultura, 'Agricultura'),
+                  (AppIcons.estoque, 'Estoque'),
+                  (AppIcons.gestaoFrota, 'Frota'),
+                  (AppIcons.consultas, 'Consultas'),
+                  (AppIcons.sincronizar, 'Sincronizar'),
+                ])
+                  AppModuleTile(
+                    icon: icon,
+                    label: label,
+                    dense: true,
+                    onTap: () {},
+                  ),
               ],
             ),
           ),

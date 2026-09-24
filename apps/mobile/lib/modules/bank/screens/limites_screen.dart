@@ -50,7 +50,7 @@ class LimitesScreen extends ConsumerWidget {
                     Text(
                       '${balanceHidden ? '••••' : f.usado} / ${balanceHidden ? '••••' : f.total}',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         fontWeight: AppTypography.weightMedium,
                         color: semantic.fgMuted,
                         fontFeatures: const [FontFeature.tabularFigures()],
@@ -67,7 +67,7 @@ class LimitesScreen extends ConsumerWidget {
                 Text(
                   '${f.usadoPct}% utilizado neste ciclo',
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     color: semantic.fgSubtle,
                   ),
                 ),

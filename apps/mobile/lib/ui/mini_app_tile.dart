@@ -120,7 +120,7 @@ class AppMiniAppTile extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: AppTypography.xs,
+                                fontSize: AppTypography.sm,
                                 height: AppTypography.lineHeightSnug,
                                 color: semantic.fgMuted,
                               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
+import 'icon_button.dart';
 import 'pressable.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
@@ -77,6 +78,7 @@ class AppSectionTitle extends StatelessWidget {
     required this.child,
     this.leading,
     this.trailing,
+    this.action,
     this.onTap,
     this.semanticLabel,
   });
@@ -88,6 +90,11 @@ class AppSectionTitle extends StatelessWidget {
 
   /// Ícone de 24 px à direita, alinhado à borda — o "ver tudo".
   final AppIconData? trailing;
+
+  /// Controle próprio encostado na borda direita — o "+" de criar, por
+  /// exemplo. Diferente de [trailing], tem toque e rótulo próprios: a linha
+  /// não fica tocável por inteiro. Não combine com [trailing].
+  final Widget? action;
 
   /// Torna a linha inteira tocável. Exigido quando há [trailing].
   final VoidCallback? onTap;
@@ -112,7 +119,13 @@ class AppSectionTitle extends StatelessWidget {
     // cabeçalho de bloco, por exemplo), e `Expanded` ali estoura o layout.
     // Com `trailing`, o ícone precisa encostar na borda direita — aí a linha
     // ocupa a largura toda e o rótulo é quem cede.
-    final hasTrailing = trailing != null;
+    //
+    // Com [action] vale o mesmo: o controle vai para a extrema direita.
+    assert(
+      trailing == null || action == null,
+      'Use trailing ou action, não os dois.',
+    );
+    final hasTrailing = trailing != null || action != null;
     final row = Row(
       mainAxisSize: hasTrailing ? MainAxisSize.max : MainAxisSize.min,
       children: [
@@ -121,9 +134,13 @@ class AppSectionTitle extends StatelessWidget {
           const SizedBox(width: AppSpacing.space2),
         ],
         if (hasTrailing) Expanded(child: label) else Flexible(child: label),
-        if (hasTrailing) ...[
+        if (trailing != null) ...[
           const SizedBox(width: AppSpacing.space2),
           AppIcon(trailing!, size: AppSize.iconLg, color: semantic.fgSection),
+        ],
+        if (action != null) ...[
+          const SizedBox(width: AppSpacing.space2),
+          action!,
         ],
       ],
     );
@@ -198,6 +215,21 @@ WidgetbookComponent buildHeadingWidgetbookComponent() {
             onTap: () {},
             semanticLabel: 'Ver todos os parceiros de crédito',
             child: const Text('Parceiros de crédito'),
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'SectionTitle com ação',
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(AppSpacing.space4),
+          child: AppSectionTitle(
+            action: AppIconButton(
+              icon: const AppIcon(AppIcons.plus, size: AppSize.iconMd),
+              label: 'Criar OS',
+              variant: AppIconButtonVariant.solid,
+              onPressed: () {},
+            ),
+            child: const Text('OS'),
           ),
         ),
       ),

@@ -11,10 +11,8 @@ import '../design/theme/app_theme_extension.dart';
 
 /// Seletor de fazenda do cabeçalho global (Figma `54300-2458`).
 ///
-/// É o **único bloco que as duas homes compartilham** — ver §4 da esteira do
-/// padrão global: ADM e Operação não dividem conteúdo, dividem contexto. Toda
-/// tela do app responde "de qual fazenda estamos falando", e é esta faixa que
-/// responde.
+/// Toda tela do app responde "de qual fazenda estamos falando", e é esta
+/// faixa que responde.
 ///
 /// Anatomia do Figma: ícone de 20 px no acento da marca, nome em 16 px na
 /// mesma cor, caret de 20 px à direita da linha inteira.
@@ -46,7 +44,7 @@ class AppFarmSelector extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               color: semantic.accentDefault,
             ),
           ),

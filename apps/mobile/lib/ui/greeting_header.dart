@@ -11,8 +11,8 @@ import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
 
-/// Cabeçalho de saudação do padrão global — o `Header` das duas homes do
-/// Figma (`54349:2372` na Operação, `54333:370` no Administrativo).
+/// Cabeçalho de saudação do padrão global — o `Header` da home do Figma
+/// (`54349:2372`).
 ///
 /// Anatomia medida: avatar de 48 px com as iniciais em 18 px Medium, saudação
 /// de 14 px Medium abafada, nome de 20 px SemiBold, e à direita uma bolha
@@ -45,9 +45,8 @@ class AppGreetingHeader extends StatelessWidget {
   /// Iniciais do avatar. Nulo deriva de [name] (regra do `AppAvatar`).
   final String? initials;
 
-  /// Linha de contexto sob o nome — no app, o ambiente da sessão. Não existe na
-  /// referência: o Figma pressupõe um único ambiente, e o GB CERNE tem dois
-  /// perfis com permissões distintas. Extensão registrada.
+  /// Linha de contexto opcional sob o nome. Não existe na referência;
+  /// extensão registrada.
   final String? subtitle;
 
   /// Pinta o ponto de não-lida sobre a bolha do sino.

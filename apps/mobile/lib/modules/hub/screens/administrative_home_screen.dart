@@ -168,23 +168,13 @@ class _AdminSectionHeader extends StatelessWidget {
 
   final String title;
 
+  // Sem chevron: o título não leva a lugar nenhum, e a seta prometia um
+  // "ver tudo" que não existia.
   @override
   Widget build(BuildContext context) {
-    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-
     return Semantics(
       header: true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          AppHeading(child: Text(title)),
-          AppIcon(
-            AppIcons.chevronRight,
-            size: AppSize.iconLg,
-            color: semantic.fgDefault,
-          ),
-        ],
-      ),
+      child: AppHeading(child: Text(title)),
     );
   }
 }
@@ -297,7 +287,7 @@ class _CreditPartnerCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     color: semantic.fgMuted,
                   ),
                 ),

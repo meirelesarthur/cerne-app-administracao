@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_shadows.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
+import '../design/generated/app_layout.dart';
 import '../design/theme/app_theme_extension.dart';
+import 'app_icon.dart';
+import 'help_button.dart';
 
 /// Espelha `KpiStatCard.tsx` — card-resumo compacto para as linhas de KPIs do
 /// topo dos dashboards.
@@ -27,6 +29,7 @@ class AppKpiStatCard extends StatelessWidget {
     required this.value,
     this.caption,
     this.tone = AppKpiStatTone.neutral,
+    this.help,
   });
 
   final String label;
@@ -34,11 +37,24 @@ class AppKpiStatCard extends StatelessWidget {
   final String? caption;
   final AppKpiStatTone tone;
 
+  /// Definição da métrica, aberta pelo [AppHelpButton] ao lado do rótulo —
+  /// para siglas e cálculos que o gestor não precisa decorar.
+  final String? help;
+
+  /// O tom nunca é só cor (WCAG 1.4.1): positivo, atenção e negativo ganham
+  /// um ícone ao lado do valor e uma palavra para leitores de tela.
+  (AppIconData, String)? get _status => switch (tone) {
+    AppKpiStatTone.neutral => null,
+    AppKpiStatTone.positive => (AppIcons.checkCircle2, 'bom'),
+    AppKpiStatTone.warning => (AppIcons.triangleAlert, 'atenção'),
+    AppKpiStatTone.negative => (AppIcons.circleAlert, 'crítico'),
+  };
+
   Color _valueColor(AppSemanticColors s) => switch (tone) {
     AppKpiStatTone.neutral => s.fgDefault,
-    AppKpiStatTone.positive => AppColors.feedbackSuccessText,
-    AppKpiStatTone.negative => AppColors.feedbackErrorText,
-    AppKpiStatTone.warning => AppColors.feedbackWarningText,
+    AppKpiStatTone.positive => s.toneBrandFg,
+    AppKpiStatTone.negative => s.toneRedFg,
+    AppKpiStatTone.warning => s.toneAmberFg,
   };
 
   @override
@@ -59,22 +75,57 @@ class AppKpiStatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: AppTypography.md,
-              fontWeight: AppTypography.weightSemibold,
-              color: semantic.fgDefault,
-            ),
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: AppTypography.md,
+                    fontWeight: AppTypography.weightSemibold,
+                    color: semantic.fgDefault,
+                  ),
+                ),
+              ),
+              if (help case final texto?) ...[
+                const SizedBox(width: AppSpacing.half),
+                SizedBox.square(
+                  dimension: AppSize.iconSm,
+                  child: OverflowBox(
+                    maxWidth: AppSize.control,
+                    maxHeight: AppSize.control,
+                    child: AppHelpButton(title: label, text: texto),
+                  ),
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: AppSpacing.space1),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: AppTypography.xlPlus,
-              fontWeight: AppTypography.weightSemibold,
-              height: AppTypography.lineHeightTight,
-              color: _valueColor(semantic),
+          Semantics(
+            label: _status == null ? null : '$value, ${_status!.$2}',
+            excludeSemantics: _status != null,
+            child: Row(
+              children: [
+                if (_status case (final icone, _)) ...[
+                  AppIcon(
+                    icone,
+                    size: AppSize.iconSm,
+                    color: _valueColor(semantic),
+                  ),
+                  const SizedBox(width: AppSpacing.space1),
+                ],
+                Flexible(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: AppTypography.xlPlus,
+                      fontWeight: AppTypography.weightSemibold,
+                      height: AppTypography.lineHeightTight,
+                      color: _valueColor(semantic),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           if (caption != null) ...[
@@ -107,35 +158,36 @@ WidgetbookComponent buildKpiStatCardWidgetbookComponent() {
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Receita do mês',
-                  value: 'R\$ 42.300',
-                  caption: '+8% vs. mês anterior',
+                  label: 'Animais no cocho',
+                  value: '1.240',
+                  caption: '+3% vs. semana anterior',
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Saldo em caixa',
-                  value: 'R\$ 128.450',
+                  label: 'GMD médio',
+                  value: '1,42 kg',
                   tone: AppKpiStatTone.positive,
-                  caption: 'Disponível',
+                  caption: 'Acima da meta',
+                  help: 'Ganho médio diário por cabeça, em kg.',
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Despesas',
-                  value: 'R\$ 9.870',
+                  label: 'Sobra de cocho',
+                  value: '6,8%',
                   tone: AppKpiStatTone.negative,
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Vencimentos',
+                  label: 'OS atrasadas',
                   value: '3',
                   tone: AppKpiStatTone.warning,
-                  caption: 'Próximos 7 dias',
+                  caption: 'Prazo vencido',
                 ),
               ),
             ],

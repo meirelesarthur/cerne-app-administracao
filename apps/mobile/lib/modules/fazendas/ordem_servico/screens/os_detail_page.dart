@@ -64,12 +64,18 @@ void abrirAvaliarOs(BuildContext context, WidgetRef ref, String osId) {
   final notifier = ref.read(ordemServicoStoreProvider.notifier);
   final comentarioController = TextEditingController();
   var nota = '5';
+  var tentou = false;
 
   showAppBottomSheet<void>(
     context,
     title: 'Avaliar a ${notifier.byId(osId).codigo}',
+    // Com comentário sendo digitado, tocar fora não descarta o texto.
+    dismissible: false,
     child: StatefulBuilder(
       builder: (context, setSheetState) {
+        final erro = tentou && comentarioController.text.trim().isEmpty
+            ? 'Escreva um comentário para registrar a avaliação.'
+            : null;
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,9 +106,13 @@ void abrirAvaliarOs(BuildContext context, WidgetRef ref, String osId) {
               label: 'Comentário',
               required: true,
               hint: _registroHistorico,
+              error: erro,
               child: AppTextarea(
                 controller: comentarioController,
                 placeholder: 'Observações sobre o andamento do serviço...',
+                onChanged: (_) {
+                  if (tentou) setSheetState(() {});
+                },
               ),
             ),
             const SizedBox(height: AppSpacing.space5),
@@ -110,7 +120,10 @@ void abrirAvaliarOs(BuildContext context, WidgetRef ref, String osId) {
               fullWidth: true,
               onPressed: () {
                 final comentario = comentarioController.text.trim();
-                if (comentario.isEmpty) return;
+                if (comentario.isEmpty) {
+                  setSheetState(() => tentou = true);
+                  return;
+                }
                 notifier.avaliar(
                   osId,
                   avaliador: autorAdministrativoOs,
@@ -133,43 +146,73 @@ void abrirAvaliarOs(BuildContext context, WidgetRef ref, String osId) {
 void abrirCancelarOs(BuildContext context, WidgetRef ref, String osId) {
   final notifier = ref.read(ordemServicoStoreProvider.notifier);
   final controller = TextEditingController();
+  var tentou = false;
+  final codigo = notifier.byId(osId).codigo;
 
   showAppBottomSheet<void>(
     context,
-    title: 'Cancelar a ${notifier.byId(osId).codigo}?',
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppFormField(
-          label: 'Motivo do cancelamento',
-          required: true,
-          hint:
-              'Encerra a OS e não dá para desfazer pelo aplicativo. '
-              '$_registroHistorico',
-          child: AppTextarea(
-            controller: controller,
-            placeholder: 'Explique por que a OS está sendo cancelada...',
-          ),
-        ),
-        const SizedBox(height: AppSpacing.space5),
-        AppButton(
-          fullWidth: true,
-          variant: AppButtonVariant.danger,
-          onPressed: () {
-            final motivo = controller.text.trim();
-            if (motivo.isEmpty) return;
-            notifier.cancelar(
-              osId,
-              autor: autorAdministrativoOs,
-              motivo: motivo,
-            );
-            // Fecha só a folha: o detalhe mostra o novo status, sem rodapé.
-            Navigator.of(context).pop();
-          },
-          child: const Text('Confirmar cancelamento'),
-        ),
-      ],
+    title: 'Cancelar a $codigo?',
+    dismissible: false,
+    child: StatefulBuilder(
+      builder: (sheetContext, setSheetState) {
+        final erro = tentou && controller.text.trim().isEmpty
+            ? 'Escreva o motivo do cancelamento para continuar.'
+            : null;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppFormField(
+              label: 'Motivo do cancelamento',
+              required: true,
+              hint:
+                  'Encerra a OS e não dá para desfazer pelo aplicativo. '
+                  '$_registroHistorico',
+              error: erro,
+              child: AppTextarea(
+                controller: controller,
+                placeholder: 'Explique por que a OS está sendo cancelada...',
+                onChanged: (_) {
+                  if (tentou) setSheetState(() {});
+                },
+              ),
+            ),
+            const SizedBox(height: AppSpacing.space5),
+            AppButton(
+              fullWidth: true,
+              variant: AppButtonVariant.danger,
+              onPressed: () async {
+                final motivo = controller.text.trim();
+                if (motivo.isEmpty) {
+                  setSheetState(() => tentou = true);
+                  return;
+                }
+                // Última chance antes de uma ação sem volta — mesmo padrão
+                // de confirmação do app Operação (showAppConfirm).
+                final ok = await showAppConfirm(
+                  sheetContext,
+                  title: 'Cancelar a $codigo de vez?',
+                  message:
+                      'A OS sai da fila da operação e não dá para reabrir '
+                      'pelo aplicativo.',
+                  confirmLabel: 'Cancelar OS',
+                  cancelLabel: 'Voltar',
+                  danger: true,
+                );
+                if (!ok) return;
+                notifier.cancelar(
+                  osId,
+                  autor: autorAdministrativoOs,
+                  motivo: motivo,
+                );
+                // Fecha só a folha: o detalhe mostra o novo status, sem rodapé.
+                if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+              },
+              child: const Text('Confirmar cancelamento'),
+            ),
+          ],
+        );
+      },
     ),
   );
 }

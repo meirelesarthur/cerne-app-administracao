@@ -50,7 +50,10 @@ class DashResultado extends StatelessWidget {
                 label: 'Atrasados',
                 value: FinanceiroKpis.atrasados,
                 tone: AppKpiStatTone.negative,
-                caption: 'Vencidos > 0',
+                caption: 'Contas vencidas',
+                help:
+                    'Soma das contas a receber com vencimento já passado e '
+                    'ainda não pagas. Cobrar ou renegociar.',
               ),
               AppKpiStatCard(
                 label: 'Investimentos',
@@ -104,7 +107,7 @@ class DashResultado extends StatelessWidget {
                 for (final c in centrosCusto)
                   AppBarDatum(label: c.label, value: c.value),
               ],
-              formatValue: (v) => '${v.toStringAsFixed(0)}k',
+              formatValue: (v) => '${v.toStringAsFixed(0)} mil',
             ),
           ),
           const SizedBox(height: AppSpacing.space4),
@@ -116,7 +119,7 @@ class DashResultado extends StatelessWidget {
                 'na barra por centro de custo acima.',
             child: AppStackedBar(
               categories: resultadoCategorias,
-              formatValue: (v) => '${v.toStringAsFixed(0)}k',
+              formatValue: (v) => '${v.toStringAsFixed(0)} mil',
               data: [
                 for (final m in resultadoMeses)
                   AppStackedDatum(

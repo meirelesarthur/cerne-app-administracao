@@ -62,7 +62,7 @@ class _DashUsoState extends ConsumerState<DashUso> {
     if (!isOnline) {
       return DashboardScreen(
         key: ValueKey(_tentativa),
-        title: 'Adoção & Governança',
+        title: 'Adoção e governança',
         restricted: true,
         hideOfflineBanner: true,
         child: AppErrorState(
@@ -111,7 +111,7 @@ class _DashUsoState extends ConsumerState<DashUso> {
     final todosUsuarios = _usuario == null;
 
     return DashboardScreen(
-      title: 'Adoção & Governança',
+      title: 'Adoção e governança',
       restricted: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -159,6 +159,10 @@ class _DashUsoState extends ConsumerState<DashUso> {
                 label: 'Adoção',
                 value: '$adocaoPct%',
                 caption: 'ativos agora',
+                help:
+                    'Parte das pessoas cadastradas que está usando o app '
+                    'neste momento. Baixa adoção costuma indicar falta de '
+                    'treinamento ou de conexão na fazenda.',
               ),
               AppKpiStatCard(
                 label: 'Fazendas ativas',
@@ -168,7 +172,6 @@ class _DashUsoState extends ConsumerState<DashUso> {
                     ? AppKpiStatTone.warning
                     : AppKpiStatTone.neutral,
               ),
-              AppKpiStatCard(label: 'Período', value: _periodo),
             ],
           ),
           const SizedBox(height: AppSpacing.space4),
@@ -416,7 +419,7 @@ class _FazendaTile extends StatelessWidget {
                         Text(
                           u.ultimoAcesso,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgSubtle,
                           ),
                         ),

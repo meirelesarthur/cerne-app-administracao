@@ -17,7 +17,31 @@ AppIconData groupIcon(String group) => switch (group) {
 /// Ícone específico de uma função dentro do módulo. O catálogo funcional
 /// guarda a regra e o texto, não componentes visuais; este mapa mantém a
 /// grade interna expressiva sem espalhar decisões de UI pelo catálogo.
-AppIconData featureIcon(String featureId, String group) => groupIcon(group);
+///
+/// Antes devolvia sempre o ícone do grupo: os cinco painéis (e as dez
+/// consultas) eram ladrilhos idênticos, e só o texto os diferenciava.
+AppIconData featureIcon(String featureId, String group) => switch (featureId) {
+  // Painéis de decisão
+  'painel-financeiro' => AppIcons.wallet,
+  'lotacao-currais' => AppIcons.confinamento,
+  'suprimentos' => AppIcons.shoppingCart,
+  'ativos' => AppIcons.tractor,
+  'analise-uso' => AppIcons.users,
+  // Ordem de serviço
+  'consulta-os' => AppIcons.ordemServico,
+  'consulta-apontamentos' => AppIcons.agricultura,
+  // Consultas e auditoria
+  'consultas-gerenciais' => AppIcons.fileBarChart,
+  'saldo-estoque' => AppIcons.estoque,
+  'consulta-produtos' => AppIcons.packageSearch,
+  'areas' => AppIcons.mapPinned,
+  'lotes-reproducao' => AppIcons.reproducao,
+  'processamentos' => AppIcons.pecuaria,
+  'compras-animais' => AppIcons.handCoins,
+  'vendas' => AppIcons.receipt,
+  'exportar-log-estoque' || 'exportar-log-pecuaria' => AppIcons.download,
+  _ => groupIcon(group),
+};
 
 /// Rótulo de apresentação dos módulos na central de responsabilidade. O
 /// catálogo mantém o nome de domínio para chaves, slugs e auditoria; a home
