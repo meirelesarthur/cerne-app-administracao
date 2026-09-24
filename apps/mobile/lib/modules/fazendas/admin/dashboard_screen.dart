@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../design/generated/app_layout.dart';
+import '../../../design/generated/app_radius.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/simulated_load.dart';
@@ -56,6 +57,7 @@ class DashboardScreen extends ConsumerWidget {
     final fazenda = ref.watch(
       fazendasStoreProvider.select((s) => s.activeFarm.name),
     );
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -69,64 +71,94 @@ class DashboardScreen extends ConsumerWidget {
           farmName: fazenda,
           onTap: () => openFarmPicker(context, ref),
         ),
-        SubPageHeader(
-          title: title,
-          action: restricted
-              ? const Padding(
-                  padding: EdgeInsets.only(right: AppSpacing.space1),
-                  child: AppChip(
-                    tone: AppChipTone.amber,
-                    icon: AppIcon(AppIcons.shieldAlert, size: AppSize.iconXs),
-                    child: Text('Acesso restrito'),
-                  ),
-                )
-              : action,
-        ),
+        // A área cinza logo abaixo da faixa branca do seletor ganha as duas
+        // quinas de cima arredondadas (20px, o mesmo raio de AppContentSheet)
+        // — sem isso ela colava reta na faixa branca, como se fosse a mesma
+        // superfície partida ao meio em vez de uma folha por cima da outra.
         Expanded(
-          child: AppContentSheet(
-            padded: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (!isOnline && !hideOfflineBanner)
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      AppSpacing.space4,
-                      AppSpacing.space3,
-                      AppSpacing.space4,
-                      0,
-                    ),
-                    child: AppBanner(
-                      icon: AppIcon(AppIcons.cloudOff, size: AppSize.iconXs),
-                      child: Text(
-                        'Sem conexão: os números são os da última '
-                        'atualização e podem estar desatualizados.',
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(AppRadius.surface),
+              topRight: Radius.circular(AppRadius.surface),
+            ),
+            child: ColoredBox(
+              color: semantic.bgCanvas,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SubPageHeader(
+                    title: title,
+                    action: restricted
+                        ? const Padding(
+                            padding: EdgeInsets.only(right: AppSpacing.space1),
+                            child: AppChip(
+                              tone: AppChipTone.amber,
+                              icon: AppIcon(
+                                AppIcons.shieldAlert,
+                                size: AppSize.iconXs,
+                              ),
+                              child: Text('Acesso restrito'),
+                            ),
+                          )
+                        : action,
+                  ),
+                  Expanded(
+                    child: AppContentSheet(
+                      padded: false,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (!isOnline && !hideOfflineBanner)
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                AppSpacing.space4,
+                                AppSpacing.space3,
+                                AppSpacing.space4,
+                                0,
+                              ),
+                              child: AppBanner(
+                                icon: AppIcon(
+                                  AppIcons.cloudOff,
+                                  size: AppSize.iconXs,
+                                ),
+                                child: Text(
+                                  'Sem conexão: os números são os da última '
+                                  'atualização e podem estar desatualizados.',
+                                ),
+                              ),
+                            ),
+                          Expanded(
+                            child: SimulatedLoad(
+                              builder: (context, loading) => loading
+                                  ? GridView.count(
+                                      padding: const EdgeInsets.all(
+                                        AppSpacing.space4,
+                                      ),
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: AppSpacing.space2,
+                                      crossAxisSpacing: AppSpacing.space2,
+                                      childAspectRatio: 1.3,
+                                      children: const [
+                                        AppCardSkeleton(),
+                                        AppCardSkeleton(),
+                                        AppCardSkeleton(),
+                                        AppCardSkeleton(),
+                                      ],
+                                    )
+                                  : SingleChildScrollView(
+                                      padding: const EdgeInsets.all(
+                                        AppSpacing.space4,
+                                      ),
+                                      child: child,
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                Expanded(
-                  child: SimulatedLoad(
-                    builder: (context, loading) => loading
-                        ? GridView.count(
-                            padding: const EdgeInsets.all(AppSpacing.space4),
-                            crossAxisCount: 2,
-                            mainAxisSpacing: AppSpacing.space2,
-                            crossAxisSpacing: AppSpacing.space2,
-                            childAspectRatio: 1.3,
-                            children: const [
-                              AppCardSkeleton(),
-                              AppCardSkeleton(),
-                              AppCardSkeleton(),
-                              AppCardSkeleton(),
-                            ],
-                          )
-                        : SingleChildScrollView(
-                            padding: const EdgeInsets.all(AppSpacing.space4),
-                            child: child,
-                          ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
