@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/generated/app_colors.dart';
+import '../design/generated/app_layout.dart';
 import '../design/generated/app_motion.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
@@ -274,9 +275,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
                                             ],
                                           ),
                                         ),
-                                      Expanded(
-                                        child: _content(state),
-                                      ),
+                                      Expanded(child: _content(state)),
                                     ],
                                   ),
                                 ),

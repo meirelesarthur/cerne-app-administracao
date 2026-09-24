@@ -16,6 +16,14 @@ import '../support/test_viewport.dart';
 
 late RouterTestHarness harness;
 
+/// `pumpAndSettle` só continua pumpando enquanto frames são agendados — um
+/// `Future.delayed` isolado (SimulatedLoad/RiseIn da HubHomeScreen, renderizada
+/// por padrão em `/inicio`) não agenda frame algum até disparar, então pode
+/// ficar pendente se não avançarmos o relógio explicitamente antes. Chamar
+/// sempre que o teste passar por `/inicio`.
+Future<void> _settleHubTimers(WidgetTester tester) =>
+    tester.pump(const Duration(seconds: 1));
+
 void main() {
   setUp(() {
     harness = RouterTestHarness(profile: UserAccessProfile.administration);
@@ -30,10 +38,13 @@ void main() {
         await setTallSurface(tester);
         harness.router.go('/fazendas/visao-geral');
         await tester.pumpWidget(harness.buildApp());
+        await _settleHubTimers(tester);
         await tester.pumpAndSettle();
         expect(find.byType(AppFarmSelector), findsOneWidget);
 
         harness.router.go('/bank');
+        await tester.pump();
+        await _settleHubTimers(tester);
         await tester.pumpAndSettle();
         expect(find.byType(AppFarmSelector), findsNothing);
       },
@@ -216,9 +227,7 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.text(
-            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
-          ),
+          find.text('Manutenções de Currais — Curral de manejo 1'),
           findsOneWidget,
         );
         expect(find.text('Confinamento'), findsNothing);
@@ -243,16 +252,14 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.text(
-            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
-          ),
+          find.text('Manutenções de Currais — Curral de manejo 1'),
           findsNothing,
         );
       },
     );
 
     testWidgets(
-      'trocar de aba administrativa preserva o header (Silvio Ventura continua visível)',
+      'trocar de módulo pelo dock preserva o header (Silvio Ventura continua visível)',
       (tester) async {
         await setTallSurface(tester);
         await tester.pumpWidget(harness.buildApp());
@@ -261,12 +268,16 @@ void main() {
 
         expect(find.text('Silvio Ventura'), findsOneWidget);
 
-        await tester.tap(find.text('Carteira').first);
+        // Início saiu do dock (só Fazendas é a central do ADM); trocar de
+        // módulo agora é ir de Fazendas para Bank pelo próprio dock. O
+        // rótulo só aparece (com fade) no item ativo — o alvo estável é o
+        // tooltip do ícone.
+        await tester.tap(find.byTooltip('Bank'));
         await tester.pump(const Duration(seconds: 1));
         await tester.pumpAndSettle();
 
         expect(find.text('Silvio Ventura'), findsOneWidget);
-        expect(find.text('Resumo da sua conta GB Bank.'), findsOneWidget);
+        expect(find.text('Últimas movimentações'), findsOneWidget);
         expect(find.byType(AppBottomTabBar), findsOneWidget);
       },
     );

@@ -93,7 +93,6 @@ class OrdemServicoStoreNotifier extends Notifier<OrdemServicoState> {
       maquinas: const [],
       armazemInsumos: 'Não informado',
       insumos: const [],
-      producao: const [],
       epis: const [],
       autorizador: autor,
       dataAutorizacao: agora,

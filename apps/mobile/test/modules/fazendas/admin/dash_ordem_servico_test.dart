@@ -32,7 +32,7 @@ void main() {
       );
       expect(
         find.text(
-          'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          'Manutenções de Currais — Curral de manejo 1',
         ),
         findsOneWidget,
       );
@@ -57,7 +57,7 @@ void main() {
       );
       expect(
         find.text(
-          'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          'Manutenções de Currais — Curral de manejo 1',
         ),
         findsNothing,
       );
@@ -69,7 +69,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      // Nenhum mock tem prazo hoje — o filtro "Hoje" deve esvaziar a lista.
+      // Só a OS #2207 tem prazo hoje — o filtro "Hoje" deixa só ela.
       await tester.tap(find.text('Hoje'));
       await tester.pumpAndSettle();
 
@@ -77,7 +77,10 @@ void main() {
         find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
         findsNothing,
       );
-      expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
+      expect(
+        find.text('Manutenções de Construções — Curral 12'),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Todas as datas'));
       await tester.pumpAndSettle();

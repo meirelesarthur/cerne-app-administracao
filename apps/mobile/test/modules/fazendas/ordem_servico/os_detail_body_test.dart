@@ -45,11 +45,28 @@ void main() {
   testWidgets(
     'evento do histórico com observação abre o texto completo ao tocar',
     (tester) async {
-      await pump(tester);
-      await tester.tap(find.text('Histórico (${os.historico.length})'));
+      // os-2198 não tem observação em nenhum evento; os-2201 tem.
+      final osComObservacao = ordensServico.firstWhere(
+        (o) => o.id == 'os-2201',
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildAppTheme(AppThemeVariant.light),
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: OsDetailBody(os: osComObservacao),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(
+        find.text('Histórico (${osComObservacao.historico.length})'),
+      );
       await tester.pumpAndSettle();
 
-      final evento = os.historico.firstWhere((e) => e.observacao != null);
+      final evento = osComObservacao.historico.firstWhere(
+        (e) => e.observacao != null,
+      );
 
       await tester.tap(find.text(evento.acao));
       await tester.pumpAndSettle();
