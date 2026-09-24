@@ -183,6 +183,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
         else
           for (final os in filtradas) ...[
             OsSummaryCard(
+              // Mesmo card destacado que a lista "Minhas OS" do Operacional
+              // usa (Lei 2): nome grande, metas com ícone, situação com a
+              // mesma leitura visual nos dois perfis.
+              variant: AppStatusCardVariant.featured,
               os: os,
               agora: agora,
               onTap: () => abrirDetalheOs(context, os.id),

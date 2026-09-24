@@ -11,8 +11,8 @@ import 'button.dart';
 import 'chip.dart';
 import 'pressable.dart';
 
-/// Par rótulo/valor exibido à direita do título de um [AppStatusCard]
-/// (ex.: "Prioridade: Alta").
+/// Dado de apoio de um [AppStatusCard], exibido abaixo do título com ícone
+/// (dois por linha). Sem ícone, o rótulo é escrito ("Prioridade: Alta").
 class AppStatusCardMeta {
   const AppStatusCardMeta({
     required this.label,
@@ -24,8 +24,8 @@ class AppStatusCardMeta {
   final String label;
   final String value;
 
-  /// Na variante [AppStatusCardVariant.featured] o ícone substitui o rótulo
-  /// escrito (calendário no lugar de "Prazo:"); o rótulo segue na semântica.
+  /// O ícone substitui o rótulo escrito (calendário no lugar de "Prazo:");
+  /// o rótulo segue na semântica.
   final AppIconData? icon;
 
   /// Destaca o valor na cor de acento — para o dado que pede atenção
@@ -35,13 +35,15 @@ class AppStatusCardMeta {
 
 /// Anatomias do [AppStatusCard]:
 ///
-/// - [standard]: a das listas — chip no topo, título, metas à direita e
-///   rodapé com situação e ação.
-/// - [featured]: o registro em destaque de uma home — título grande à
-///   esquerda com as linhas de apoio, chip e metas com ícone à direita, e a
-///   situação numa faixa tingida ao lado do botão de ação.
+/// Todas seguem o padrão global de listagem: título na largura inteira,
+/// dados de apoio com ícone (dois por linha) e o chip de status embaixo —
+/// nada na lateral disputando espaço com o texto.
+///
+/// - [standard]: a das listas — rodapé com situação e ação pequena.
+/// - [featured]: o registro em destaque de uma home — título e rodapé
+///   maiores, situação numa faixa tingida ao lado do botão de ação.
 /// - [compact]: o "próximo da fila" logo abaixo do destaque — título, uma
-///   linha de apoio e o chip à direita, sem metas nem rodapé.
+///   linha de dados e o status, sem rodapé.
 enum AppStatusCardVariant { standard, featured, compact }
 
 /// Tom da linha de situação de um [AppStatusCard].
@@ -84,9 +86,9 @@ class AppStatusCardAction {
 /// Card de registro com andamento — listas de ordens, pedidos e tarefas em
 /// que o **status** é a primeira coisa a ler.
 ///
-/// Anatomia: chip de status no topo; título grande (o identificador que a
-/// pessoa procura, ex.: "OS #2201") com a descrição e a legenda abaixo; à
-/// direita, até dois ou três pares rótulo/valor ([meta]). Superfície
+/// Anatomia: título grande na largura inteira, descrição e legenda
+/// opcionais, dados de apoio com ícone ([meta], dois por linha), o chip de
+/// status embaixo e o rodapé de situação e ação. Superfície
 /// [AppSemanticColors.bgRaised] sem borda nem sombra e raio [AppRadius.tile]
 /// — branco sobre a folha cinza (`AppContentSheet`) no tema claro e o verde
 /// elevado sobre a folha escura no Modo GB. Nada é cor crua.
@@ -166,236 +168,133 @@ class AppStatusCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCompact(AppSemanticColors semantic, BorderRadius radius) {
-    final line = subtitle ?? caption;
-    return _wrap(
-      Container(
-        padding: const EdgeInsets.all(AppSpacing.space4),
-        decoration: BoxDecoration(
-          color: semantic.bgRaised,
-          borderRadius: radius,
-        ),
+  /// Dados de apoio com ícone, no máximo dois por linha — o mesmo padrão de
+  /// [AppRecordTile]. Meta sem ícone escreve o rótulo ("Tipo: Pecuário").
+  Widget _metaGrid(AppSemanticColors semantic, List<AppStatusCardMeta> items) {
+    Widget cell(AppStatusCardMeta item) {
+      final color = item.highlight ? semantic.toneRedFg : semantic.fgMuted;
+      return Semantics(
+        label: '${item.label}: ${item.value}',
+        excludeSemantics: true,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: AppTypography.md,
-                      fontWeight: AppTypography.weightMedium,
-                      height: AppTypography.lineHeightSnug,
-                      color: semantic.fgHeading,
-                    ),
-                  ),
-                  if (line != null) ...[
-                    const SizedBox(height: AppSpacing.space1),
-                    Text(
-                      line,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: AppTypography.base,
-                        color: semantic.fgSubtle,
-                      ),
-                    ),
-                  ],
-                ],
+            if (item.icon != null) ...[
+              AppIcon(item.icon!, size: AppSize.iconXs, color: color),
+              const SizedBox(width: AppSpacing.space1),
+            ],
+            Flexible(
+              child: Text(
+                item.icon == null ? '${item.label}: ${item.value}' : item.value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: AppTypography.base,
+                  fontWeight: item.highlight
+                      ? AppTypography.weightSemibold
+                      : AppTypography.weightNormal,
+                  color: color,
+                ),
               ),
             ),
-            const SizedBox(width: AppSpacing.space3),
-            AppChip(tone: statusTone, child: Text(statusLabel)),
           ],
         ),
-      ),
-      radius,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < items.length; i += 2) ...[
+          if (i > 0) const SizedBox(height: AppSpacing.space1),
+          Row(
+            children: [
+              Expanded(child: cell(items[i])),
+              const SizedBox(width: AppSpacing.space3),
+              Expanded(
+                child: i + 1 < items.length
+                    ? cell(items[i + 1])
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 
-  Widget _buildFeatured(AppSemanticColors semantic, BorderRadius radius) {
-    final lines = [?subtitle, ?caption];
+  /// Rodapé: situação do momento à esquerda e ação rápida à direita. No
+  /// destaque a situação vira faixa tingida e o botão é do tamanho padrão.
+  Widget _footer(AppSemanticColors semantic, {required bool featured}) {
     final situation = this.situation;
     final action = this.action;
-    return _wrap(
-      Container(
-        padding: const EdgeInsets.all(AppSpacing.space4),
-        decoration: BoxDecoration(
-          color: semantic.bgRaised,
-          borderRadius: radius,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: AppTypography.xlPlus,
-                          fontWeight: AppTypography.weightMedium,
-                          height: AppTypography.lineHeightTight,
-                          color: semantic.fgHeading,
-                        ),
-                      ),
-                      for (var i = 0; i < lines.length; i++) ...[
-                        const SizedBox(height: AppSpacing.space1),
-                        Text(
-                          lines[i],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: AppTypography.base,
-                            fontWeight: i == 0
-                                ? AppTypography.weightMedium
-                                : AppTypography.weightNormal,
-                            color: i == 0
-                                ? semantic.fgDefault
-                                : semantic.fgSubtle,
-                          ),
-                        ),
-                      ],
-                    ],
+    final situationRow = situation == null
+        ? const SizedBox.shrink()
+        : Row(
+            mainAxisAlignment: featured
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
+            children: [
+              AppIcon(
+                situation.icon,
+                size: AppSize.iconSm,
+                color: _toneColor(semantic, situation.tone),
+              ),
+              const SizedBox(width: AppSpacing.oneHalf),
+              Flexible(
+                child: Text(
+                  situation.label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: featured ? TextAlign.center : TextAlign.start,
+                  style: TextStyle(
+                    fontSize: featured ? AppTypography.base : AppTypography.sm,
+                    fontWeight: AppTypography.weightSemibold,
+                    color: _toneColor(semantic, situation.tone),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.space3),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AppChip(tone: statusTone, child: Text(statusLabel)),
-                    for (final item in meta) ...[
-                      const SizedBox(height: AppSpacing.space2),
-                      Semantics(
-                        label: '${item.label}: ${item.value}',
-                        excludeSemantics: true,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (item.icon != null) ...[
-                              AppIcon(
-                                item.icon!,
-                                size: AppSize.iconSm,
-                                color: item.highlight
-                                    ? semantic.toneRedFg
-                                    : semantic.fgMuted,
-                              ),
-                              const SizedBox(width: AppSpacing.space1),
-                            ] else
-                              Text(
-                                '${item.label}: ',
-                                style: TextStyle(
-                                  fontSize: AppTypography.md,
-                                  color: semantic.fgMuted,
-                                ),
-                              ),
-                            Text(
-                              item.value,
-                              style: TextStyle(
-                                fontSize: AppTypography.md,
-                                fontWeight: AppTypography.weightMedium,
-                                color: item.highlight
-                                    ? semantic.toneRedFg
-                                    : semantic.fgDefault,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-            if (situation != null || action != null) ...[
-              const SizedBox(height: AppSpacing.space4),
-              Row(
-                children: [
-                  Expanded(
-                    child: situation == null
-                        ? const SizedBox.shrink()
-                        : Container(
-                            constraints: const BoxConstraints(
-                              minHeight: AppSpacing.space10,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.space3,
-                              vertical: AppSpacing.space2,
-                            ),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: _toneBg(semantic, situation.tone),
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.mdPlus,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                AppIcon(
-                                  situation.icon,
-                                  size: AppSize.iconSm,
-                                  color: _toneColor(semantic, situation.tone),
-                                ),
-                                const SizedBox(width: AppSpacing.oneHalf),
-                                Flexible(
-                                  child: Text(
-                                    situation.label,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: AppTypography.base,
-                                      fontWeight: AppTypography.weightSemibold,
-                                      color: _toneColor(
-                                        semantic,
-                                        situation.tone,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
-                  if (action != null) ...[
-                    const SizedBox(width: AppSpacing.space3),
-                    AppButton(
-                      variant: action.primary
-                          ? AppButtonVariant.primary
-                          : AppButtonVariant.secondary,
-                      leftIcon: AppIcon(
-                        action.icon,
-                        size: AppSize.iconSm,
-                        color: action.primary
-                            ? semantic.ctaFg
-                            : semantic.fgDefault,
-                      ),
-                      onPressed: action.onPressed,
-                      child: Text(action.label),
-                    ),
-                  ],
-                ],
               ),
             ],
-          ],
+          );
+
+    return Row(
+      children: [
+        Expanded(
+          child: featured && situation != null
+              ? Container(
+                  constraints: const BoxConstraints(
+                    minHeight: AppSpacing.space10,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.space3,
+                    vertical: AppSpacing.space2,
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: _toneBg(semantic, situation.tone),
+                    borderRadius: BorderRadius.circular(AppRadius.mdPlus),
+                  ),
+                  child: situationRow,
+                )
+              : situationRow,
         ),
-      ),
-      radius,
+        if (action != null) ...[
+          const SizedBox(width: AppSpacing.space3),
+          AppButton(
+            size: featured ? AppButtonSize.md : AppButtonSize.sm,
+            variant: action.primary
+                ? AppButtonVariant.primary
+                : AppButtonVariant.secondary,
+            leftIcon: AppIcon(
+              action.icon,
+              size: AppSize.iconSm,
+              color: action.primary ? semantic.ctaFg : semantic.fgDefault,
+            ),
+            onPressed: action.onPressed,
+            child: Text(action.label),
+          ),
+        ],
+      ],
     );
   }
 
@@ -403,158 +302,71 @@ class AppStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final radius = BorderRadius.circular(AppRadius.tile);
-    switch (variant) {
-      case AppStatusCardVariant.featured:
-        return _buildFeatured(semantic, radius);
-      case AppStatusCardVariant.compact:
-        return _buildCompact(semantic, radius);
-      case AppStatusCardVariant.standard:
-        break;
-    }
+    final compact = variant == AppStatusCardVariant.compact;
+    final featured = variant == AppStatusCardVariant.featured;
+    // O "próximo da fila" mostra só a primeira linha de dados.
+    final visibleMeta = compact ? meta.take(2).toList() : meta;
+    final hasFooter = !compact && (situation != null || action != null);
 
     final content = Container(
       padding: const EdgeInsets.all(AppSpacing.space4),
       decoration: BoxDecoration(color: semantic.bgRaised, borderRadius: radius),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          AppChip(tone: statusTone, child: Text(statusLabel)),
-          const SizedBox(height: AppSpacing.space2),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: AppTypography.xlPlus,
-                        fontWeight: AppTypography.weightMedium,
-                        height: AppTypography.lineHeightTight,
-                        color: semantic.fgHeading,
-                      ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: AppSpacing.space1),
-                      Text(
-                        subtitle!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: AppTypography.base,
-                          fontWeight: AppTypography.weightMedium,
-                          color: semantic.fgDefault,
-                        ),
-                      ),
-                    ],
-                    if (caption != null) ...[
-                      const SizedBox(height: AppSpacing.space1),
-                      Text(
-                        caption!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: AppTypography.sm,
-                          color: semantic.fgSubtle,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (meta.isNotEmpty) ...[
-                const SizedBox(width: AppSpacing.space3),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    for (final item in meta)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: AppSpacing.space1,
-                        ),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${item.label}: ',
-                                style: TextStyle(color: semantic.fgMuted),
-                              ),
-                              TextSpan(
-                                text: item.value,
-                                style: TextStyle(
-                                  fontWeight: AppTypography.weightSemibold,
-                                  color: item.highlight
-                                      ? semantic.accentDefault
-                                      : semantic.fgDefault,
-                                ),
-                              ),
-                            ],
-                          ),
-                          style: const TextStyle(fontSize: AppTypography.sm),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-          if (situation != null || action != null) ...[
-            const SizedBox(height: AppSpacing.space3),
-            Row(
-              children: [
-                Expanded(
-                  child: situation == null
-                      ? const SizedBox.shrink()
-                      : Row(
-                          children: [
-                            AppIcon(
-                              situation!.icon,
-                              size: AppSize.iconSm,
-                              color: _toneColor(semantic, situation!.tone),
-                            ),
-                            const SizedBox(width: AppSpacing.space1),
-                            Expanded(
-                              child: Text(
-                                situation!.label,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: AppTypography.sm,
-                                  fontWeight: AppTypography.weightSemibold,
-                                  color: _toneColor(semantic, situation!.tone),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-                if (action != null) ...[
-                  const SizedBox(width: AppSpacing.space2),
-                  AppButton(
-                    size: AppButtonSize.sm,
-                    variant: action!.primary
-                        ? AppButtonVariant.primary
-                        : AppButtonVariant.secondary,
-                    leftIcon: AppIcon(
-                      action!.icon,
-                      size: AppSize.iconSm,
-                      color: action!.primary
-                          ? semantic.ctaFg
-                          : semantic.fgDefault,
-                    ),
-                    onPressed: action!.onPressed,
-                    child: Text(action!.label),
-                  ),
-                ],
-              ],
+          // O título usa a largura inteira: status e dados ficam embaixo,
+          // nunca na lateral disputando espaço com o texto.
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: compact ? AppTypography.xl : AppTypography.xl2,
+              fontWeight: AppTypography.weightMedium,
+              height: compact
+                  ? AppTypography.lineHeightSnug
+                  : AppTypography.lineHeightTight,
+              color: semantic.fgHeading,
             ),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: AppSpacing.space1),
+            Text(
+              subtitle!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: AppTypography.base,
+                fontWeight: AppTypography.weightMedium,
+                color: semantic.fgDefault,
+              ),
+            ),
+          ],
+          if (caption != null && !compact) ...[
+            const SizedBox(height: AppSpacing.space1),
+            Text(
+              caption!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: AppTypography.sm,
+                color: semantic.fgSubtle,
+              ),
+            ),
+          ],
+          if (visibleMeta.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.space2),
+            _metaGrid(semantic, visibleMeta),
+          ],
+          const SizedBox(height: AppSpacing.space2),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AppChip(tone: statusTone, child: Text(statusLabel)),
+          ),
+          if (hasFooter) ...[
+            SizedBox(height: featured ? AppSpacing.space4 : AppSpacing.space3),
+            _footer(semantic, featured: featured),
           ],
         ],
       ),

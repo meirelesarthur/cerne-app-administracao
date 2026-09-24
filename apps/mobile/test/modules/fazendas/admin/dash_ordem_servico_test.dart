@@ -60,8 +60,10 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      // Só a OS #2207 tem prazo hoje — o filtro "Hoje" deixa só ela.
-      await tester.tap(find.text('Hoje'));
+      // Só a OS #2207 tem prazo hoje — e como o card mostra o prazo por
+      // extenso ("Hoje"), o texto sozinho já é ambíguo com o botão do
+      // filtro antes mesmo de tocar nele.
+      await tester.tap(find.widgetWithText(AppButton, 'Hoje'));
       await tester.pumpAndSettle();
 
       expect(
