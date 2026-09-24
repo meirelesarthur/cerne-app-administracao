@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "site-institucional",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:06.921Z"
+    },
+    "aspect": {
+      "value": "1920x1080",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:07.006Z"
+    },
+    "language": {
+      "value": "pt-BR",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:07.092Z"
+    },
+    "flow": {
+      "value": "companion",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:07.181Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:07.268Z"
+    },
+    "style_preset.general-video": {
+      "value": "apple-studio-white",
+      "confirmed_in": [
+        "cerne-adm-showcase"
+      ],
+      "updated_at": "2026-09-24T19:38:07.356Z"
+    }
+  },
+  "sightings": {}
+}
