@@ -11,8 +11,8 @@ import '../../design/generated/app_layout.dart';
 ///
 /// Documenta, de forma viva e autocontida, a composição já usada em
 /// `shell/pages/login_page.dart`: cartão flutuando sobre um fundo, campos de
-/// e-mail/senha, checkbox de sessão e botão primário de largura total — só
-/// com componentes de `ui/ui.dart` e tokens, sem Riverpod/go_router reais.
+/// e-mail/senha e botão primário de largura total — só com componentes de
+/// `ui/ui.dart` e tokens, sem Riverpod/go_router reais.
 /// Serve de referência para qualquer tela de acesso futura (ex.: login de um
 /// módulo isolado ou recuperação de senha).
 class _LoginPatternExample extends StatefulWidget {
@@ -25,7 +25,6 @@ class _LoginPatternExample extends StatefulWidget {
 class _LoginPatternExampleState extends State<_LoginPatternExample> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
-  bool _manterConectado = true;
 
   @override
   void dispose() {
@@ -91,21 +90,11 @@ class _LoginPatternExampleState extends State<_LoginPatternExample> {
                   placeholder: 'Digite sua senha',
                 ),
               ),
-              const SizedBox(height: AppSpacing.space4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppCheckbox(
-                    checked: _manterConectado,
-                    onChanged: (v) => setState(() => _manterConectado = v),
-                    label: 'Manter conectado',
-                  ),
-                  AppButton(
-                    variant: AppButtonVariant.link,
-                    onPressed: () {},
-                    child: const Text('Esqueceu a senha?'),
-                  ),
-                ],
+              const SizedBox(height: AppSpacing.space2),
+              AppButton(
+                variant: AppButtonVariant.link,
+                onPressed: () {},
+                child: const Text('Esqueceu a senha?'),
               ),
               const SizedBox(height: AppSpacing.space4),
               AppButton(

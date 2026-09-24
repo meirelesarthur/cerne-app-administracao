@@ -22,6 +22,7 @@ void main() {
       expect(find.bySemanticsLabel('GB CERNE'), findsOneWidget);
       expect(find.text('Bem-vindo de volta!'), findsOneWidget);
       expect(find.text('ENTRAR'), findsOneWidget);
+      expect(find.text('Manter conectado'), findsNothing);
       expect(find.text('Login Administração'), findsNothing);
       expect(find.text('Login Operacional'), findsNothing);
       expect(tester.takeException(), isNull);
@@ -38,19 +39,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sua fazenda na palma da mão'), findsOneWidget);
-    });
-
-    testWidgets('alterna "Manter conectado" ao tocar', (tester) async {
-      await tester.pumpWidget(harness.buildApp());
-      await tester.pumpAndSettle();
-
-      final keepConnected = find.text('Manter conectado');
-      await tester.ensureVisible(keepConnected);
-      await tester.pumpAndSettle();
-      await tester.tap(keepConnected);
-      await tester.pump();
-
-      expect(tester.takeException(), isNull);
     });
 
     testWidgets('login padrão abre a Visão geral das fazendas', (tester) async {
