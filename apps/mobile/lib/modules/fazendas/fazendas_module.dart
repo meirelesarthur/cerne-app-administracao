@@ -25,6 +25,7 @@ GoRoute buildFazendasModuleRoute() {
     routes: [
       GoRoute(
         path: 'administracao',
+        name: 'farm.admin_center',
         builder: (context, state) => const _FazendasScaffold(
           child: ResponsibilityWorkspace(
             profile: FeatureProfile.administration,
@@ -36,6 +37,7 @@ GoRoute buildFazendasModuleRoute() {
         routes: [
           GoRoute(
             path: 'grupo/:group',
+            name: 'farm.admin_group',
             builder: (context, state) => _FazendasScaffold(
               child: GroupFeaturesScreen(
                 groupSlug: state.pathParameters['group']!,
@@ -46,6 +48,7 @@ GoRoute buildFazendasModuleRoute() {
           ),
           GoRoute(
             path: ':featureId',
+            name: 'farm.admin_feature',
             builder: (context, state) => _FazendasScaffold(
               child: MappedFeatureScreen(
                 featureId: state.pathParameters['featureId']!,
@@ -57,21 +60,25 @@ GoRoute buildFazendasModuleRoute() {
       ),
       GoRoute(
         path: 'visao-geral',
+        name: 'farm.overview',
         builder: (context, state) =>
             const _FazendasScaffold(child: FazendasHome()),
       ),
       GoRoute(
         path: 'atividades',
+        name: 'farm.activities',
         builder: (context, state) =>
             const _FazendasScaffold(child: AtividadesScreen()),
       ),
       GoRoute(
         path: 'fazendas',
+        name: 'farm.list',
         builder: (context, state) =>
             const _FazendasScaffold(child: FarmListScreen()),
       ),
       GoRoute(
         path: 'financeiro',
+        name: 'farm.financeiro_legacy',
         // Atalho legado; hoje resolve no painel Resultado, mesma tela do dashId
         // `resultado` (e dos aliases `financeiro`/`pecuaria`).
         builder: (context, state) =>
@@ -79,6 +86,7 @@ GoRoute buildFazendasModuleRoute() {
       ),
       GoRoute(
         path: 'mais',
+        name: 'farm.mais',
         builder: (context, state) =>
             const _FazendasScaffold(child: MaisScreen()),
       ),
@@ -89,6 +97,7 @@ GoRoute buildFazendasModuleRoute() {
       // Ver docs/ESTEIRA-DASHBOARDS-ADM.md, secao 2.
       GoRoute(
         path: 'consultas',
+        name: 'farm.consultas',
         builder: (context, state) => const _FazendasScaffold(
           child: ResponsibilityWorkspace(
             profile: FeatureProfile.administration,
@@ -103,11 +112,13 @@ GoRoute buildFazendasModuleRoute() {
         routes: [
           GoRoute(
             path: 'gerenciais',
+            name: 'farm.consultas_gerenciais',
             builder: (context, state) =>
                 _FazendasScaffold(child: buildAdminDashboard('consultas')),
           ),
           GoRoute(
             path: ':featureId',
+            name: 'farm.consulta_feature',
             builder: (context, state) => _FazendasScaffold(
               child: MappedFeatureScreen(
                 featureId: state.pathParameters['featureId']!,
@@ -127,6 +138,7 @@ GoRoute buildFazendasModuleRoute() {
       ),
       GoRoute(
         path: 'dashboards/:dashId',
+        name: 'farm.dashboard',
         builder: (context, state) => _FazendasScaffold(
           child: buildAdminDashboard(state.pathParameters['dashId']!),
         ),

@@ -15,7 +15,9 @@ import '../mocks/atividades.dart';
 import '../mocks/dashboards_mocks.dart';
 import '../ordem_servico/models.dart';
 import '../ordem_servico/state/ordem_servico_store.dart';
+import '../recent_access_catalog.dart';
 import '../state/fazendas_store.dart';
+import '../state/recent_access_store.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
 ///
@@ -102,9 +104,26 @@ class FazendasHome extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fazenda = ref.watch(
-      fazendasStoreProvider.select((s) => s.activeFarm.name),
+    final farmContext = ref.watch(
+      fazendasStoreProvider.select(
+        (s) => (id: s.activeFarmId, name: s.activeFarm.name),
+      ),
     );
+    final fazenda = farmContext.name;
+    final recentFunctions = ref.watch(
+      farmRecentAccessProvider.select((s) => s.forFarm(farmContext.id)),
+    );
+    final recentItems = [
+      for (final recent in recentFunctions)
+        if (farmQuickAccessDefinitionForId(recent.functionId)
+            case final function?)
+          AppQuickAccessItem(
+            id: function.id,
+            label: function.label,
+            icon: function.icon,
+            onPressed: () => context.push(recent.route),
+          ),
+    ];
     final ordens = ref
         .watch(ordemServicoStoreProvider.select((s) => s.ordens))
         .where((o) => o.fazenda == fazenda)
@@ -164,6 +183,8 @@ class FazendasHome extends ConsumerWidget {
           scrollEndPadding,
         ),
         children: [
+          rise(AppQuickAccessRail(items: recentItems)),
+          const SizedBox(height: AppSpacing.space5),
           rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
           const SizedBox(height: AppSpacing.space2),
           rise(

@@ -64,6 +64,7 @@ export 'pagination.dart';
 export 'progress_bar.dart';
 export 'pressable.dart';
 export 'quick_action.dart';
+export 'quick_access_rail.dart';
 export 'review_list.dart';
 export 'review_tabs.dart';
 export 'screen_header.dart';

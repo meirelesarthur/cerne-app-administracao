@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../modules/armazem/armazem_module.dart';
 import '../modules/bank/bank_module.dart';
 import '../modules/credito/credito_module.dart';
 import '../modules/fazendas/fazendas_module.dart';
+import '../modules/fazendas/recent_access_catalog.dart';
 import '../modules/fazendas/screens/busca_global_screen.dart';
+import '../modules/fazendas/state/fazendas_store.dart';
+import '../modules/fazendas/state/recent_access_store.dart';
 import '../modules/marketplace/marketplace_module.dart';
 import '../shell/module_config.dart';
 import '../shell/pages/login_page.dart';
@@ -31,6 +35,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refresh.value++;
   });
 
+  void recordFarmRecentAccess(String route) {
+    final function = farmQuickAccessDefinitionForRoute(route);
+    if (function == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final farmId = ref.read(fazendasStoreProvider).activeFarmId;
+      ref
+          .read(farmRecentAccessProvider.notifier)
+          .record(farmId, function.id, route);
+    });
+  }
+
+  final recentAccessObserver = _FarmRecentAccessObserver(
+    onRouteVisited: recordFarmRecentAccess,
+  );
+
   final router = GoRouter(
     initialLocation: '/login',
     refreshListenable: refresh,
@@ -39,11 +59,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return redirectForSession(state.uri.path, session);
     },
     routes: [
-      GoRoute(
-        path: '/',
-        redirect: (context, state) => '/fazendas/visao-geral',
-      ),
+      GoRoute(path: '/', redirect: (context, state) => '/fazendas/visao-geral'),
       ShellRoute(
+        observers: [recentAccessObserver],
         builder: (context, state, child) {
           final segments = state.uri.pathSegments;
           final moduleId = segments.isNotEmpty ? segments.first : 'fazendas';
@@ -127,6 +145,52 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return router;
 });
 
+class _FarmRecentAccessObserver extends NavigatorObserver {
+  _FarmRecentAccessObserver({required this.onRouteVisited});
+
+  final void Function(String route) onRouteVisited;
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+    _record(route);
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+    if (newRoute != null) _record(newRoute);
+  }
+
+  void _record(Route<dynamic> route) {
+    final arguments = route.settings.arguments;
+    String? parameter(String name) =>
+        arguments is Map ? arguments[name]?.toString() : null;
+
+    final path = switch (route.settings.name) {
+      'farm.activities' => '/fazendas/atividades',
+      'farm.consultas' => '/fazendas/consultas',
+      'farm.consultas_gerenciais' => '/fazendas/consultas/gerenciais',
+      'farm.financeiro_legacy' => '/fazendas/dashboards/resultado',
+      'farm.dashboard' => switch (parameter('dashId')) {
+        final id? => '/fazendas/dashboards/$id',
+        _ => null,
+      },
+      'farm.admin_feature' => switch (parameter('featureId')) {
+        final id? => '/fazendas/administracao/$id',
+        _ => null,
+      },
+      'farm.consulta_feature' => switch (parameter('featureId')) {
+        final id? => '/fazendas/consultas/$id',
+        _ => null,
+      },
+      _ => null,
+    };
+
+    if (path != null) onRouteVisited(path);
+  }
+}
+
 /// Política única de acesso do protótipo, separada do roteador para permitir
 /// testes determinísticos de deep links. O CERNE ADM tem um único perfil
 /// (Administração) e entra direto pelo login — sem tela de seleção de
@@ -157,13 +221,7 @@ String? redirectForSession(String path, PrototypeSessionState session) {
 /// Módulos com rota real registrada (todos, após a F4) — o loop genérico de
 /// `ModulePlaceholderScreen` abaixo só existe como rede de segurança para um
 /// módulo futuro sem tela própria ainda.
-const _wiredModules = {
-  'fazendas',
-  'bank',
-  'credito',
-  'marketplace',
-  'armazem',
-};
+const _wiredModules = {'fazendas', 'bank', 'credito', 'marketplace', 'armazem'};
 
 String _tabLabel(ModuleDef module, String tabPath) {
   for (final tab in module.bottomTabs) {
