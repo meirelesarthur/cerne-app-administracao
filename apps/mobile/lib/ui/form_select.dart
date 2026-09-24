@@ -40,7 +40,7 @@ class AppFormSelect extends StatelessWidget {
 
     final textStyle = TextStyle(
       fontFamily: AppTypography.fontFamily,
-      fontSize: AppTypography.xl,
+      fontSize: AppTypography.md,
       color: enabled ? inputColors.foreground : inputColors.muted,
     );
 
@@ -77,7 +77,7 @@ class AppFormSelect extends StatelessWidget {
                 placeholder!,
                 style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.xl,
+                  fontSize: AppTypography.md,
                   color: inputColors.placeholder,
                 ),
               ),

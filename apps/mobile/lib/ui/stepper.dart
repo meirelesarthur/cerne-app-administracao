@@ -131,7 +131,7 @@ class _AppStepperState extends State<AppStepper> {
                       ),
                       style: TextStyle(
                         fontFamily: AppTypography.fontFamily,
-                        fontSize: AppTypography.xl,
+                        fontSize: AppTypography.md,
                         fontWeight: AppTypography.weightSemibold,
                         color: semantic.fgDefault,
                       ),

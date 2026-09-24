@@ -262,7 +262,7 @@ class _OsDetailBodyState extends State<OsDetailBody> {
           child: Text(
             os.titulo,
             style: TextStyle(
-              fontSize: AppTypography.xl2,
+              fontSize: AppTypography.xlPlus2,
               fontWeight: AppTypography.weightSemibold,
               height: AppTypography.lineHeightTight,
               color: semantic.fgHeading,

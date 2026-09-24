@@ -246,7 +246,7 @@ class _CotacaoCard extends StatelessWidget {
                 Text(
                   cotacao.total,
                   style: TextStyle(
-                    fontSize: AppTypography.xl,
+                    fontSize: AppTypography.md,
                     fontWeight: AppTypography.weightBold,
                     color: semantic.fgDefault,
                   ),

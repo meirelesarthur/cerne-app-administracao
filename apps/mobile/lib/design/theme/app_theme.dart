@@ -75,7 +75,7 @@ ThemeData buildAppTheme(AppThemeVariant variant) {
             ),
             // corpo e texto de input (54349:2016)
             bodyLarge: outfit(
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               fontWeight: AppTypography.weightNormal,
               color: semantic.fgDefault,
             ),

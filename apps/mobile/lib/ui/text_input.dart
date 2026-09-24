@@ -116,7 +116,7 @@ class _AppTextInputState extends State<AppTextInput> {
         cursorColor: inputColors.focus,
         style: TextStyle(
           fontFamily: AppTypography.fontFamily,
-          fontSize: AppTypography.xl,
+          fontSize: AppTypography.md,
           color: widget.enabled ? inputColors.foreground : inputColors.muted,
         ),
         decoration: InputDecoration(
@@ -129,7 +129,7 @@ class _AppTextInputState extends State<AppTextInput> {
           hintText: widget.placeholder,
           hintStyle: TextStyle(
             fontFamily: AppTypography.fontFamily,
-            fontSize: AppTypography.xl,
+            fontSize: AppTypography.md,
             color: inputColors.placeholder,
           ),
         ),

@@ -235,7 +235,7 @@ class _ReviewRowState extends State<_ReviewRow> {
           item.value,
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
-            fontSize: AppTypography.xl,
+            fontSize: AppTypography.md,
             color: item.emphasis ? semantic.accentDefault : inputColors.muted,
           ),
         ),

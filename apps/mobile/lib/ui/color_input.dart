@@ -218,7 +218,7 @@ class _AppColorInputState extends State<AppColorInput> {
             '#',
             style: TextStyle(
               fontFamily: AppTypography.fontFamily,
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               color: widget.enabled ? inputColors.muted : inputColors.placeholder,
             ),
           ),
@@ -237,7 +237,7 @@ class _AppColorInputState extends State<AppColorInput> {
               cursorColor: inputColors.focus,
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
-                fontSize: AppTypography.xl,
+                fontSize: AppTypography.md,
                 color: widget.enabled ? inputColors.foreground : inputColors.muted,
               ),
               decoration: InputDecoration(
@@ -248,7 +248,7 @@ class _AppColorInputState extends State<AppColorInput> {
                 hintText: 'F6C23E',
                 hintStyle: TextStyle(
                   fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.xl,
+                  fontSize: AppTypography.md,
                   color: inputColors.placeholder,
                 ),
               ),
@@ -297,7 +297,7 @@ class _AppColorInputState extends State<AppColorInput> {
                 selected?.label ?? 'Selecionar cor',
                 style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.xl,
+                  fontSize: AppTypography.md,
                   color: selected == null
                       ? inputColors.placeholder
                       : (widget.enabled
@@ -431,7 +431,7 @@ class _ClosedPaletteSheet extends StatelessWidget {
                           option.label,
                           style: TextStyle(
                             fontFamily: AppTypography.fontFamily,
-                            fontSize: AppTypography.xl,
+                            fontSize: AppTypography.md,
                             color: inputColors.foreground,
                           ),
                         ),

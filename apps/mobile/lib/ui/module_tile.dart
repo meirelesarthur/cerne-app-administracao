@@ -78,7 +78,7 @@ class AppModuleTile extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: layout == AppModuleTileLayout.module
-            ? AppTypography.xl
+            ? AppTypography.md
             : dense
             ? AppTypography.base
             : AppTypography.md,

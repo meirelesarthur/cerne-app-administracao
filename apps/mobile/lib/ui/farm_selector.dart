@@ -44,7 +44,7 @@ class AppFarmSelector extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               color: semantic.accentDefault,
             ),
           ),

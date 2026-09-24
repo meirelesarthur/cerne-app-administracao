@@ -157,7 +157,7 @@ class _AppDateInputState extends State<AppDateInput> {
         cursorColor: inputColors.focus,
         style: TextStyle(
           fontFamily: AppTypography.fontFamily,
-          fontSize: AppTypography.xl,
+          fontSize: AppTypography.md,
           color: widget.enabled ? inputColors.foreground : inputColors.muted,
         ),
         decoration: InputDecoration(
@@ -168,7 +168,7 @@ class _AppDateInputState extends State<AppDateInput> {
           hintText: 'DD/MM/AAAA',
           hintStyle: TextStyle(
             fontFamily: AppTypography.fontFamily,
-            fontSize: AppTypography.xl,
+            fontSize: AppTypography.md,
             color: inputColors.placeholder,
           ),
         ),

@@ -188,7 +188,7 @@ class AppStatusCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: AppTypography.xl,
+                      fontSize: AppTypography.md,
                       fontWeight: AppTypography.weightMedium,
                       height: AppTypography.lineHeightSnug,
                       color: semantic.fgHeading,
@@ -246,7 +246,7 @@ class AppStatusCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: AppTypography.xl2,
+                          fontSize: AppTypography.xlPlus,
                           fontWeight: AppTypography.weightMedium,
                           height: AppTypography.lineHeightTight,
                           color: semantic.fgHeading,
@@ -434,7 +434,7 @@ class AppStatusCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: AppTypography.xl2,
+                        fontSize: AppTypography.xlPlus,
                         fontWeight: AppTypography.weightMedium,
                         height: AppTypography.lineHeightTight,
                         color: semantic.fgHeading,

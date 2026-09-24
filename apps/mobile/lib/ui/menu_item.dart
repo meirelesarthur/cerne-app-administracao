@@ -154,7 +154,7 @@ class AppMenuItem extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: AppTypography.xl,
+                        fontSize: AppTypography.md,
                         fontWeight: AppTypography.weightMedium,
                         color: labelColor,
                       ),

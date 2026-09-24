@@ -92,7 +92,7 @@ class AppSearchSelect extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
-            fontSize: AppTypography.xl,
+            fontSize: AppTypography.md,
             color: selected == null
                 ? inputColors.placeholder
                 : inputColors.foreground,
@@ -206,7 +206,7 @@ class _SearchSelectDockContentState extends State<_SearchSelectDockContent> {
             onChanged: (v) => setState(() => _query = v),
             style: TextStyle(
               fontFamily: AppTypography.fontFamily,
-              fontSize: AppTypography.xl,
+              fontSize: AppTypography.md,
               color: inputColors.foreground,
             ),
             decoration: InputDecoration(
@@ -217,7 +217,7 @@ class _SearchSelectDockContentState extends State<_SearchSelectDockContent> {
               hintText: widget.searchPlaceholder,
               hintStyle: TextStyle(
                 fontFamily: AppTypography.fontFamily,
-                fontSize: AppTypography.xl,
+                fontSize: AppTypography.md,
                 color: inputColors.placeholder,
               ),
             ),
