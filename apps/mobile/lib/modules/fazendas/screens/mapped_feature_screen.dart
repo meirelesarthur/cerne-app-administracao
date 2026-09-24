@@ -740,7 +740,7 @@ class _RecordsListState extends State<_RecordsList> {
           child: AppTextInput(
             controller: _searchController,
             placeholder: 'Nome, situação ou detalhe',
-            prefixIcon: const AppIcon(AppIcons.aiSearch),
+            prefixIcon: const AppIcon(AppIcons.search),
             onChanged: _setQuery,
           ),
         ),

@@ -222,7 +222,7 @@ class _ConsultaLista extends StatelessWidget {
           child: AppTextInput(
             controller: searchController,
             placeholder: 'Nome, curral ou detalhe',
-            prefixIcon: const AppIcon(AppIcons.aiSearch),
+            prefixIcon: const AppIcon(AppIcons.search),
             onChanged: onQueryChanged,
           ),
         ),

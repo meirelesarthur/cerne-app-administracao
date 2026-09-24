@@ -72,7 +72,7 @@ class _FarmPickerBodyState extends State<_FarmPickerBody> {
           label: 'Buscar fazenda',
           child: AppTextInput(
             placeholder: 'Nome, cidade ou UF',
-            prefixIcon: const AppIcon(AppIcons.aiSearch),
+            prefixIcon: const AppIcon(AppIcons.search),
             onChanged: (value) => setState(() => _query = value),
           ),
         ),

@@ -200,11 +200,6 @@ class AppIcons {
     HugeIcons.strokeRoundedSearchRemove,
   );
 
-  /// Busca por IA — `AiSearch01Icon` no Figma. No pacote Flutter atual, o
-  /// desenho equivalente com brilho é exposto como `AiSearch02`.
-  static const AppIconData aiSearch = AppIconData.glyph(
-    HugeIcons.strokeRoundedAiSearch02,
-  );
   static const AppIconData filter = AppIconData.glyph(
     HugeIcons.strokeRoundedFilterHorizontal,
   );

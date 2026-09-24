@@ -94,7 +94,7 @@ class _BuscaGlobalScreenState extends ConsumerState<BuscaGlobalScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: AppIcon(
-                    AppIcons.aiSearch,
+                    AppIcons.search,
                     size: AppSize.iconLg,
                     color: semantic.accentDefault,
                   ),

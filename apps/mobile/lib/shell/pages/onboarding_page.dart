@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../design/generated/app_radius.dart';
 import '../../design/generated/app_spacing.dart';
 import '../../design/generated/app_typography.dart';
 import '../../design/theme/app_theme_extension.dart';
@@ -73,9 +72,9 @@ const _slides = [
 /// Onboarding do Shell: carrossel de 5 telas (hero full-bleed + título +
 /// descrição), com Pular e Próximo; o último slide convida a começar.
 /// Suporta swipe via `PageView`. A imagem encosta nas bordas — inclusive sob
-/// a status bar — retangular, sem raio próprio; a folha branca de texto é
-/// quem tem raio (só no topo) e sobrepõe levemente a base da imagem, dentro
-/// da área segura. Título limitado a 2 linhas (trunca com reticências) para
+/// a status bar — retangular, sem raio próprio; a folha branca de texto
+/// sobrepõe levemente a base da imagem com um arco suave no topo, dentro da
+/// área segura. Título limitado a 2 linhas (trunca com reticências) para
 /// não quebrar o layout da folha.
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -156,72 +155,59 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                     Expanded(
                       flex: 4,
-                      // `Transform.translate` (não `margin`, que o Container
-                      // recusa negativo) sobrepõe a folha levemente sobre a
-                      // base da imagem — como a folha é opaca, só os cantos
-                      // arredondados "recortam" e revelam a imagem atrás,
-                      // deixando o raio aparente contra o fundo fotográfico
-                      // (pedido do usuário; antes o raio ficava na imagem,
-                      // contra o fundo já branco da folha — pouco visível).
+                      // `Transform.translate` sobrepõe a folha à base da foto;
+                      // o recorte curvo revela a imagem ao longo da divisão.
                       child: Transform.translate(
                         offset: const Offset(0, -AppSpacing.space5),
-                        child: Container(
+                        child: ClipPath(
+                          clipper: const _OnboardingPanelClipper(),
                           clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
+                          child: Container(
                             color: semantic.bgSurface,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(AppRadius.surface),
-                              topRight: Radius.circular(AppRadius.surface),
-                            ),
-                          ),
-                          // Sem `Center`: o texto encosta no topo da folha, logo
-                          // abaixo da imagem — só rola se não couber, não fica
-                          // flutuando no meio de um vão vazio (pedido do usuário
-                          // após ver o hero com folga demais da folha de texto).
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(
-                              AppSpacing.space6,
-                              AppSpacing.space4 + AppSpacing.space5,
-                              AppSpacing.space6,
-                              AppSpacing.space4,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 340,
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.space6,
+                                AppSpacing.space4 + AppSpacing.space5,
+                                AppSpacing.space6,
+                                AppSpacing.space4,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 340,
+                                    ),
+                                    child: AppHeading(
+                                      level: AppHeadingLevel.h1,
+                                      // +8px sobre o h1 global, só no hero.
+                                      style: const TextStyle(
+                                        fontSize: AppTypography.xlPlus2 + 8,
+                                      ),
+                                      child: Text(
+                                        slide.title,
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   ),
-                                  child: AppHeading(
-                                    level: AppHeadingLevel.h1,
-                                    // +8px sobre o h1 do padrão global (pedido do
-                                    // usuário só para o hero do onboarding).
-                                    style: const TextStyle(
-                                      fontSize: AppTypography.xlPlus2 + 8,
+                                  const SizedBox(height: AppSpacing.space2),
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 320,
                                     ),
                                     child: Text(
-                                      slide.title,
+                                      slide.desc,
                                       textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: semantic.fgMuted,
+                                        height: 1.4,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: AppSpacing.space2),
-                                ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 320,
-                                  ),
-                                  child: Text(
-                                    slide.desc,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: semantic.fgMuted,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -282,4 +268,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
     );
   }
+}
+
+/// A folha branca sobe ao centro e encontra a foto mais abaixo nas laterais,
+/// formando a curva côncava suave do onboarding de referência.
+class _OnboardingPanelClipper extends CustomClipper<Path> {
+  const _OnboardingPanelClipper();
+
+  @override
+  Path getClip(Size size) {
+    final curveDepth = AppSpacing.space8;
+    final path = Path()..moveTo(0, curveDepth);
+    path
+      ..cubicTo(
+        size.width * .18,
+        curveDepth,
+        size.width * .3,
+        0,
+        size.width / 2,
+        0,
+      )
+      ..cubicTo(
+        size.width * .7,
+        0,
+        size.width * .82,
+        curveDepth,
+        size.width,
+        curveDepth,
+      )
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant _OnboardingPanelClipper oldClipper) => false;
 }
