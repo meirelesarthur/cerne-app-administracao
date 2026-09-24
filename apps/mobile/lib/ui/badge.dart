@@ -46,7 +46,7 @@ class AppBadge extends StatelessWidget {
       alignment: Alignment.center,
       child: DefaultTextStyle.merge(
         style: TextStyle(
-          fontSize: AppTypography.xs,
+          fontSize: AppTypography.sm,
           fontWeight: AppTypography.weightBold,
           height: 1.0,
           color: colors.fg,

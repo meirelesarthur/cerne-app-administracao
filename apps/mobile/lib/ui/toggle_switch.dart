@@ -56,9 +56,9 @@ class AppToggleSwitch extends StatelessWidget {
                   height: trackHeight,
                   padding: const EdgeInsets.all(AppSpacing.space1),
                   decoration: BoxDecoration(
-                    color: checked
-                        ? semantic.accentDefault
-                        : AppColors.neutral300,
+                    // Trilho desligado com contraste (antes neutral300, 1,47:1
+                    // sobre branco — no sol parecia não haver controle).
+                    color: checked ? semantic.accentDefault : semantic.fgSubtle,
                     borderRadius: BorderRadius.circular(trackHeight),
                   ),
                   child: AnimatedAlign(

@@ -138,9 +138,9 @@ WidgetbookComponent buildSegmentedTabsWidgetbookComponent() {
         ),
       ),
       WidgetbookUseCase(
-        name: 'Abas da home ADM',
+        name: 'Três períodos',
         builder: (context) =>
-            const _SegmentedTabsPreview(labels: ['Início', 'Carteira', 'Apps']),
+            const _SegmentedTabsPreview(labels: ['Hoje', 'Semana', 'Mês']),
       ),
     ],
   );

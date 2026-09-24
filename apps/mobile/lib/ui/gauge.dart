@@ -48,7 +48,7 @@ class AppGauge extends StatelessWidget {
   /// um número maior sem afetar os demais usos do componente.
   final double? valueFontSize;
 
-  /// Tamanho da legenda abaixo do número; padrão [AppTypography.xs].
+  /// Tamanho da legenda abaixo do número; padrão [AppTypography.sm].
   final double? labelFontSize;
 
   /// Meta, na mesma unidade de [value] — desenhada como um traço no arco.
@@ -89,7 +89,7 @@ class AppGauge extends StatelessWidget {
           valueLabel: valueLabel ?? '${(_fraction * 100).round()}%',
           valueFontSize: valueFontSize ?? AppTypography.xl2,
           label: label,
-          labelFontSize: labelFontSize ?? AppTypography.xs,
+          labelFontSize: labelFontSize ?? AppTypography.sm,
           valueColor: semantic.fgDefault,
           labelColor: semantic.fgMuted,
         ),
@@ -256,7 +256,7 @@ WidgetbookComponent buildGaugeWidgetbookComponent() {
             size: 200,
             tone: AppGaugeTone.positive,
             valueFontSize: AppTypography.xl2 * 2,
-            labelFontSize: AppTypography.xs * 2,
+            labelFontSize: AppTypography.sm * 2,
             label: '80/100',
           ),
         ),

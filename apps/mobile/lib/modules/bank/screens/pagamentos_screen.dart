@@ -159,7 +159,7 @@ class _PagamentosScreenState extends ConsumerState<PagamentosScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                           color: semantic.fgMuted,
                         ),
                       ),

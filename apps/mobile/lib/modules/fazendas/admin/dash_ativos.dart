@@ -237,7 +237,7 @@ class _AtivoCard extends StatelessWidget {
                         Text(
                           ativo.proximaManutencao,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgSubtle,
                           ),
                         ),

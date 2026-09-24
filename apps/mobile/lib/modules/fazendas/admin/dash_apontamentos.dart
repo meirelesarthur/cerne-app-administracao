@@ -130,7 +130,7 @@ class _ApontamentoDetailBody extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: AppTypography.xs,
+              fontSize: AppTypography.sm,
               fontWeight: AppTypography.weightSemibold,
               color: semantic.fgMuted,
               letterSpacing: 0.4,

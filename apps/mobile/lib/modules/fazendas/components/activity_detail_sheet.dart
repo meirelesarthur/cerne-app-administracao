@@ -104,7 +104,7 @@ class _ActivityDetailBody extends StatelessWidget {
                   Text(
                     _kindLabel[activity.kind]!.toUpperCase(),
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                       fontWeight: AppTypography.weightBold,
                       color: semantic.fgSubtle,
                       letterSpacing: 0.4,

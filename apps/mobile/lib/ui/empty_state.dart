@@ -228,7 +228,7 @@ class _EmptyStateArt extends StatelessWidget {
                     color: color,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: semantic.bgSheet,
+                      color: semantic.bgInset,
                       width: AppSpacing.threeQuarter,
                     ),
                   ),

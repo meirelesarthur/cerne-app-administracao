@@ -19,6 +19,7 @@ class AppPressable extends StatelessWidget {
     this.selected,
     this.toggled,
     this.showVisualFeedback = true,
+    this.excludeSemantics = true,
   });
 
   final Widget child;
@@ -29,6 +30,13 @@ class AppPressable extends StatelessWidget {
   final bool? selected;
   final bool? toggled;
   final bool showVisualFeedback;
+
+  /// `true` (padrão) funde a superfície num único nó acessível com
+  /// [semanticLabel]. `false` preserva os controles internos — use quando a
+  /// superfície inteira é clicável **e** abriga outro botão real (ex.: o "+"
+  /// de adição rápida dentro do card de [AppSquareGroupGrid]); textos
+  /// decorativos internos devem então vir em `ExcludeSemantics`.
+  final bool excludeSemantics;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +60,8 @@ class AppPressable extends StatelessWidget {
       label: semanticLabel,
       selected: selected,
       toggled: toggled,
-      excludeSemantics: true,
+      container: !excludeSemantics,
+      excludeSemantics: excludeSemantics,
       child: minTouchTarget
           ? ConstrainedBox(
               constraints: const BoxConstraints(

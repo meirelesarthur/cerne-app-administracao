@@ -209,7 +209,7 @@ class _BarChartPainter extends CustomPainter {
       text: TextSpan(
         text: formatValue(d.value),
         style: TextStyle(
-          fontSize: AppTypography.xs,
+          fontSize: AppTypography.sm,
           fontWeight: AppTypography.weightSemibold,
           color: color,
         ),

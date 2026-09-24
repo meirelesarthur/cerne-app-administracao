@@ -135,7 +135,7 @@ class _AlertPill extends StatelessWidget {
               Text(
                 item.label,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   height: AppTypography.lineHeightTight,
                   color: semantic.fgMuted,
                 ),

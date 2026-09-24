@@ -95,8 +95,11 @@ const feedback = {
   success: { bg: primitive.brand[50], border: primitive.brand[200], text: primitive.brand[700], solid: primitive.brand[600] },
   // Figma 54300-2458: o vermelho de "Cancelar" (borda + rótulo do botão outline) e o
   // âmbar do badge "Em análise" são hexes próprios da referência, não tons da escala.
-  error: { bg: primitive.red[50], border: primitive.red[200], text: '#ed3437', solid: '#ed3437' },
-  warning: { bg: primitive.amber[50], border: primitive.amber[200], text: '#be9304', solid: '#be9304' },
+  // Auditoria de UX (09/2026): o texto de erro e de aviso passa aos tons 700 da
+  // escala para ficar em AA (4,5:1) sobre branco — o #ed3437 dava 4,08:1 e o
+  // âmbar #be9304 dava 2,85:1. `solid` continua o hex da referência.
+  error: { bg: primitive.red[50], border: primitive.red[200], text: primitive.red[700], solid: '#ed3437' },
+  warning: { bg: primitive.amber[50], border: primitive.amber[200], text: primitive.amber[700], solid: '#be9304' },
   info: { bg: primitive.blue[50], border: primitive.blue[200], text: primitive.blue[600], solid: primitive.blue[500] },
   notice: primitive.amber[500],
 } as const
@@ -159,8 +162,12 @@ export interface ThemePalette {
    * `sheet` é a folha de conteúdo do Figma (`action-card`): superfície levemente
    * distinta do branco puro, com raio 24 no topo, que cobre o canvas em toda tela.
    * `track` é o trilho do segmented control.
+   * `inset` é o bloco cinza que agrupa conteúdo *sobre* a folha branca
+   * (seções do detalhe, card inset, menu sutil). No claro é o cinza da folha;
+   * no Modo GB precisa ser o verde elevado — ali `sheet` é igual à folha e o
+   * bloco sumia.
    */
-  bg: { canvas: string; sheet: string; surface: string; subtle: string; raised: string; track: string; kpi: string }
+  bg: { canvas: string; sheet: string; surface: string; subtle: string; raised: string; track: string; kpi: string; inset: string }
   /**
    * Preenchimento dos campos de formulário (`AppFieldCapsule`), que precisa
    * contrastar com a superfície em que o campo está — não com um branco fixo.
@@ -227,12 +234,15 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       default: '#141414',
       heading: '#262626',
       section: '#1f1a19',
-      muted: '#6b7280',
+      // Auditoria de UX (09/2026): muted/subtle/quiet escurecidos para AA (4,5:1)
+      // também sobre o canvas cinza — o público lê no sol. Antes: #6b7280 e
+      // #80807f (3,47:1 no canvas).
+      muted: '#636b78',
       secondary: '#615b58',
-      subtle: '#80807f',
-      quiet: '#80807f',
-      // rgba(2,53,53,.9) renderizado a 60% de opacidade no Figma = alpha .54
-      placeholder: 'rgba(2,53,53,0.54)',
+      subtle: '#686867',
+      quiet: '#686867',
+      // Figma: alpha .54; subido para .64 para o exemplo do campo ser legível.
+      placeholder: 'rgba(2,53,53,0.64)',
       inverse: primitive.neutral[0],
     },
     // O canvas e a folha estrutural permanecem cinza. Todo elemento que recebe
@@ -247,13 +257,16 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       raised: primitive.neutral[0],
       track: '#e6e6e6',
       kpi: primitive.neutral[0],
+      inset: '#f0f0f0',
     },
     // Sobre o branco de `bg.surface`, o campo precisa de um cinza próprio
     // para se destacar (neutral[100]) — `bg.subtle`/`bg.raised` são brancos
     // aqui e não serviriam. Sobre o cinza do canvas/folha, o branco puro já
     // contrasta, e é a leitura histórica do campo de busca do app.
     field: { onSurface: primitive.neutral[100], onCanvas: primitive.neutral[0] },
-    border: { default: '#e8e9e1', strong: '#d6d8ce', subtle: '#f0f1ea', tint: primitive.brand[100] },
+    // `strong` escurecido na auditoria de UX: é a borda de repouso dos campos,
+    // que antes sumiam na folha branca (1,09:1).
+    border: { default: '#e8e9e1', strong: '#c4c7bb', subtle: '#f0f1ea', tint: primitive.brand[100] },
     accent: { default: primitive.brand[700], hover: primitive.brand[800], subtle: primitive.brand[50], contrast: primitive.neutral[0] },
     ink: {
       bg: '#131712',
@@ -300,8 +313,9 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     tone: {
       brand: { bg: primitive.brand[50], border: primitive.brand[200], fg: primitive.brand[700] },
       blue: { bg: primitive.blue[50], border: primitive.blue[200], fg: primitive.blue[600] },
-      amber: { bg: primitive.amber[50], border: primitive.amber[200], fg: primitive.amber[600] },
-      red: { bg: primitive.red[50], border: primitive.red[200], fg: primitive.red[600] },
+      // Âmbar e vermelho no tom 700: o 600 dava 3,07:1 sobre o fundo 50.
+      amber: { bg: primitive.amber[50], border: primitive.amber[200], fg: primitive.amber[700] },
+      red: { bg: primitive.red[50], border: primitive.red[200], fg: primitive.red[700] },
       neutral: { bg: primitive.neutral[100], border: primitive.neutral[200], fg: primitive.neutral[600] },
     },
   },
@@ -315,12 +329,13 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       section: '#e2f0e8',
       muted: '#8fb3a2',
       secondary: '#8fb3a2',
-      subtle: '#5f7d6e',
+      // #5f7d6e dava 2,80:1 sobre bg.raised; #86a696 dá 4,76:1.
+      subtle: '#86a696',
       quiet: '#8fb3a2',
       placeholder: 'rgba(226,240,232,0.54)',
       inverse: '#051008',
     },
-    bg: { canvas: '#051008', sheet: '#0e2a1d', surface: '#0e2a1d', subtle: '#0a2016', raised: '#123a28', track: 'rgba(255,255,255,0.10)', kpi: '#0e2a1d' },
+    bg: { canvas: '#051008', sheet: '#0e2a1d', surface: '#0e2a1d', subtle: '#0a2016', raised: '#123a28', track: 'rgba(255,255,255,0.10)', kpi: '#0e2a1d', inset: '#123a28' },
     // Nenhuma superfície de gbMode é branca — os dois papéis convergem para
     // `bg.raised` (o mesmo verde elevado dos cards), corrigindo o campo que
     // antes virava branco puro sobre o tema escuro (quebra de contraste
@@ -347,7 +362,8 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     },
     // gbMode mantém a identidade escura, mas segue a mesma direção: CTA/ativo
     // do dock em verde sólido de marca + texto branco, nav em superfície opaca.
-    cta: { bg: '#10b981', hover: '#34d399', fg: primitive.neutral[0] },
+    // Texto do CTA escuro: branco sobre #10b981 dava 2,54:1; #051008 dá 7,64:1.
+    cta: { bg: '#10b981', hover: '#34d399', fg: '#051008' },
     nav: { bg: '#0e2a1d', fg: '#8fb3a2', active: '#10b981', border: 'rgba(255,255,255,0.10)' },
     shadow: {
       card: '0 1px 3px rgba(0,0,0,0.4)',
@@ -385,10 +401,9 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
 export const font = {
   family: { sans: "'Outfit', sans-serif" },
   size: {
-    // Figma 54300-2458: 10 é o badge de status; 20 é o título de tela do
-    // cabeçalho de saudação (entre xlPlus 18 e 2xl 22).
-    '2xs': '10px',
-    xs: '11px',
+    // 20 é o título de tela do cabeçalho de saudação (entre xlPlus 18 e 2xl 22).
+    // Auditoria de UX (09/2026): 12px é o piso — os antigos 2xs (10) e xs (11)
+    // saíram da escala; o corpo de leitura fica em 14 (md).
     sm: '12px',
     base: '13px',
     md: '14px',
@@ -435,11 +450,13 @@ export const space = {
 } as const
 
 export const size = {
-  control: '44px',
+  // Alvos de toque em 48dp (Material) — o público usa luva e está em pé no
+  // campo. O CTA grande fica em 52.
+  control: '48px',
   controlSm: '36px',
   controlLg: '52px',
-  btn: { sm: '44px', md: '44px', lg: '48px' }, // lg = altura do CTA pill do Figma (54349:2068)
-  iconBtn: { sm: '44px', md: '44px', lg: '48px' },
+  btn: { sm: '48px', md: '48px', lg: '52px' },
+  iconBtn: { sm: '48px', md: '48px', lg: '52px' },
   toggle: { track: '40px', thumb: '18px' },
   tableRow: '42px',
   drawer: '320px',
@@ -453,7 +470,8 @@ export const size = {
   icon: { xs: '14px', sm: '16px', smPlus: '18px', md: '20px', lg: '24px', xl: '28px', xxl: '32px' },
   // Espessura do traço do ícone. Único valor do sistema — `AppIcon` o aplica a
   // todo ícone renderizado; nenhuma tela passa espessura própria.
-  iconStroke: '1.2px',
+  // 1.5 (antes 1.2): traço fino some ao ar livre.
+  iconStroke: '1.5px',
 } as const
 
 // Nova UI: geometria cápsula — raios generosos em toda a hierarquia (referência)

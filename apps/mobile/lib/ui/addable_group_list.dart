@@ -82,7 +82,7 @@ class _GroupRow extends StatelessWidget {
               Text(
                 description,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   color: semantic.fgMuted,
                 ),
               ),

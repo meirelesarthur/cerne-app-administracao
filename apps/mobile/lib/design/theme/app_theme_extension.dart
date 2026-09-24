@@ -21,6 +21,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.fgInverse,
     required this.bgCanvas,
     required this.bgSheet,
+    required this.bgInset,
     required this.bgSurface,
     required this.bgSubtle,
     required this.bgRaised,
@@ -93,6 +94,10 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color fgInverse;
   final Color bgCanvas;
   final Color bgSheet;
+
+  /// Bloco cinza que agrupa conteúdo sobre a folha branca — visível nos dois
+  /// temas (no Modo GB, `bgSheet` é igual à folha).
+  final Color bgInset;
   final Color bgSurface;
   final Color bgSubtle;
   final Color bgRaised;
@@ -185,6 +190,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     fgInverse: AppColorsLight.fgInverse,
     bgCanvas: AppColorsLight.bgCanvas,
     bgSheet: AppColorsLight.bgSheet,
+    bgInset: AppColorsLight.bgInset,
     bgSurface: AppColorsLight.bgSurface,
     bgSubtle: AppColorsLight.bgSubtle,
     bgRaised: AppColorsLight.bgRaised,
@@ -258,6 +264,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     fgInverse: AppColorsGbMode.fgInverse,
     bgCanvas: AppColorsGbMode.bgCanvas,
     bgSheet: AppColorsGbMode.bgSheet,
+    bgInset: AppColorsGbMode.bgInset,
     bgSurface: AppColorsGbMode.bgSurface,
     bgSubtle: AppColorsGbMode.bgSubtle,
     bgRaised: AppColorsGbMode.bgRaised,
@@ -332,6 +339,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? fgInverse,
     Color? bgCanvas,
     Color? bgSheet,
+    Color? bgInset,
     Color? bgSurface,
     Color? bgSubtle,
     Color? bgRaised,
@@ -404,6 +412,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       fgInverse: fgInverse ?? this.fgInverse,
       bgCanvas: bgCanvas ?? this.bgCanvas,
       bgSheet: bgSheet ?? this.bgSheet,
+      bgInset: bgInset ?? this.bgInset,
       bgSurface: bgSurface ?? this.bgSurface,
       bgSubtle: bgSubtle ?? this.bgSubtle,
       bgRaised: bgRaised ?? this.bgRaised,
@@ -482,6 +491,7 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       fgInverse: c(fgInverse, other.fgInverse),
       bgCanvas: c(bgCanvas, other.bgCanvas),
       bgSheet: c(bgSheet, other.bgSheet),
+      bgInset: c(bgInset, other.bgInset),
       bgSurface: c(bgSurface, other.bgSurface),
       bgSubtle: c(bgSubtle, other.bgSubtle),
       bgRaised: c(bgRaised, other.bgRaised),

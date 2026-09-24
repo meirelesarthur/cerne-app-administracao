@@ -56,7 +56,7 @@ class AppDetailSection extends StatelessWidget {
     };
     final iconColor = alert?.fg ?? semantic.accentDefault;
     final bubble = alert?.bg ?? semantic.accentSubtle;
-    final block = alert?.bg ?? semantic.bgSheet;
+    final block = alert?.bg ?? semantic.bgInset;
     final border = alert?.border;
 
     return Column(
@@ -94,7 +94,7 @@ class AppDetailSection extends StatelessWidget {
                   vertical: AppSpacing.half,
                 ),
                 decoration: BoxDecoration(
-                  color: semantic.bgSheet,
+                  color: semantic.bgInset,
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Text(

@@ -26,7 +26,26 @@ void main() {
 
       expect(find.text('Operação concluída'), findsOneWidget);
       expect(find.text('Detalhes da operação.'), findsOneWidget);
-      expect(findAppIcon(AppIcons.checkCircle2), findsOneWidget);
+      expect(findAppIcon(AppIcons.checkSquare), findsOneWidget);
+    });
+
+    testWidgets('cada resultado tem seu ícone de sinalização', (tester) async {
+      const esperado = {
+        AppResultKind.created: AppIcons.checkSquare,
+        AppResultKind.updated: AppIcons.editSquare,
+        AppResultKind.deleted: AppIcons.deleteSquare,
+        AppResultKind.pending: AppIcons.cloudSaved,
+        AppResultKind.warning: AppIcons.alertSquare,
+        AppResultKind.error: AppIcons.cancelSquare,
+        AppResultKind.info: AppIcons.infoSquare,
+      };
+      for (final MapEntry(key: kind, value: icon) in esperado.entries) {
+        await tester.pumpWidget(
+          _wrap(AppSuccessPanel(kind: kind, title: kind.name)),
+        );
+        await tester.pumpAndSettle();
+        expect(findAppIcon(icon), findsOneWidget, reason: kind.name);
+      }
     });
 
     testWidgets('aceita ícone customizado e ações', (tester) async {

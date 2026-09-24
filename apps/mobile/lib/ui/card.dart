@@ -60,7 +60,7 @@ class AppCard extends StatelessWidget {
     final isGlass = variant == AppCardVariant.glass;
     final bg = switch (variant) {
       AppCardVariant.ink => semantic.inkBg,
-      AppCardVariant.inset => semantic.bgSheet,
+      AppCardVariant.inset => semantic.bgInset,
       AppCardVariant.surface => semantic.bgRaised,
       AppCardVariant.glass => AppComponentColors.loginCardFill,
     };

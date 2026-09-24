@@ -371,7 +371,7 @@ class _CurralTile extends StatelessWidget {
               Text(
                 'GMD ${ind.gmdKg.toStringAsFixed(2)} kg · desempenho ${ind.indicadorDesempenhoPct}%',
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   color: semantic.fgMuted,
                 ),
               ),

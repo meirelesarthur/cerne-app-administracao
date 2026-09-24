@@ -236,9 +236,9 @@ WidgetbookComponent buildActionBarWidgetbookComponent() {
           child: AppActionBar(
             alternativeLabel: 'Pausar execução',
             onAlternative: () {},
-            primaryLabel: 'Marcar como entregue',
+            primaryLabel: 'Entregar serviço',
             onPrimary: () {},
-            secondaryLabel: 'Marcar como refeita',
+            secondaryLabel: 'Precisa refazer',
             onSecondary: () {},
           ),
         ),

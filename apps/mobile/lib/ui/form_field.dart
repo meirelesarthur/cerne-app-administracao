@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
@@ -66,13 +65,13 @@ class AppFormField extends StatelessWidget {
                 ),
               ),
               if (required)
-                const Text(
+                Text(
                   '*',
                   style: TextStyle(
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.md,
                     fontWeight: AppTypography.weightMedium,
-                    color: AppColors.feedbackErrorText,
+                    color: semantic.toneRedFg,
                   ),
                 ),
               if (helpIcon != null) ...[
@@ -94,27 +93,30 @@ class AppFormField extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const AppIcon(
+                  AppIcon(
                     AppIcons.alertCircle,
                     size: AppSize.iconXs,
-                    color: AppColors.feedbackErrorText,
+                    color: semantic.toneRedFg,
                   ),
                   const SizedBox(width: AppSpacing.space1),
                   Flexible(
                     child: Text(
                       error!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppTypography.fontFamily,
                         fontSize: AppTypography.sm,
                         fontWeight: AppTypography.weightMedium,
-                        color: AppColors.feedbackErrorText,
+                        color: semantic.toneRedFg,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-          ] else if (hint != null) ...[
+          ],
+          // A dica continua visível junto do erro: é quando a pessoa erra que
+          // ela mais precisa da instrução.
+          if (hint != null) ...[
             const SizedBox(height: AppSpacing.space2),
             Text(
               hint!,

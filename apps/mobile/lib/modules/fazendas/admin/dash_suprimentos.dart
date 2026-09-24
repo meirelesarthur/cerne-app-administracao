@@ -254,7 +254,7 @@ class _CotacaoCard extends StatelessWidget {
                 Text(
                   'Dados de exemplo',
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     fontStyle: FontStyle.italic,
                     color: semantic.fgSubtle,
                   ),
@@ -296,7 +296,7 @@ void _showCotacaoDetail(BuildContext context, Cotacao c) {
                       Text(
                         _tipoLabel[c.tipo]!.toUpperCase(),
                         style: TextStyle(
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                           fontWeight: AppTypography.weightSemibold,
                           color: semantic.fgSubtle,
                         ),
@@ -347,7 +347,7 @@ void _showCotacaoDetail(BuildContext context, Cotacao c) {
                   Text(
                     'por ${c.unidade}',
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                       color: semantic.fgSubtle,
                     ),
                   ),
@@ -408,7 +408,7 @@ void _showCotacaoDetail(BuildContext context, Cotacao c) {
                       Text(
                         historicoLabels[i],
                         style: TextStyle(
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                           color: semantic.fgSubtle,
                         ),
                       ),

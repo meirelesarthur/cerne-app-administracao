@@ -122,7 +122,7 @@ class AppBentoTile extends StatelessWidget {
                         child: Text(
                           caption!,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             height: AppTypography.lineHeightSnug,
                             color: _isAccent
                                 ? AppColors.neutral0.withValues(alpha: 0.7)

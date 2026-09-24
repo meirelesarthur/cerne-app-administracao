@@ -168,8 +168,8 @@ class _DonutChartPainter extends CustomPainter {
       final labelPainter = TextPainter(
         text: TextSpan(
           text: centerLabel,
-          // 9px no React não tem token exato; AppTypography.xs (11) é o mais próximo.
-          style: TextStyle(fontSize: AppTypography.xs, color: labelColor),
+          // 9px no React não tem token exato; AppTypography.sm (11) é o mais próximo.
+          style: TextStyle(fontSize: AppTypography.sm, color: labelColor),
         ),
         textDirection: TextDirection.ltr,
       )..layout();

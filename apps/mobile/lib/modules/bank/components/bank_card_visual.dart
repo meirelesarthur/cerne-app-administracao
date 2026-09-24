@@ -69,7 +69,7 @@ class BankCardVisual extends StatelessWidget {
                         Text(
                           Cartao.tipo,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             fontWeight: AppTypography.weightMedium,
                             color: AppComponentColors.hubBankCardFgMuted,
                           ),
@@ -124,7 +124,7 @@ class BankCardVisual extends StatelessWidget {
                           Text(
                             'VALIDADE',
                             style: TextStyle(
-                              fontSize: AppTypography.xs,
+                              fontSize: AppTypography.sm,
                               color: AppComponentColors.hubBankCardFgMuted,
                               letterSpacing: 0.4,
                             ),
@@ -144,7 +144,7 @@ class BankCardVisual extends StatelessWidget {
                     Text(
                       'Final ${Cartao.finalNumero}',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         fontWeight: AppTypography.weightMedium,
                         color: AppComponentColors.hubBankCardFgMuted,
                       ),

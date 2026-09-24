@@ -297,7 +297,7 @@ class _CreditPartnerCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     color: semantic.fgMuted,
                   ),
                 ),

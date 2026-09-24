@@ -16,15 +16,15 @@ class AppLayout {
 class AppSize {
   AppSize._();
 
-  static const double control = 44;
+  static const double control = 48;
   static const double controlSm = 36;
   static const double controlLg = 52;
-  static const double btnSm = 44;
-  static const double btnMd = 44;
-  static const double btnLg = 48;
-  static const double iconBtnSm = 44;
-  static const double iconBtnMd = 44;
-  static const double iconBtnLg = 48;
+  static const double btnSm = 48;
+  static const double btnMd = 48;
+  static const double btnLg = 52;
+  static const double iconBtnSm = 48;
+  static const double iconBtnMd = 48;
+  static const double iconBtnLg = 52;
   static const double toggleTrack = 40;
   static const double toggleThumb = 18;
   static const double tableRow = 42;
@@ -38,7 +38,7 @@ class AppSize {
   static const double iconLg = 24;
   static const double iconXl = 28;
   static const double iconXxl = 32;
-  static const double iconStroke = 1.2;
+  static const double iconStroke = 1.5;
 }
 
 /// Métricas não coloridas de componentes específicos (revealMenu, hub, tabbar…).

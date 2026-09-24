@@ -45,6 +45,7 @@ export 'hardware_simulator.dart';
 export 'heading.dart';
 export 'icon_button.dart';
 export 'illustration_slot.dart';
+export 'leave_guard.dart';
 export 'line_chart.dart';
 export 'kpi_stat_card.dart';
 export 'menu_item.dart';

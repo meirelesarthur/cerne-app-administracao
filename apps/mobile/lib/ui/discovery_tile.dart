@@ -10,8 +10,7 @@ import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
 
 /// Card de descoberta usado nos trilhos de acesso rápido e busca otimizada.
-/// A mesma anatomia aparece na home administrativa e nas seções de produtos
-/// da busca: ícone de 32 px no topo, nome na base e rolagem horizontal.
+/// A mesma anatomia aparece nas seções de produtos da busca: ícone de 32 px no topo, nome na base e rolagem horizontal.
 ///
 /// [selected] tinge ícone e rótulo com a cor de destaque e troca o fundo para
 /// [AppSemanticColors.accentSubtle] — usado quando o trilho também funciona
@@ -93,16 +92,16 @@ WidgetbookComponent buildDiscoveryTileWidgetbookComponent() {
                 const SizedBox(width: AppSpacing.space2),
             itemBuilder: (context, index) => AppDiscoveryTile(
               icon: [
-                AppIcons.sprout,
-                AppIcons.boxes,
-                AppIcons.store,
-                AppIcons.openFinance,
+                AppIcons.confinamento,
+                AppIcons.pecuaria,
+                AppIcons.agricultura,
+                AppIcons.sincronizar,
               ][index],
               label: [
-                'Fazendas',
-                'Gestão de Estoque',
-                'Marketplace',
-                'Open Finance',
+                'Confinamento',
+                'Pecuária',
+                'Agricultura',
+                'Sincronizar',
               ][index],
               onTap: () {},
             ),

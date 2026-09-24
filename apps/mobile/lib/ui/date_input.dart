@@ -4,6 +4,7 @@ import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
 import 'field_capsule.dart';
+import 'icon_button.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
@@ -135,17 +136,16 @@ class _AppDateInputState extends State<AppDateInput> {
     return AppFieldCapsule(
       focused: _focused,
       invalid: widget.invalid,
-      trailing: IconButton(
+      // AppIconButton garante o alvo de 48dp (o IconButton compacto ficava em
+      // ~40dp com o glifo de 20px).
+      trailing: AppIconButton(
         onPressed: widget.enabled ? _openPicker : null,
-        visualDensity: VisualDensity.compact,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
+        label: 'Escolher no calendário',
         icon: AppIcon(
           AppIcons.calendar,
           size: AppSize.iconMd,
           color: widget.enabled ? inputColors.muted : inputColors.placeholder,
         ),
-        tooltip: 'Escolher no calendário',
       ),
       child: TextFormField(
         controller: _controller,

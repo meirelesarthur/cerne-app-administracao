@@ -107,7 +107,7 @@ class AppChartCard extends StatelessWidget {
               child: Text(
                 footnote!,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   color: semantic.fgSubtle,
                 ),
               ),

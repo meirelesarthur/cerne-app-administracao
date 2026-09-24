@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
@@ -39,9 +38,9 @@ class AppTag extends StatelessWidget {
 
   Color _color(AppSemanticColors semantic) => switch (tone) {
     AppTagTone.neutral => semantic.fgMuted,
-    AppTagTone.success => AppColors.feedbackSuccessText,
-    AppTagTone.warning => AppColors.feedbackWarningText,
-    AppTagTone.danger => AppColors.feedbackErrorText,
+    AppTagTone.success => semantic.toneBrandFg,
+    AppTagTone.warning => semantic.toneAmberFg,
+    AppTagTone.danger => semantic.toneRedFg,
   };
 
   @override
@@ -70,7 +69,7 @@ class AppTag extends StatelessWidget {
           ],
           DefaultTextStyle(
             style: TextStyle(
-              fontSize: AppTypography.xs2,
+              fontSize: AppTypography.sm,
               fontWeight: AppTypography.weightMedium,
               color: color,
             ),
@@ -101,20 +100,20 @@ WidgetbookComponent buildTagWidgetbookComponent() {
         ),
       ),
       WidgetbookUseCase(
-        name: 'Status de crédito',
+        name: 'Status de sincronização',
         builder: (context) => const Center(
           child: Wrap(
             spacing: AppSpacing.space2,
             runSpacing: AppSpacing.space2,
             children: [
-              AppTag(tone: AppTagTone.success, child: Text('Pré-aprovado')),
-              AppTag(tone: AppTagTone.warning, child: Text('Em análise')),
+              AppTag(tone: AppTagTone.success, child: Text('Enviado')),
+              AppTag(tone: AppTagTone.warning, child: Text('Na fila')),
               AppTag(
                 tone: AppTagTone.success,
                 icon: AppIcons.partyPopper,
-                child: Text('Aprovado'),
+                child: Text('Tudo sincronizado'),
               ),
-              AppTag(tone: AppTagTone.danger, child: Text('Recusado')),
+              AppTag(tone: AppTagTone.danger, child: Text('Falhou')),
             ],
           ),
         ),

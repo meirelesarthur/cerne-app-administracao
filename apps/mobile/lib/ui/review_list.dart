@@ -187,7 +187,7 @@ class _ReviewRowState extends State<_ReviewRow> {
                 Text(
                   item.label.toUpperCase(),
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     fontWeight: AppTypography.weightBold,
                     color: semantic.fgSubtle,
                     letterSpacing: 0.4,
@@ -269,7 +269,7 @@ WidgetbookComponent buildReviewListWidgetbookComponent() {
           child: AppReviewList(
             items: [
               AppReviewItem(label: 'Código', value: '1.01'),
-              AppReviewItem(label: 'Descrição', value: 'Administração'),
+              AppReviewItem(label: 'Descrição', value: 'Adubação de cobertura'),
               AppReviewItem(label: 'Status', value: 'Ativo', copyable: false),
             ],
           ),

@@ -253,7 +253,7 @@ class _Header extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     color: semantic.heroFgMuted,
                   ),
                 ),
@@ -344,7 +344,7 @@ class AppBalanceSummaryItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   color: semantic.heroFgSubtle,
                 ),
               ),

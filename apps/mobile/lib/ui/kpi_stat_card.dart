@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_shadows.dart';
 import '../design/generated/app_spacing.dart';
@@ -36,9 +35,9 @@ class AppKpiStatCard extends StatelessWidget {
 
   Color _valueColor(AppSemanticColors s) => switch (tone) {
     AppKpiStatTone.neutral => s.fgDefault,
-    AppKpiStatTone.positive => AppColors.feedbackSuccessText,
-    AppKpiStatTone.negative => AppColors.feedbackErrorText,
-    AppKpiStatTone.warning => AppColors.feedbackWarningText,
+    AppKpiStatTone.positive => s.toneBrandFg,
+    AppKpiStatTone.negative => s.toneRedFg,
+    AppKpiStatTone.warning => s.toneAmberFg,
   };
 
   @override
@@ -107,35 +106,35 @@ WidgetbookComponent buildKpiStatCardWidgetbookComponent() {
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Receita do mês',
-                  value: 'R\$ 42.300',
-                  caption: '+8% vs. mês anterior',
+                  label: 'Animais no cocho',
+                  value: '1.240',
+                  caption: '+3% vs. semana anterior',
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Saldo em caixa',
-                  value: 'R\$ 128.450',
+                  label: 'GMD médio',
+                  value: '1,42 kg',
                   tone: AppKpiStatTone.positive,
-                  caption: 'Disponível',
+                  caption: 'Acima da meta',
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Despesas',
-                  value: 'R\$ 9.870',
+                  label: 'Sobra de cocho',
+                  value: '6,8%',
                   tone: AppKpiStatTone.negative,
                 ),
               ),
               SizedBox(
                 width: 160,
                 child: AppKpiStatCard(
-                  label: 'Vencimentos',
+                  label: 'OS atrasadas',
                   value: '3',
                   tone: AppKpiStatTone.warning,
-                  caption: 'Próximos 7 dias',
+                  caption: 'Prazo vencido',
                 ),
               ),
             ],

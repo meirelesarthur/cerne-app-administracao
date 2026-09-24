@@ -3,10 +3,13 @@ import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
 import 'bottom_sheet.dart';
+import 'empty_state.dart';
+import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
 import 'field_capsule.dart';
+import 'pressable.dart';
 import 'package:cerne_app/design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
 
@@ -64,20 +67,25 @@ class AppSearchSelect extends StatelessWidget {
     final inputColors = appInputColors(context);
     final selected = _selected;
 
-    return AppFieldCapsule(
-      leading: AppIcon(
-        AppIcons.search,
-        size: AppSize.iconSm,
-        color: inputColors.placeholder,
-      ),
-      trailing: AppIcon(
-        AppIcons.chevronDown,
-        size: AppSize.iconSm,
-        color: inputColors.placeholder,
-      ),
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => _open(context),
+    // A cápsula inteira é o alvo de toque (antes só o texto respondia: o ícone
+    // de busca e a seta eram zonas mortas nas bordas).
+    return AppPressable(
+      semanticLabel:
+          '${label ?? placeholder}: ${selected?.label ?? 'nada escolhido'}',
+      onPressed: () => _open(context),
+      borderRadius: BorderRadius.circular(AppRadius.tile),
+      minTouchTarget: false,
+      child: AppFieldCapsule(
+        leading: AppIcon(
+          AppIcons.search,
+          size: AppSize.iconSm,
+          color: inputColors.placeholder,
+        ),
+        trailing: AppIcon(
+          AppIcons.chevronDown,
+          size: AppSize.iconSm,
+          color: inputColors.placeholder,
+        ),
         child: Text(
           selected?.label ?? placeholder,
           maxLines: 1,
@@ -218,15 +226,26 @@ class _SearchSelectDockContentState extends State<_SearchSelectDockContent> {
         const SizedBox(height: AppSpacing.space3),
         Expanded(
           child: filtered.isEmpty
+              // Duas variações: a busca zerou a lista, ou a lista já chegou
+              // vazia (ex.: só produtos com estoque e nenhum tem saldo).
               ? Center(
-                  child: Text(
-                    'Nada encontrado',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
-                      fontSize: AppTypography.sm,
-                      color: semantic.fgSubtle,
-                    ),
+                  child: SingleChildScrollView(
+                    child: widget.options.isEmpty
+                        ? const AppEmptyState(
+                            size: AppEmptyStateSize.compact,
+                            icon: AppIcons.inbox,
+                            title: 'Nenhuma opção disponível',
+                            description:
+                                'Não há itens cadastrados para esta escolha.',
+                          )
+                        : const AppEmptyState(
+                            size: AppEmptyStateSize.compact,
+                            icon: AppIcons.search,
+                            badgeIcon: AppIcons.x,
+                            tone: AppEmptyStateTone.info,
+                            title: 'Nada encontrado',
+                            description: 'Tente outro termo de busca.',
+                          ),
                   ),
                 )
               : ListView.separated(

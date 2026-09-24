@@ -68,33 +68,37 @@ class AppIconButton extends StatelessWidget {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
     final colors = _colors(semantic);
 
-    return Tooltip(
-      message: label,
-      child: Semantics(
-        label: label,
-        button: true,
-        enabled: onPressed != null,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(_borderRadius),
-            boxShadow: colors.shadow,
-          ),
-          child: Material(
-            color: colors.bg,
-            shape: RoundedRectangleBorder(
+    // Desabilitado precisa parecer desabilitado — antes era idêntico ao ativo.
+    return Opacity(
+      opacity: onPressed == null ? 0.38 : 1,
+      child: Tooltip(
+        message: label,
+        child: Semantics(
+          label: label,
+          button: true,
+          enabled: onPressed != null,
+          child: Container(
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(_borderRadius),
+              boxShadow: colors.shadow,
             ),
-            child: InkWell(
-              onTap: onPressed,
-              customBorder: RoundedRectangleBorder(
+            child: Material(
+              color: colors.bg,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(_borderRadius),
               ),
-              child: SizedBox(
-                width: _dimension,
-                height: _dimension,
-                child: IconTheme.merge(
-                  data: IconThemeData(color: colors.fg),
-                  child: Center(child: icon),
+              child: InkWell(
+                onTap: onPressed,
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(_borderRadius),
+                ),
+                child: SizedBox(
+                  width: _dimension,
+                  height: _dimension,
+                  child: IconTheme.merge(
+                    data: IconThemeData(color: colors.fg),
+                    child: Center(child: icon),
+                  ),
                 ),
               ),
             ),

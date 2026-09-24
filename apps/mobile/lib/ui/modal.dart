@@ -6,6 +6,7 @@ import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
 import '../design/theme/app_theme_extension.dart';
+import 'button.dart';
 import 'icon_button.dart';
 import 'package:cerne_app/design/generated/app_colors.dart';
 import '../design/generated/app_layout.dart';
@@ -33,6 +34,55 @@ Future<T?> showAppModal<T>(
     barrierColor: AppColors.black.withValues(alpha: 0.45),
     builder: (context) => AppModal(title: title, footer: footer, child: child),
   );
+}
+
+/// Pede confirmação explícita antes de uma ação que gera histórico (iniciar,
+/// pausar, entregar…). Devolve `true` só quando a pessoa toca no botão de
+/// confirmar; fechar, tocar fora ou "Cancelar" devolvem `false`.
+///
+/// Pensado para o trabalho de campo: toque acidental é esperado (luva, mão
+/// ocupada, sol na tela), então os dois botões são grandes, empilhados em
+/// largura total, com o de confirmar em cima e rótulo com o verbo da ação
+/// ("Iniciar execução"), nunca um "OK" genérico.
+Future<bool> showAppConfirm(
+  BuildContext context, {
+  required String title,
+  required String message,
+  required String confirmLabel,
+  String cancelLabel = 'Cancelar',
+  bool danger = false,
+}) async {
+  final confirmed = await showAppModal<bool>(
+    context,
+    title: title,
+    child: Text(message),
+    footer: Builder(
+      builder: (context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppButton(
+            size: AppButtonSize.lg,
+            fullWidth: true,
+            variant: danger
+                ? AppButtonVariant.danger
+                : AppButtonVariant.primary,
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(confirmLabel),
+          ),
+          const SizedBox(height: AppSpacing.space2),
+          AppButton(
+            size: AppButtonSize.lg,
+            fullWidth: true,
+            variant: AppButtonVariant.subtle,
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(cancelLabel),
+          ),
+        ],
+      ),
+    ),
+  );
+  return confirmed ?? false;
 }
 
 /// "Chrome" visual do modal centralizado: título opcional + botão fechar,
@@ -159,6 +209,24 @@ WidgetbookComponent buildModalWidgetbookComponent() {
                 ),
               ),
               child: const Text('Abrir modal'),
+            ),
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Confirmação de ação (showAppConfirm)',
+        builder: (context) => Center(
+          child: Builder(
+            builder: (context) => AppButton(
+              onPressed: () => showAppConfirm(
+                context,
+                title: 'Iniciar a OS #2201?',
+                message:
+                    'O início fica registrado no histórico da OS com data, '
+                    'hora e o seu nome.',
+                confirmLabel: 'Iniciar execução',
+              ),
+              child: const Text('Abrir confirmação'),
             ),
           ),
         ),

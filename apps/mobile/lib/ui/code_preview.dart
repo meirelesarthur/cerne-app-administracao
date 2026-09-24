@@ -103,7 +103,7 @@ class _AppCodePreviewState extends State<AppCodePreview> {
                         widget.title ?? 'Código',
                         style: TextStyle(
                           color: semantic.inkMuted,
-                          fontSize: AppTypography.xs,
+                          fontSize: AppTypography.sm,
                           fontWeight: AppTypography.weightSemibold,
                           letterSpacing: 0.4,
                         ),

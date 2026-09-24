@@ -19,11 +19,11 @@ HugeIcon _rendered(WidgetTester tester) =>
 
 void main() {
   group('AppIcon', () {
-    testWidgets('aplica o traço 1.2 do token a todo ícone', (tester) async {
+    testWidgets('aplica o traço 1.5 do token a todo ícone', (tester) async {
       await tester.pumpWidget(_wrap(const AppIcon(AppIcons.tractor)));
 
       expect(_rendered(tester).strokeWidth, AppSize.iconStroke);
-      expect(AppSize.iconStroke, 1.2);
+      expect(AppSize.iconStroke, 1.5);
     });
 
     testWidgets('cai em 24 px quando nada define tamanho', (tester) async {
@@ -200,7 +200,7 @@ void main() {
 
     test('o set de origem é stroke-rounded, e não sólido', () {
       // Um ícone sólido não teria atributo de traço para sobrescrever — é o que
-      // torna o 1.2 possível. Guarda contra troca silenciosa de estilo.
+      // torna o 1.5 possível. Guarda contra troca silenciosa de estilo.
       final attributes = AppIcons.tractor.glyph!
           .map((element) => element[1] as Map<String, dynamic>)
           .toList();
@@ -208,7 +208,7 @@ void main() {
       expect(
         attributes.any((a) => a.containsKey('strokeWidth')),
         isTrue,
-        reason: 'ícone sem strokeWidth: o override de 1.2 não teria efeito',
+        reason: 'ícone sem strokeWidth: o override de 1.5 não teria efeito',
       );
     });
 

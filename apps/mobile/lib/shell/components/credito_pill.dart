@@ -64,7 +64,7 @@ class AppCreditoPill extends StatelessWidget {
                 Text(
                   'crédito pré aprovado',
                   style: TextStyle(
-                    fontSize: AppTypography.xs,
+                    fontSize: AppTypography.sm,
                     fontWeight: AppTypography.weightMedium,
                     color: semantic.fgMuted,
                   ),

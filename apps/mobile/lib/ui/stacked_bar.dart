@@ -126,7 +126,7 @@ class _StackedBarPainter extends CustomPainter {
   TextPainter _text(String value) => TextPainter(
     text: TextSpan(
       text: value,
-      style: TextStyle(fontSize: AppTypography.xs, color: axisColor),
+      style: TextStyle(fontSize: AppTypography.sm, color: axisColor),
     ),
     textDirection: TextDirection.ltr,
   )..layout();

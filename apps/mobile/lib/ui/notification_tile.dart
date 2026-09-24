@@ -19,7 +19,7 @@ enum AppNotificationTone { success, info, warning, danger, neutral }
 ///
 /// Superfície [AppSemanticColors.bgRaised] sem borda e raio [AppRadius.tile]
 /// — o cartão branco sobre a folha cinza no tema claro e o verde elevado no
-/// Modo GB.
+/// Modo GB, o mesmo idioma dos cards de OS ([AppStatusCard]).
 class AppNotificationTile extends StatelessWidget {
   const AppNotificationTile({
     super.key,
@@ -123,7 +123,7 @@ class AppNotificationTile extends StatelessWidget {
                   child: Text(
                     timeLabel,
                     style: TextStyle(
-                      fontSize: AppTypography.xs,
+                      fontSize: AppTypography.sm,
                       fontWeight: AppTypography.weightMedium,
                       color: semantic.fgSubtle,
                     ),
@@ -181,9 +181,9 @@ WidgetbookComponent buildNotificationTileWidgetbookComponent() {
             ),
             const SizedBox(height: AppSpacing.space3),
             AppNotificationTile(
-              icon: AppIcons.handCoins,
-              title: 'Crédito pré-aprovado',
-              message: 'R\$ 480.000,00 disponíveis',
+              icon: AppIcons.fileText,
+              title: 'Nova ordem de serviço atribuída',
+              message: 'OS #2201 · Reparo de cerca do Talhão 04',
               timeLabel: 'há 1 h',
               tone: AppNotificationTone.info,
               unread: true,

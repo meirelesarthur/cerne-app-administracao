@@ -27,6 +27,7 @@ class AppAppIconTile extends StatelessWidget {
     this.iconColor,
     this.tileColor,
     this.labelColor,
+    this.labelMaxLines = 1,
     this.onTap,
   });
 
@@ -46,6 +47,11 @@ class AppAppIconTile extends StatelessWidget {
   /// sempre sobre fundo escuro). Telas com o tile sobre cartão claro (pasta
   /// "CERNE App" em vidro fosco) passam `fgDefault`.
   final Color? labelColor;
+
+  /// Linhas do rótulo. Padrão 1 (ícone de launcher); atalhos com nomes de
+  /// rotina ("Sincronizar aplicativo") passam 2 para não truncar numa grade
+  /// de quatro colunas.
+  final int labelMaxLines;
   final VoidCallback? onTap;
 
   double get _tileSize => switch (size) {
@@ -91,10 +97,10 @@ class AppAppIconTile extends StatelessWidget {
               Text(
                 label,
                 textAlign: TextAlign.center,
-                maxLines: 1,
+                maxLines: labelMaxLines,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: AppTypography.xs,
+                  fontSize: AppTypography.sm,
                   fontWeight: AppTypography.weightSemibold,
                   color: labelColor ?? semantic.fgInverse,
                 ),
@@ -120,9 +126,9 @@ WidgetbookComponent buildAppIconTileWidgetbookComponent() {
             spacing: AppSpacing.space6,
             runSpacing: AppSpacing.space6,
             children: [
-              AppAppIconTile(icon: AppIcons.layoutGrid, label: 'CERNE App'),
-              AppAppIconTile(icon: AppIcons.shieldCheck, label: 'CERNE ADM'),
-              AppAppIconTile(icon: AppIcons.tractor, label: 'CERNE Operação'),
+              AppAppIconTile(icon: AppIcons.pecuaria, label: 'Pecuária'),
+              AppAppIconTile(icon: AppIcons.agricultura, label: 'Agricultura'),
+              AppAppIconTile(icon: AppIcons.sincronizar, label: 'Sincronizar'),
             ],
           ),
         ),

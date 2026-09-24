@@ -416,7 +416,7 @@ class _FazendaTile extends StatelessWidget {
                         Text(
                           u.ultimoAcesso,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgSubtle,
                           ),
                         ),

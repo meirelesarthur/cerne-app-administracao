@@ -197,7 +197,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           'GB CERNE · Superapp corporativo do agronegócio',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgInverse.withValues(alpha: 0.7),
                           ),
                         ),
@@ -216,7 +216,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           'Acesso administrativo',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgInverse.withValues(alpha: 0.7),
                           ),
                         ),

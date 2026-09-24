@@ -77,7 +77,7 @@ class PropostasScreen extends StatelessWidget {
                         Text(
                           proposta.data,
                           style: TextStyle(
-                            fontSize: AppTypography.xs,
+                            fontSize: AppTypography.sm,
                             color: semantic.fgMuted,
                           ),
                         ),

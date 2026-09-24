@@ -104,7 +104,7 @@ ThemeData buildAppTheme(AppThemeVariant variant) {
             ),
             // badge de status (54300:16148)
             labelSmall: outfit(
-              fontSize: AppTypography.xs2,
+              fontSize: AppTypography.sm,
               fontWeight: AppTypography.weightMedium,
               color: semantic.fgMuted,
             ),

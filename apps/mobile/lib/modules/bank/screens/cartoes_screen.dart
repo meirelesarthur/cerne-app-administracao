@@ -126,7 +126,7 @@ class _CartoesScreenState extends ConsumerState<CartoesScreen> {
                     Text(
                       '${balanceHidden ? '••••' : Cartao.limiteUsado} usados de ${balanceHidden ? '••••' : Cartao.limiteTotal}',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         color: semantic.fgSubtle,
                       ),
                     ),
@@ -184,7 +184,7 @@ class _CartoesScreenState extends ConsumerState<CartoesScreen> {
                     Text(
                       'Suspende o cartão sem cancelá-lo. Reative a qualquer momento.',
                       style: TextStyle(
-                        fontSize: AppTypography.xs,
+                        fontSize: AppTypography.sm,
                         color: semantic.fgMuted,
                       ),
                     ),

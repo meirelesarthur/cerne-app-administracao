@@ -91,7 +91,7 @@ class AppChip extends StatelessWidget {
           ],
           DefaultTextStyle.merge(
             style: TextStyle(
-              fontSize: AppTypography.xs,
+              fontSize: AppTypography.sm,
               fontWeight: AppTypography.weightSemibold,
               color: colors.fg,
             ),

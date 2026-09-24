@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import '../design/generated/app_colors.dart';
@@ -35,6 +36,15 @@ enum AppButtonVariant {
   /// (sem preenchimento algum) deixa esse lado sem "corpo" e desequilibra o
   /// par visualmente (ex.: "Pular" ao lado de "Próximo" no onboarding).
   subtle,
+
+  /// Contorno e rótulo na cor da marca sobre fundo transparente — a ação
+  /// secundária ao lado do CTA na tela de resultado ("Nova pesagem").
+  outline,
+
+  /// Cinza um tom acima da folha (`bgTrack`) — para uma ação de navegação
+  /// sobre a folha cinza das homes ("Ver todas"), onde `subtle` (`bgCanvas`)
+  /// some por ser quase o mesmo cinza da folha.
+  soft,
 }
 
 enum AppButtonSize { sm, md, lg, xl }
@@ -103,7 +113,8 @@ class AppButton extends StatelessWidget {
   /// caixa alta da referência passa o texto já em caixa alta; o widget não
   /// transforma conteúdo (`child` é `Widget`, não `String`).
   double get _fontSize => switch (size) {
-    AppButtonSize.sm => AppTypography.sm,
+    // Auditoria de UX: nenhum rótulo de botão abaixo de 14px.
+    AppButtonSize.sm => AppTypography.md,
     AppButtonSize.md => AppTypography.md,
     AppButtonSize.lg => AppTypography.md,
     AppButtonSize.xl => AppTypography.md,
@@ -134,8 +145,8 @@ class AppButton extends StatelessWidget {
         ),
         AppButtonVariant.dangerOutline => (
           bg: AppColors.transparent,
-          fg: AppColors.feedbackErrorText,
-          border: AppColors.feedbackErrorText,
+          fg: s.toneRedFg,
+          border: s.toneRedFg,
         ),
         AppButtonVariant.link => (
           bg: AppColors.transparent,
@@ -152,12 +163,28 @@ class AppButton extends StatelessWidget {
           fg: s.fgDefault,
           border: null,
         ),
+        AppButtonVariant.soft => (bg: s.bgTrack, fg: s.fgDefault, border: null),
+        AppButtonVariant.outline => (
+          bg: AppColors.transparent,
+          fg: s.accentDefault,
+          border: s.accentDefault,
+        ),
       };
 
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    final colors = _colors(semantic);
+    final colors = _disabled && !loading
+        ? _disabledColors(semantic)
+        : _colors(semantic);
+    // Vibração curta confirma o toque — com luva, sem ela a pessoa não sabe se
+    // o botão pegou.
+    final VoidCallback? tap = _disabled
+        ? null
+        : () {
+            HapticFeedback.selectionClick();
+            onPressed!();
+          };
 
     final content = Row(
       mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
@@ -188,13 +215,12 @@ class AppButton extends StatelessWidget {
     );
 
     if (variant == AppButtonVariant.link) {
-      return Opacity(
-        opacity: _disabled && !loading ? 0.7 : 1,
-        child: Material(
+      return _semantics(
+        Material(
           color: AppColors.transparent,
           borderRadius: BorderRadius.circular(AppRadius.full),
           child: InkWell(
-            onTap: _disabled ? null : onPressed,
+            onTap: tap,
             canRequestFocus: !_disabled,
             borderRadius: BorderRadius.circular(AppRadius.full),
             child: ConstrainedBox(
@@ -210,6 +236,7 @@ class AppButton extends StatelessWidget {
                 // conteúdo (mín. 44), sem se esticar sobre os vizinhos.
                 child: Center(
                   widthFactor: width == null && !fullWidth ? 1 : null,
+                  heightFactor: 1,
                   child: content,
                 ),
               ),
@@ -219,9 +246,8 @@ class AppButton extends StatelessWidget {
       );
     }
 
-    return Opacity(
-      opacity: _disabled && !loading ? 0.7 : 1,
-      child: Material(
+    return _semantics(
+      Material(
         color: colors.bg,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(_borderRadius),
@@ -230,7 +256,7 @@ class AppButton extends StatelessWidget {
               : BorderSide.none,
         ),
         child: InkWell(
-          onTap: _disabled ? null : onPressed,
+          onTap: tap,
           canRequestFocus: !_disabled,
           borderRadius: BorderRadius.circular(_borderRadius),
           // `Center(widthFactor: 1)` e não `Container(alignment:)`: um
@@ -238,12 +264,18 @@ class AppButton extends StatelessWidget {
           // oferece, e o botão "compacto" virava uma faixa invisível por cima
           // dos vizinhos — era o "Marcar lidas" cobrindo o "Voltar" da barra
           // de Notificações. Agora só `fullWidth`/`width` alargam o botão.
+          // Altura mínima (não fixa): com a letra do celular aumentada o
+          // rótulo quebra em duas linhas em vez de ser cortado.
           child: Container(
-            height: height ?? _height,
+            constraints: BoxConstraints(minHeight: height ?? _height),
             width: width ?? (fullWidth ? double.infinity : null),
-            padding: EdgeInsets.symmetric(horizontal: _horizontalPadding),
+            padding: EdgeInsets.symmetric(
+              horizontal: _horizontalPadding,
+              vertical: AppSpacing.space1,
+            ),
             child: Center(
               widthFactor: width == null && !fullWidth ? 1 : null,
+              heightFactor: 1,
               child: content,
             ),
           ),
@@ -252,8 +284,32 @@ class AppButton extends StatelessWidget {
     );
   }
 
+  /// Desabilitado tem visual próprio (trilho cinza + texto apagado) em vez de
+  /// opacidade: a 70% o CTA verde ainda parecia ativo.
+  ({Color bg, Color fg, Color? border}) _disabledColors(AppSemanticColors s) =>
+      switch (variant) {
+        AppButtonVariant.link || AppButtonVariant.ghost => (
+          bg: AppColors.transparent,
+          fg: s.fgSubtle,
+          border: null,
+        ),
+        AppButtonVariant.onDark => (
+          bg: s.inkBubble,
+          fg: s.inkSubtle,
+          border: null,
+        ),
+        _ => (bg: s.bgTrack, fg: s.fgSubtle, border: null),
+      };
+
+  Widget _semantics(Widget child) => Semantics(
+    button: true,
+    enabled: !_disabled,
+    container: true,
+    child: child,
+  );
+
   TextStyle _labelStyle(Color color) => TextStyle(
-    fontSize: variant == AppButtonVariant.link ? AppTypography.sm : _fontSize,
+    fontSize: _fontSize,
     fontWeight: AppTypography.weightSemibold,
     color: color,
     decoration: variant == AppButtonVariant.link
@@ -269,9 +325,12 @@ class _ButtonLabel extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => DefaultTextStyle(
+  // `merge`, e não `DefaultTextStyle(style:)`: o construtor simples troca o
+  // estilo herdado inteiro e o rótulo perdia a família Outfit do tema.
+  Widget build(BuildContext context) => DefaultTextStyle.merge(
     style: style,
-    maxLines: 1,
+    maxLines: 2,
+    textAlign: TextAlign.center,
     overflow: TextOverflow.ellipsis,
     child: child,
   );
@@ -299,6 +358,8 @@ AppButton(
 
 AppButton(variant: AppButtonVariant.ghost, ...)
 AppButton(variant: AppButtonVariant.subtle, ...)
+AppButton(variant: AppButtonVariant.soft, ...)
+AppButton(variant: AppButtonVariant.outline, ...)
 AppButton(variant: AppButtonVariant.danger, ...)
 AppButton(variant: AppButtonVariant.link, ...)''',
             child: Wrap(
@@ -320,6 +381,16 @@ AppButton(variant: AppButtonVariant.link, ...)''',
                   variant: AppButtonVariant.subtle,
                   onPressed: () {},
                   child: const Text('Subtle'),
+                ),
+                AppButton(
+                  variant: AppButtonVariant.soft,
+                  onPressed: () {},
+                  child: const Text('Soft'),
+                ),
+                AppButton(
+                  variant: AppButtonVariant.outline,
+                  onPressed: () {},
+                  child: const Text('Outline'),
                 ),
                 AppButton(
                   variant: AppButtonVariant.danger,

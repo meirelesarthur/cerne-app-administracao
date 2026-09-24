@@ -141,7 +141,7 @@ class AppDashboardCard extends StatelessWidget {
             child: Text(
               disabledLabel,
               style: TextStyle(
-                fontSize: AppTypography.xs,
+                fontSize: AppTypography.sm,
                 fontWeight: AppTypography.weightMedium,
                 color: semantic.fgSubtle,
               ),
