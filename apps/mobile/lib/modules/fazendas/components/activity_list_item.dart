@@ -29,6 +29,20 @@ const Map<ActivityKind, String> kindLabel = {
   ActivityKind.arracoamento: 'Arraçoamento',
 };
 
+/// Painel de decisão que explica cada tipo de atividade — fonte única de para
+/// onde "Atividades recentes"/"Atividades" navega (Lei 2). Nada de ficha
+/// genérica: o toque leva à funcionalidade de verdade, com o dado completo.
+/// Pesagem, eventos, arraçoamento e venda de animais são movimentação de
+/// rebanho; nota fiscal e insumo comprado vivem em Suprimentos.
+const Map<ActivityKind, String> kindRoute = {
+  ActivityKind.pesagem: '/fazendas/dashboards/confinamento',
+  ActivityKind.evento: '/fazendas/dashboards/confinamento',
+  ActivityKind.venda: '/fazendas/dashboards/confinamento',
+  ActivityKind.arracoamento: '/fazendas/dashboards/confinamento',
+  ActivityKind.nfe: '/fazendas/dashboards/suprimentos',
+  ActivityKind.insumo: '/fazendas/dashboards/suprimentos',
+};
+
 /// Rótulo + tom de status — fonte única, reutilizado no `ActivityDetailSheet`
 /// (Lei 2). Espelha `STATUS_META`.
 class StatusMeta {

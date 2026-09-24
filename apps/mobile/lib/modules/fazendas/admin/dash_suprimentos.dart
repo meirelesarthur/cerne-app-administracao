@@ -105,6 +105,7 @@ class _DashSuprimentosState extends State<DashSuprimentos> {
           ),
           const SizedBox(height: AppSpacing.space4),
           AppMetricGrid(
+            equalRowHeight: true,
             children: [
               AppKpiStatCard(
                 label: 'Aguardando decisão',

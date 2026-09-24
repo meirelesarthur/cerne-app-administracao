@@ -7,7 +7,6 @@ import '../../../design/generated/app_spacing.dart';
 import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/rise_in.dart';
 import '../../../ui/ui.dart';
-import '../components/activity_detail_sheet.dart';
 import '../components/activity_list_item.dart';
 import '../confinamento/mocks.dart' as confinamento_mocks;
 import '../confinamento/models.dart';
@@ -16,7 +15,6 @@ import '../mocks/dashboards_mocks.dart';
 import '../ordem_servico/models.dart';
 import '../ordem_servico/state/ordem_servico_store.dart';
 import '../state/fazendas_store.dart';
-import '../types.dart';
 import '../../../design/generated/app_layout.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
@@ -153,8 +151,8 @@ class FazendasHome extends ConsumerWidget {
     var ordem = 0;
     Widget rise(Widget child) => RiseIn(index: ordem++, child: child);
 
-    return _ActivityAwareList(
-      builder: (context, onActivityTap) => ListView(
+    return Builder(
+      builder: (context) => ListView(
         padding: const EdgeInsets.all(AppSpacing.space4),
         children: [
           rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
@@ -168,6 +166,7 @@ class FazendasHome extends ConsumerWidget {
           rise(const _Grupo(titulo: 'Resultado', rota: _resultado)),
           rise(
             const AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'A receber',
@@ -251,6 +250,7 @@ class FazendasHome extends ConsumerWidget {
           ),
           rise(
             AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'Em andamento',
@@ -276,6 +276,7 @@ class FazendasHome extends ConsumerWidget {
           rise(const _Grupo(titulo: 'Suprimentos', rota: _suprimentos)),
           rise(
             AppMetricGrid(
+              equalRowHeight: true,
               children: [
                 AppKpiStatCard(
                   label: 'Aguardando decisão',
@@ -375,7 +376,7 @@ class FazendasHome extends ConsumerWidget {
                             ActivityListItem(
                               activity: a,
                               showDivider: a != recentes.last,
-                              onTap: () => onActivityTap(a),
+                              onTap: () => context.push(kindRoute[a.kind]!),
                             ),
                         ],
                       ),
@@ -414,27 +415,6 @@ class _Grupo extends StatelessWidget {
         ),
         child: Text(titulo),
       ),
-    );
-  }
-}
-
-/// Encapsula o acionamento do `ActivityDetailSheet` — equivalente ao
-/// `useState<Activity | null>` do React, sem precisar de `StatefulWidget` na
-/// tela inteira (o bottom sheet já é a fonte de estado "aberto/fechado").
-class _ActivityAwareList extends StatelessWidget {
-  const _ActivityAwareList({required this.builder});
-
-  final Widget Function(
-    BuildContext context,
-    void Function(Activity activity) onActivityTap,
-  )
-  builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(
-      context,
-      (activity) => showActivityDetailSheet(context, activity: activity),
     );
   }
 }
