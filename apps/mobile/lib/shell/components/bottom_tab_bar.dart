@@ -14,24 +14,19 @@ class AppBottomTabBar extends StatelessWidget {
     super.key,
     required this.activeId,
     required this.onModuleSelected,
-    this.visibleModules,
+    this.visibleModules = modules,
   });
 
   final String activeId;
   final ValueChanged<String> onModuleSelected;
-  /// Se omitido, o hub Início fica fora da navegação global por enquanto.
-  final List<ModuleDef>? visibleModules;
+  final List<ModuleDef> visibleModules;
 
   @override
   Widget build(BuildContext context) {
-    // O módulo Início repete parte dos destinos financeiros do Bank e está
-    // desativado temporariamente na navbar. Mantemos sua rota registrada.
-    final modulesToShow = visibleModules ?? globalNavigationModules;
-
     return AppTabBar(
       activeId: activeId,
       items: [
-        for (final module in modulesToShow)
+        for (final module in visibleModules)
           AppTabBarItem(
             id: module.id,
             label: module.label,

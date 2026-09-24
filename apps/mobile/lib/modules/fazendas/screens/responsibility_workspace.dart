@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design/generated/app_layout.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../ui/ui.dart';
 import '../components/farm_picker.dart';
@@ -75,6 +76,10 @@ class ResponsibilityWorkspace extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scrollEndPadding =
+        AppSpacing.space4 +
+        AppLayout.tabBarClearance +
+        MediaQuery.paddingOf(context).bottom;
     final activeFarm = ref.watch(
       fazendasStoreProvider.select((s) => s.activeFarm),
     );
@@ -157,7 +162,12 @@ class ResponsibilityWorkspace extends ConsumerWidget {
     ];
 
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.space4),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.space4,
+        AppSpacing.space4,
+        AppSpacing.space4,
+        scrollEndPadding,
+      ),
       children: content,
     );
   }

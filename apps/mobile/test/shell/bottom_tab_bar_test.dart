@@ -12,7 +12,7 @@ Widget _wrap(Widget child) => MaterialApp(
 void main() {
   group('AppBottomTabBar', () {
     testWidgets(
-      'renderiza os 5 módulos visíveis sem o hub Início',
+      'renderiza os 5 módulos sem a Home do ADM',
       (tester) async {
         await tester.pumpWidget(
           _wrap(

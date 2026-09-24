@@ -14,7 +14,7 @@ import 'screens/responsibility_workspace.dart';
 
 /// Rotas do módulo Fazendas (ex-"Cerne") — espelha `FazendasModule.tsx`.
 /// Registrado no `ShellRoute` principal (`lib/router/app_router.dart`), no
-/// mesmo padrão de `buildHubModuleRoute()`.
+/// mesmo padrão dos demais construtores de rota de módulo.
 ///
 /// A troca de fazenda ativa vive na tela dedicada (tab "Fazendas"). O CERNE
 /// ADM opera sempre no ambiente de Administração.

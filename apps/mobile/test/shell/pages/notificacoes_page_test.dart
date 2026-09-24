@@ -102,7 +102,7 @@ void main() {
     testWidgets('aberta pelo sino, "Voltar" retorna à tela anterior', (
       tester,
     ) async {
-      harness.router.go('/inicio');
+      harness.router.go('/fazendas/visao-geral');
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
@@ -114,7 +114,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AppNotificationTile), findsNothing);
-      expect(rotaAtual(), '/inicio');
+      expect(rotaAtual(), '/fazendas/visao-geral');
     });
   });
 }

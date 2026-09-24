@@ -16,19 +16,11 @@ import '../support/test_viewport.dart';
 
 late RouterTestHarness harness;
 
-/// `pumpAndSettle` só continua pumpando enquanto frames são agendados — um
-/// `Future.delayed` isolado (SimulatedLoad/RiseIn da HubHomeScreen, renderizada
-/// por padrão em `/inicio`) não agenda frame algum até disparar, então pode
-/// ficar pendente se não avançarmos o relógio explicitamente antes. Chamar
-/// sempre que o teste passar por `/inicio`.
-Future<void> _settleHubTimers(WidgetTester tester) =>
-    tester.pump(const Duration(seconds: 1));
-
 void main() {
   setUp(() {
     harness = RouterTestHarness(profile: UserAccessProfile.administration);
     addTearDown(() => harness.dispose());
-    harness.router.go('/inicio');
+    harness.router.go('/fazendas/visao-geral');
   });
 
   group('appRouter', () {
@@ -41,8 +33,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(AppFarmSelector), findsOneWidget);
 
-        harness.router.go('/inicio');
-        await _settleHubTimers(tester);
+        harness.router.go('/bank');
         await tester.pumpAndSettle();
         expect(find.byType(AppFarmSelector), findsNothing);
       },

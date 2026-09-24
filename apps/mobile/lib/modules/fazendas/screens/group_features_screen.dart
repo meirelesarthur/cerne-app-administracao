@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design/generated/app_layout.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../ui/ui.dart';
 import '../functional_catalog.dart';
@@ -44,13 +45,18 @@ class GroupFeaturesScreen extends StatelessWidget {
         ? const <FeatureDefinition>[]
         : adminFeatures.where((f) => f.group == group).toList();
     final title = group ?? groupSlug;
+    final scrollEndPadding =
+        AppSpacing.space4 +
+        (embedded
+            ? AppLayout.tabBarClearance + MediaQuery.paddingOf(context).bottom
+            : 0.0);
 
     final content = ListView(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
         AppSpacing.space4,
         AppSpacing.space4,
         AppSpacing.space4,
-        AppSpacing.space4,
+        scrollEndPadding,
       ),
       children: [
         AppSearchField(onTap: () => context.push('/busca')),

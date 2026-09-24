@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../design/generated/app_layout.dart';
 import '../../../design/generated/app_radius.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../design/theme/app_theme_extension.dart';
@@ -15,7 +16,6 @@ import '../mocks/dashboards_mocks.dart';
 import '../ordem_servico/models.dart';
 import '../ordem_servico/state/ordem_servico_store.dart';
 import '../state/fazendas_store.dart';
-import '../../../design/generated/app_layout.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
 ///
@@ -150,10 +150,19 @@ class FazendasHome extends ConsumerWidget {
 
     var ordem = 0;
     Widget rise(Widget child) => RiseIn(index: ordem++, child: child);
+    final scrollEndPadding =
+        AppSpacing.space4 +
+        AppLayout.tabBarClearance +
+        MediaQuery.paddingOf(context).bottom;
 
     return Builder(
       builder: (context) => ListView(
-        padding: const EdgeInsets.all(AppSpacing.space4),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.space4,
+          AppSpacing.space4,
+          AppSpacing.space4,
+          scrollEndPadding,
+        ),
         children: [
           rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
           const SizedBox(height: AppSpacing.space2),

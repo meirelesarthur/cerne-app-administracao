@@ -39,10 +39,16 @@ void main() {
       }
     });
 
-    test('raiz, login e atalhos neutros retornam à central do perfil', () {
+    test('raiz, login e links antigos da Home abrem Fazendas', () {
       for (final profile in UserAccessProfile.values) {
         final session = PrototypeSessionState.signedIn(profile);
-        for (final path in ['/', '/login']) {
+        for (final path in [
+          '/',
+          '/login',
+          '/inicio',
+          '/inicio/apps',
+          '/inicio/carteira',
+        ]) {
           expect(
             redirectForSession(path, session),
             profile.landingRoute,

@@ -7,7 +7,6 @@ import '../modules/bank/bank_module.dart';
 import '../modules/credito/credito_module.dart';
 import '../modules/fazendas/fazendas_module.dart';
 import '../modules/fazendas/screens/busca_global_screen.dart';
-import '../modules/hub/hub_module.dart';
 import '../modules/marketplace/marketplace_module.dart';
 import '../shell/module_config.dart';
 import '../shell/pages/login_page.dart';
@@ -65,7 +64,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
         routes: [
-          buildHubModuleRoute(),
+          // A Home do ADM está temporariamente fora do roteador. Links antigos
+          // para /inicio são redirecionados em `redirectForSession`.
           buildFazendasModuleRoute(),
           buildBankModuleRoute(),
           buildCreditoModuleRoute(),
@@ -142,6 +142,10 @@ String? redirectForSession(String path, PrototypeSessionState session) {
     return isPublic ? null : '/login';
   }
 
+  if (path == '/inicio' || path.startsWith('/inicio/')) {
+    return profile.landingRoute;
+  }
+
   if (path == '/' || path == '/fazendas' || path == '/login') {
     return path == '/fazendas' ? profile.homeRoute : profile.landingRoute;
   }
@@ -154,7 +158,6 @@ String? redirectForSession(String path, PrototypeSessionState session) {
 /// `ModulePlaceholderScreen` abaixo só existe como rede de segurança para um
 /// módulo futuro sem tela própria ainda.
 const _wiredModules = {
-  'inicio',
   'fazendas',
   'bank',
   'credito',

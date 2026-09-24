@@ -6,11 +6,12 @@ import 'package:cerne_app/ui/app_icon.dart';
 
 void main() {
   group('module_config', () {
-    test('todos os 6 módulos existem com bottomTabs não vazios', () {
-      expect(modules.length, 6);
+    test('os 5 módulos ativos têm bottomTabs não vazios', () {
+      expect(modules.length, 5);
       for (final m in modules) {
         expect(m.bottomTabs, isNotEmpty);
       }
+      expect(getModule('inicio'), isNull);
     });
 
     test('getModule resolve por id e retorna null para desconhecido/nulo', () {
@@ -19,19 +20,16 @@ void main() {
       expect(getModule(null), isNull);
     });
 
-    test(
-      'a navbar omite temporariamente Início e chama Marketplace de Market',
-      () {
-        expect(globalNavigationModules.map((module) => module.id), [
-          'fazendas',
-          'bank',
-          'credito',
-          'marketplace',
-          'armazem',
-        ]);
-        expect(getModule('marketplace')?.label, 'Market');
-      },
-    );
+    test('a navbar mostra os módulos ativos e chama Marketplace de Market', () {
+      expect(modules.map((module) => module.id), [
+        'fazendas',
+        'bank',
+        'credito',
+        'marketplace',
+        'armazem',
+      ]);
+      expect(getModule('marketplace')?.label, 'Market');
+    });
 
     test('getMenuSections usa menuSections quando definido', () {
       final bank = getModule('bank')!;
@@ -45,7 +43,7 @@ void main() {
     test(
       'getMenuSections cai no fallback derivado das bottomTabs quando ausente',
       () {
-        // Nenhum dos 6 módulos reais deixa `menuSections` ausente hoje (ver
+        // Nenhum dos 5 módulos reais deixa `menuSections` ausente hoje (ver
         // teste abaixo) — o fallback só existe como rede de segurança para um
         // módulo futuro sem seção própria. Testado aqui com um `ModuleDef`
         // sintético, não com um módulo real.
@@ -94,16 +92,9 @@ void main() {
       },
     );
 
-    test(
-      'Início e Fazendas não repetem as próprias abas no menu "Mais" (ver plano de UX)',
-      () {
-        // Ambos declaram `menuSections: []` — o menu "reveal" desses módulos
-        // vira só a seção CONTA (perfil/tema/conexão/sair), sem duplicar as
-        // abas de contexto já visíveis no topo.
-        expect(getMenuSections(getModule('inicio')!), isEmpty);
-        expect(getMenuSections(getModule('fazendas')!), isEmpty);
-      },
-    );
+    test('Fazendas não repete as próprias abas no menu "Mais"', () {
+      expect(getMenuSections(getModule('fazendas')!), isEmpty);
+    });
 
     test('Fazendas expõe as abas administrativas', () {
       final fazendas = getModule('fazendas')!;

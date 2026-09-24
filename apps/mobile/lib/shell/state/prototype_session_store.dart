@@ -11,9 +11,8 @@ extension UserAccessProfileLabels on UserAccessProfile {
 
   String get homeRoute => '/fazendas/visao-geral';
 
-  /// Primeira tela depois do login: a Visão geral das fazendas. O MVP é
-  /// focado em Fazendas, e o gestor chega para ler os indicadores — não para
-  /// passar pelo hub Banking, temporariamente oculto na navbar global.
+  /// Primeira tela depois do login. A Home administrativa está temporariamente
+  /// desativada; o gestor entra direto na Visão geral de Fazendas.
   String get landingRoute => '/fazendas/visao-geral';
 }
 

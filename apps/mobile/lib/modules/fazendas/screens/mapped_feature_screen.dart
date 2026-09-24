@@ -1086,7 +1086,7 @@ List<PrototypeRecord> _recordsWithMinimumSample(
       PrototypeRecord(
         id: '${feature.id}-sample-$number',
         title: '${feature.title} · Registro $number',
-        description: 'Fazenda Agro Pillathi · atualizado recentemente',
+        description: 'Fazenda Agro Pillathi',
         status: status,
         details: {
           'Fazenda': 'Fazenda Agro Pillathi',
