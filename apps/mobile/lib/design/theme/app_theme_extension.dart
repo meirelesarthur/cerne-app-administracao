@@ -65,21 +65,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.chartTrack,
     required this.chartPositive,
     required this.chartNegative,
-    required this.statusSuccessFg,
-    required this.statusSuccessBg,
-    required this.statusSuccessBorder,
-    required this.statusWarningFg,
-    required this.statusWarningBg,
-    required this.statusWarningBorder,
-    required this.statusDangerFg,
-    required this.statusDangerBg,
-    required this.statusDangerBorder,
-    required this.statusInfoFg,
-    required this.statusInfoBg,
-    required this.statusInfoBorder,
-    required this.statusNeutralFg,
-    required this.statusNeutralBg,
-    required this.statusNeutralBorder,
   });
 
   final Color fgDefault;
@@ -155,25 +140,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color chartPositive;
   final Color chartNegative;
 
-  /// Pares de status theme-aware (texto · fundo suave · borda) para chips,
-  /// tags, banners, erro de formulário e tons de KPI. Cada `*Fg` tem ≥ 4,5:1
-  /// sobre o seu `*Bg` e sobre `bgSurface` do mesmo tema.
-  final Color statusSuccessFg;
-  final Color statusSuccessBg;
-  final Color statusSuccessBorder;
-  final Color statusWarningFg;
-  final Color statusWarningBg;
-  final Color statusWarningBorder;
-  final Color statusDangerFg;
-  final Color statusDangerBg;
-  final Color statusDangerBorder;
-  final Color statusInfoFg;
-  final Color statusInfoBg;
-  final Color statusInfoBorder;
-  final Color statusNeutralFg;
-  final Color statusNeutralBg;
-  final Color statusNeutralBorder;
-
   static const light = AppSemanticColors(
     fgDefault: AppColorsLight.fgDefault,
     fgHeading: AppColorsLight.fgHeading,
@@ -230,21 +196,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     chartTrack: AppColorsLight.chartTrack,
     chartPositive: AppColorsLight.chartPositive,
     chartNegative: AppColorsLight.chartNegative,
-    statusSuccessFg: AppColorsLight.statusSuccessFg,
-    statusSuccessBg: AppColorsLight.statusSuccessBg,
-    statusSuccessBorder: AppColorsLight.statusSuccessBorder,
-    statusWarningFg: AppColorsLight.statusWarningFg,
-    statusWarningBg: AppColorsLight.statusWarningBg,
-    statusWarningBorder: AppColorsLight.statusWarningBorder,
-    statusDangerFg: AppColorsLight.statusDangerFg,
-    statusDangerBg: AppColorsLight.statusDangerBg,
-    statusDangerBorder: AppColorsLight.statusDangerBorder,
-    statusInfoFg: AppColorsLight.statusInfoFg,
-    statusInfoBg: AppColorsLight.statusInfoBg,
-    statusInfoBorder: AppColorsLight.statusInfoBorder,
-    statusNeutralFg: AppColorsLight.statusNeutralFg,
-    statusNeutralBg: AppColorsLight.statusNeutralBg,
-    statusNeutralBorder: AppColorsLight.statusNeutralBorder,
   );
 
   static const gbMode = AppSemanticColors(
@@ -303,21 +254,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     chartTrack: AppColorsGbMode.chartTrack,
     chartPositive: AppColorsGbMode.chartPositive,
     chartNegative: AppColorsGbMode.chartNegative,
-    statusSuccessFg: AppColorsGbMode.statusSuccessFg,
-    statusSuccessBg: AppColorsGbMode.statusSuccessBg,
-    statusSuccessBorder: AppColorsGbMode.statusSuccessBorder,
-    statusWarningFg: AppColorsGbMode.statusWarningFg,
-    statusWarningBg: AppColorsGbMode.statusWarningBg,
-    statusWarningBorder: AppColorsGbMode.statusWarningBorder,
-    statusDangerFg: AppColorsGbMode.statusDangerFg,
-    statusDangerBg: AppColorsGbMode.statusDangerBg,
-    statusDangerBorder: AppColorsGbMode.statusDangerBorder,
-    statusInfoFg: AppColorsGbMode.statusInfoFg,
-    statusInfoBg: AppColorsGbMode.statusInfoBg,
-    statusInfoBorder: AppColorsGbMode.statusInfoBorder,
-    statusNeutralFg: AppColorsGbMode.statusNeutralFg,
-    statusNeutralBg: AppColorsGbMode.statusNeutralBg,
-    statusNeutralBorder: AppColorsGbMode.statusNeutralBorder,
   );
 
   @override
@@ -377,21 +313,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? chartTrack,
     Color? chartPositive,
     Color? chartNegative,
-    Color? statusSuccessFg,
-    Color? statusSuccessBg,
-    Color? statusSuccessBorder,
-    Color? statusWarningFg,
-    Color? statusWarningBg,
-    Color? statusWarningBorder,
-    Color? statusDangerFg,
-    Color? statusDangerBg,
-    Color? statusDangerBorder,
-    Color? statusInfoFg,
-    Color? statusInfoBg,
-    Color? statusInfoBorder,
-    Color? statusNeutralFg,
-    Color? statusNeutralBg,
-    Color? statusNeutralBorder,
   }) {
     return AppSemanticColors(
       fgDefault: fgDefault ?? this.fgDefault,
@@ -449,21 +370,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       chartTrack: chartTrack ?? this.chartTrack,
       chartPositive: chartPositive ?? this.chartPositive,
       chartNegative: chartNegative ?? this.chartNegative,
-      statusSuccessFg: statusSuccessFg ?? this.statusSuccessFg,
-      statusSuccessBg: statusSuccessBg ?? this.statusSuccessBg,
-      statusSuccessBorder: statusSuccessBorder ?? this.statusSuccessBorder,
-      statusWarningFg: statusWarningFg ?? this.statusWarningFg,
-      statusWarningBg: statusWarningBg ?? this.statusWarningBg,
-      statusWarningBorder: statusWarningBorder ?? this.statusWarningBorder,
-      statusDangerFg: statusDangerFg ?? this.statusDangerFg,
-      statusDangerBg: statusDangerBg ?? this.statusDangerBg,
-      statusDangerBorder: statusDangerBorder ?? this.statusDangerBorder,
-      statusInfoFg: statusInfoFg ?? this.statusInfoFg,
-      statusInfoBg: statusInfoBg ?? this.statusInfoBg,
-      statusInfoBorder: statusInfoBorder ?? this.statusInfoBorder,
-      statusNeutralFg: statusNeutralFg ?? this.statusNeutralFg,
-      statusNeutralBg: statusNeutralBg ?? this.statusNeutralBg,
-      statusNeutralBorder: statusNeutralBorder ?? this.statusNeutralBorder,
     );
   }
 
@@ -535,21 +441,6 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       chartTrack: c(chartTrack, other.chartTrack),
       chartPositive: c(chartPositive, other.chartPositive),
       chartNegative: c(chartNegative, other.chartNegative),
-      statusSuccessFg: c(statusSuccessFg, other.statusSuccessFg),
-      statusSuccessBg: c(statusSuccessBg, other.statusSuccessBg),
-      statusSuccessBorder: c(statusSuccessBorder, other.statusSuccessBorder),
-      statusWarningFg: c(statusWarningFg, other.statusWarningFg),
-      statusWarningBg: c(statusWarningBg, other.statusWarningBg),
-      statusWarningBorder: c(statusWarningBorder, other.statusWarningBorder),
-      statusDangerFg: c(statusDangerFg, other.statusDangerFg),
-      statusDangerBg: c(statusDangerBg, other.statusDangerBg),
-      statusDangerBorder: c(statusDangerBorder, other.statusDangerBorder),
-      statusInfoFg: c(statusInfoFg, other.statusInfoFg),
-      statusInfoBg: c(statusInfoBg, other.statusInfoBg),
-      statusInfoBorder: c(statusInfoBorder, other.statusInfoBorder),
-      statusNeutralFg: c(statusNeutralFg, other.statusNeutralFg),
-      statusNeutralBg: c(statusNeutralBg, other.statusNeutralBg),
-      statusNeutralBorder: c(statusNeutralBorder, other.statusNeutralBorder),
     );
   }
 }
