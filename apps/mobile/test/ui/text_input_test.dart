@@ -42,5 +42,27 @@ void main() {
       expect(find.text('abc'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('senha tem o olho que mostra e oculta o texto', (tester) async {
+      await tester.pumpWidget(_wrap(const AppTextInput(obscureText: true)));
+
+      bool obscured() =>
+          tester.widget<TextField>(find.byType(TextField)).obscureText;
+
+      expect(obscured(), isTrue);
+      await tester.tap(find.byTooltip('Mostrar senha'));
+      await tester.pump();
+      expect(obscured(), isFalse);
+
+      await tester.tap(find.byTooltip('Ocultar senha'));
+      await tester.pump();
+      expect(obscured(), isTrue);
+    });
+
+    testWidgets('campo comum não ganha o olho', (tester) async {
+      await tester.pumpWidget(_wrap(const AppTextInput()));
+
+      expect(find.byTooltip('Mostrar senha'), findsNothing);
+    });
   });
 }
