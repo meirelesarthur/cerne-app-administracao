@@ -71,61 +71,77 @@ class AppNotification {
 /// banco-real (onda 2): tipos inspirados nos alertas mais frequentes do dump
 /// gbcerne (estoque abaixo do mínimo, aprovação de compra pendente) — dado
 /// sintético. Três não lidas, cobertas por `shell_store_test.dart`.
-List<AppNotification> _mockNotifications(DateTime agora) => [
-  AppNotification(
-    id: 'n1',
-    tipo: TipoNotificacao.lancamento,
-    title: 'Pesagem registrada',
-    detail: 'Lote 42 · Fazenda São Pedro',
-    dataHora: agora.subtract(const Duration(minutes: 5)),
-    read: false,
-    route: '/fazendas',
-  ),
-  AppNotification(
-    id: 'n2',
-    tipo: TipoNotificacao.financeiro,
-    title: 'Crédito pré-aprovado',
-    detail: 'R\$ 480.000,00 disponíveis',
-    dataHora: agora.subtract(const Duration(hours: 1)),
-    read: false,
-    route: '/credito',
-  ),
-  AppNotification(
-    id: 'n3',
-    tipo: TipoNotificacao.lancamento,
-    title: 'NF-e processada',
-    detail: 'Entrada de insumos conferida',
-    dataHora: agora.subtract(const Duration(hours: 3)),
-    read: false,
-    route: '/fazendas',
-  ),
-  AppNotification(
-    id: 'n4',
-    tipo: TipoNotificacao.financeiro,
-    title: 'Pagamento agendado',
-    detail: 'Fornecedor Agropecuária Vale',
-    dataHora: agora.subtract(const Duration(days: 1, hours: 2)),
-    read: true,
-    route: '/bank',
-  ),
-  AppNotification(
-    id: 'n5',
-    tipo: TipoNotificacao.alerta,
-    title: 'Estoque abaixo do mínimo',
-    detail: 'Sal Mineral Proteinado · Armazém A',
-    dataHora: agora.subtract(const Duration(days: 1, hours: 5)),
-    read: true,
-    route: '/armazem',
-  ),
-  AppNotification(
-    id: 'n6',
-    tipo: TipoNotificacao.pendencia,
-    title: 'Cotação pendente de aprovação',
-    detail: 'Solicitação de compra #4821 · Suprimentos',
-    dataHora: agora.subtract(const Duration(days: 3)),
-    read: true,
-  ),
-];
+///
+/// As lidas ficam ancoradas no calendário (ontem às 16:40, há três dias às
+/// 09:00) e as de hoje nunca recuam para antes da meia-noite: com
+/// "agora − 1 dia e 2 h", abrir o app logo depois da meia-noite jogava a
+/// notificação para anteontem e o grupo "Ontem" sumia.
+List<AppNotification> _mockNotifications(DateTime agora) {
+  final hoje = DateTime(agora.year, agora.month, agora.day);
+  DateTime deHoje(Duration atras) {
+    final t = agora.subtract(atras);
+    return t.isBefore(hoje) ? hoje : t;
+  }
+
+  DateTime diaAtras(int dias, int hora, int minuto) =>
+      DateTime(hoje.year, hoje.month, hoje.day - dias, hora, minuto);
+
+  return [
+    AppNotification(
+      id: 'n1',
+      tipo: TipoNotificacao.lancamento,
+      title: 'Pesagem registrada',
+      detail: 'Lote 42 · Fazenda São Pedro',
+      dataHora: deHoje(const Duration(minutes: 5)),
+      read: false,
+      route: '/fazendas',
+    ),
+    AppNotification(
+      id: 'n2',
+      tipo: TipoNotificacao.financeiro,
+      title: 'Crédito pré-aprovado',
+      detail: 'R\$ 480.000,00 disponíveis',
+      dataHora: deHoje(const Duration(hours: 1)),
+      read: false,
+      route: '/credito',
+    ),
+    AppNotification(
+      id: 'n3',
+      tipo: TipoNotificacao.lancamento,
+      title: 'NF-e processada',
+      detail: 'Entrada de insumos conferida',
+      dataHora: deHoje(const Duration(hours: 3)),
+      read: false,
+      route: '/fazendas',
+    ),
+    AppNotification(
+      id: 'n4',
+      tipo: TipoNotificacao.financeiro,
+      title: 'Pagamento agendado',
+      detail: 'Fornecedor Agropecuária Vale',
+      dataHora: diaAtras(1, 16, 40),
+      read: true,
+      route: '/bank',
+    ),
+    AppNotification(
+      id: 'n5',
+      tipo: TipoNotificacao.alerta,
+      title: 'Estoque abaixo do mínimo',
+      detail: 'Sal Mineral Proteinado · Armazém A',
+      dataHora: diaAtras(1, 13, 40),
+      read: true,
+      route: '/armazem',
+    ),
+    AppNotification(
+      id: 'n6',
+      tipo: TipoNotificacao.pendencia,
+      title: 'Cotação pendente de aprovação',
+      detail: 'Solicitação de compra #4821 · Suprimentos',
+      dataHora: diaAtras(3, 9, 0),
+      read: true,
+    ),
+  ];
+}
 
 class ShellState {
   const ShellState({
