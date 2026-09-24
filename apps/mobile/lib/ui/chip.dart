@@ -2,19 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
+import '../design/theme/app_theme_extension.dart';
 
 /// Espelha `Chip.tsx` — cor semântica única e parametrizável (spec §6.9),
-/// reutilizada em todos os badges de status. Não depende de tema (light/gbMode)
-/// pois usa diretamente as escalas cruas de `AppColors`, igual ao React original
-/// (`bg-brand-50`, `bg-blue-50`, etc. não são tokens semânticos de tema).
+/// reutilizada em todos os badges de status. As cores vêm dos tokens de tom
+/// theme-aware (`tone*` em [AppSemanticColors]): no tema claro são as mesmas
+/// escalas `*50/200/600` de antes; no gbMode, fundo translúcido do matiz em vez
+/// de um bloco pastel claro sobre o verde escuro.
 ///
 /// Padding horizontal/vertical (10px/4px) é um valor fixo de design fora da
 /// escala de espaçamento — mesmo padrão de `_spinnerSize` em `button.dart`.
 enum AppChipTone { brand, blue, amber, red, neutral }
+
+/// Fundo, texto e borda de um tom no tema atual — fonte única para chips e
+/// para qualquer superfície tonal (ex.: blocos de aviso do detalhe).
+({Color bg, Color fg, Color border}) appToneColors(
+  AppSemanticColors s,
+  AppChipTone tone,
+) => switch (tone) {
+  AppChipTone.brand => (
+    bg: s.toneBrandBg,
+    fg: s.toneBrandFg,
+    border: s.toneBrandBorder,
+  ),
+  AppChipTone.blue => (
+    bg: s.toneBlueBg,
+    fg: s.toneBlueFg,
+    border: s.toneBlueBorder,
+  ),
+  AppChipTone.amber => (
+    bg: s.toneAmberBg,
+    fg: s.toneAmberFg,
+    border: s.toneAmberBorder,
+  ),
+  AppChipTone.red => (
+    bg: s.toneRedBg,
+    fg: s.toneRedFg,
+    border: s.toneRedBorder,
+  ),
+  AppChipTone.neutral => (
+    bg: s.toneNeutralBg,
+    fg: s.toneNeutralFg,
+    border: s.toneNeutralBorder,
+  ),
+};
 
 class AppChip extends StatelessWidget {
   const AppChip({
@@ -28,37 +62,12 @@ class AppChip extends StatelessWidget {
   final Widget child;
   final Widget? icon;
 
-  ({Color bg, Color fg, Color border}) get _colors => switch (tone) {
-    AppChipTone.brand => (
-      bg: AppColors.brand50,
-      fg: AppColors.brand700,
-      border: AppColors.brand200,
-    ),
-    AppChipTone.blue => (
-      bg: AppColors.blue50,
-      fg: AppColors.blue600,
-      border: AppColors.blue200,
-    ),
-    AppChipTone.amber => (
-      bg: AppColors.amber50,
-      fg: AppColors.amber600,
-      border: AppColors.amber200,
-    ),
-    AppChipTone.red => (
-      bg: AppColors.red50,
-      fg: AppColors.red600,
-      border: AppColors.red200,
-    ),
-    AppChipTone.neutral => (
-      bg: AppColors.neutral100,
-      fg: AppColors.neutral600,
-      border: AppColors.neutral200,
-    ),
-  };
-
   @override
   Widget build(BuildContext context) {
-    final colors = _colors;
+    final colors = appToneColors(
+      Theme.of(context).extension<AppSemanticColors>()!,
+      tone,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(

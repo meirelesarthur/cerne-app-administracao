@@ -163,6 +163,21 @@ class AppColorsLight {
   static const Color chartTrack = Color(0xFFE5E7EB);
   static const Color chartPositive = Color(0xFF059669);
   static const Color chartNegative = Color(0xFFDC2626);
+  static const Color toneBrandBg = Color(0xFFF0FDF4);
+  static const Color toneBrandBorder = Color(0xFFBBF7D0);
+  static const Color toneBrandFg = Color(0xFF047857);
+  static const Color toneBlueBg = Color(0xFFEFF6FF);
+  static const Color toneBlueBorder = Color(0xFFBFDBFE);
+  static const Color toneBlueFg = Color(0xFF2563EB);
+  static const Color toneAmberBg = Color(0xFFFFFBEB);
+  static const Color toneAmberBorder = Color(0xFFFDE68A);
+  static const Color toneAmberFg = Color(0xFFD97706);
+  static const Color toneRedBg = Color(0xFFFEF2F2);
+  static const Color toneRedBorder = Color(0xFFFECACA);
+  static const Color toneRedFg = Color(0xFFDC2626);
+  static const Color toneNeutralBg = Color(0xFFF5F5F5);
+  static const Color toneNeutralBorder = Color(0xFFE5E7EB);
+  static const Color toneNeutralFg = Color(0xFF616161);
 }
 
 class AppColorsGbMode {
@@ -229,6 +244,21 @@ class AppColorsGbMode {
   static const Color chartTrack = Color(0x12FFFFFF);
   static const Color chartPositive = Color(0xFF34D399);
   static const Color chartNegative = Color(0xFFF87171);
+  static const Color toneBrandBg = Color(0x1F34D399);
+  static const Color toneBrandBorder = Color(0x5234D399);
+  static const Color toneBrandFg = Color(0xFF6EE7B7);
+  static const Color toneBlueBg = Color(0x1F60A5FA);
+  static const Color toneBlueBorder = Color(0x5260A5FA);
+  static const Color toneBlueFg = Color(0xFF93C5FD);
+  static const Color toneAmberBg = Color(0x1AFBBF24);
+  static const Color toneAmberBorder = Color(0x52FBBF24);
+  static const Color toneAmberFg = Color(0xFFFCD34D);
+  static const Color toneRedBg = Color(0x1AF87171);
+  static const Color toneRedBorder = Color(0x57F87171);
+  static const Color toneRedFg = Color(0xFFFCA5A5);
+  static const Color toneNeutralBg = Color(0x0FFFFFFF);
+  static const Color toneNeutralBorder = Color(0x24FFFFFF);
+  static const Color toneNeutralFg = Color(0xFFC3D6CB);
 }
 
 class AppComponentColors {

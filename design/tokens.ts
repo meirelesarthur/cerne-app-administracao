@@ -205,6 +205,13 @@ export interface ThemePalette {
     positive: string
     negative: string
   }
+  /**
+   * Superfícies de tom (chips de status, blocos de aviso do detalhe),
+   * theme-aware. As escalas cruas `*.50/200/600` só funcionam sobre branco: em
+   * gbMode viravam retângulos pastel claros com texto quase invisível. Cada
+   * tom declara fundo, borda e texto/ícone próprios por tema.
+   */
+  tone: Record<'brand' | 'blue' | 'amber' | 'red' | 'neutral', { bg: string; border: string; fg: string }>
 }
 
 export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
@@ -289,6 +296,14 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       positive: primitive.brand[600],
       negative: primitive.red[600],
     },
+    // Tema claro = as escalas que o AppChip já usava (sem mudança visual).
+    tone: {
+      brand: { bg: primitive.brand[50], border: primitive.brand[200], fg: primitive.brand[700] },
+      blue: { bg: primitive.blue[50], border: primitive.blue[200], fg: primitive.blue[600] },
+      amber: { bg: primitive.amber[50], border: primitive.amber[200], fg: primitive.amber[600] },
+      red: { bg: primitive.red[50], border: primitive.red[200], fg: primitive.red[600] },
+      neutral: { bg: primitive.neutral[100], border: primitive.neutral[200], fg: primitive.neutral[600] },
+    },
   },
   gbMode: {
     // Congelado por decisão: o Figma só define o tema claro. Os papéis novos
@@ -350,6 +365,15 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       track: 'rgba(255,255,255,0.07)',
       positive: '#34d399',
       negative: '#f87171',
+    },
+    // Fundo translúcido do matiz sobre o verde escuro + texto no tom 300: o
+    // tom continua reconhecível sem acender um bloco claro na tela.
+    tone: {
+      brand: { bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.32)', fg: '#6ee7b7' },
+      blue: { bg: 'rgba(96,165,250,0.12)', border: 'rgba(96,165,250,0.32)', fg: '#93c5fd' },
+      amber: { bg: 'rgba(251,191,36,0.10)', border: 'rgba(251,191,36,0.32)', fg: '#fcd34d' },
+      red: { bg: 'rgba(248,113,113,0.10)', border: 'rgba(248,113,113,0.34)', fg: '#fca5a5' },
+      neutral: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.14)', fg: '#c3d6cb' },
     },
   },
 }
