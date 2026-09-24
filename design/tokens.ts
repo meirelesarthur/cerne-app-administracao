@@ -181,6 +181,20 @@ export interface ThemePalette {
    * `component.hero.angle`.
    */
   hero: { from: string; to: string; fg: string; fgMuted: string; fgSubtle: string; overlay: string; line: string }
+  /**
+   * Pares de status (texto · fundo suave · borda) para chips, tags, banners,
+   * mensagens de erro de formulário e tons de KPI. Theme-aware: os tons de
+   * `color.feedback` são fixos e nasceram no claro — sobre o gbMode o vermelho
+   * e o verde-escuro somem. Cada `*Fg` tem ≥ 4,5:1 sobre o seu `*Bg` e sobre
+   * `bg.surface` do mesmo tema (WCAG AA para texto de corpo).
+   */
+  status: {
+    successFg: string; successBg: string; successBorder: string
+    warningFg: string; warningBg: string; warningBorder: string
+    dangerFg: string; dangerBg: string; dangerBorder: string
+    infoFg: string; infoBg: string; infoBorder: string
+    neutralFg: string; neutralBg: string; neutralBorder: string
+  }
   /** CTA de alto impacto: verde vibrante + texto quase-preto (referência) */
   cta: { bg: string; hover: string; fg: string }
   /** tab bar flutuante em cápsula translúcida */
@@ -220,12 +234,16 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       default: '#141414',
       heading: '#262626',
       section: '#1f1a19',
-      muted: '#6b7280',
+      // Contraste AA (≥ 4,5:1) sobre o canvas #f0f0f2, não só sobre o branco:
+      // os tons medidos no Figma (#6b7280, #80807f e o placeholder a 54%)
+      // ficavam entre 3,2 e 4,3 sobre a folha cinza — ilegíveis para leitura
+      // prolongada. Mesma família de cor, só mais escura.
+      muted: '#5f6673',
       secondary: '#615b58',
-      subtle: '#80807f',
-      quiet: '#80807f',
-      // rgba(2,53,53,.9) renderizado a 60% de opacidade no Figma = alpha .54
-      placeholder: 'rgba(2,53,53,0.54)',
+      subtle: '#676766',
+      quiet: '#676766',
+      // rgba(2,53,53,.9) do Figma, com alpha subido de .54 para .70 (AA)
+      placeholder: 'rgba(2,53,53,0.70)',
       inverse: primitive.neutral[0],
     },
     // O canvas e a folha estrutural permanecem cinza. Todo elemento que recebe
@@ -268,6 +286,13 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     // Nova UI (referência Força Agro): CTA vira verde sólido + texto branco
     // (era verde-menta + texto quase-preto); nav deixa de depender de blur/
     // translucidez e vira cápsula opaca, como a referência.
+    status: {
+      successFg: primitive.brand[700], successBg: primitive.brand[50], successBorder: primitive.brand[200],
+      warningFg: primitive.amber[700], warningBg: primitive.amber[50], warningBorder: primitive.amber[200],
+      dangerFg: primitive.red[700], dangerBg: primitive.red[50], dangerBorder: primitive.red[200],
+      infoFg: primitive.blue[700], infoBg: primitive.blue[50], infoBorder: primitive.blue[200],
+      neutralFg: primitive.neutral[600], neutralBg: primitive.neutral[100], neutralBorder: primitive.neutral[200],
+    },
     cta: { bg: primitive.brand[700], hover: primitive.brand[800], fg: primitive.neutral[0] },
     nav: { bg: primitive.neutral[0], fg: '#67716a', active: primitive.brand[700], border: '#e8e9e1' },
     shadow: {
@@ -278,13 +303,16 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     // série do tema claro = a paleta categórica histórica de `chart.series`,
     // mantida para não mudar a leitura dos painéis já publicados.
     chart: {
-      series: ['#059669', '#2563eb', '#f59e0b', '#7c3aed', '#0891b2', '#dc2626', '#14532d', '#9ca3af'],
+      // Âmbar e cinza escurecidos (amber[600], neutral[500]): #f59e0b e
+      // #9ca3af ficavam abaixo de 3:1 sobre o branco do card (WCAG 1.4.11).
+      series: ['#059669', '#2563eb', primitive.amber[600], '#7c3aed', '#0891b2', '#dc2626', '#14532d', primitive.neutral[500]],
       // grid mais claro que track de proposito: a linha de grade e referencia
       // de fundo, o trilho e a escala cheia de uma barra/gauge e precisa ser
       // visivel sobre a superficie branca do card (o neutral[100] anterior era
       // o mesmo tom do canvas e sumia).
       grid: primitive.neutral[150],
-      axis: primitive.neutral[400],
+      // neutral[500]: rótulo de eixo é texto — o neutral[400] dava 2,5:1.
+      axis: primitive.neutral[500],
       track: primitive.neutral[200],
       positive: primitive.brand[600],
       negative: primitive.red[600],
@@ -300,9 +328,10 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
       section: '#e2f0e8',
       muted: '#8fb3a2',
       secondary: '#8fb3a2',
-      subtle: '#5f7d6e',
+      // #5f7d6e dava 2,8–4,3:1; clareado para AA sobre surface e raised.
+      subtle: '#8aab9b',
       quiet: '#8fb3a2',
-      placeholder: 'rgba(226,240,232,0.54)',
+      placeholder: 'rgba(226,240,232,0.62)',
       inverse: '#051008',
     },
     bg: { canvas: '#051008', sheet: '#0e2a1d', surface: '#0e2a1d', subtle: '#0a2016', raised: '#123a28', track: 'rgba(255,255,255,0.10)', kpi: '#0e2a1d' },
@@ -332,7 +361,16 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     },
     // gbMode mantém a identidade escura, mas segue a mesma direção: CTA/ativo
     // do dock em verde sólido de marca + texto branco, nav em superfície opaca.
-    cta: { bg: '#10b981', hover: '#34d399', fg: primitive.neutral[0] },
+    status: {
+      successFg: '#34d399', successBg: 'rgba(52,211,153,0.14)', successBorder: 'rgba(52,211,153,0.32)',
+      warningFg: '#fbbf24', warningBg: 'rgba(251,191,36,0.14)', warningBorder: 'rgba(251,191,36,0.32)',
+      dangerFg: '#fca5a5', dangerBg: 'rgba(248,113,113,0.14)', dangerBorder: 'rgba(248,113,113,0.32)',
+      infoFg: '#93c5fd', infoBg: 'rgba(96,165,250,0.14)', infoBorder: 'rgba(96,165,250,0.32)',
+      neutralFg: '#b8cfc3', neutralBg: 'rgba(255,255,255,0.08)', neutralBorder: 'rgba(255,255,255,0.14)',
+    },
+    // Texto quase-preto (= accent.contrast) sobre o verde #10b981: o branco
+    // anterior dava 2,54:1, reprovado até para texto grande. 7,6:1 agora.
+    cta: { bg: '#10b981', hover: '#34d399', fg: '#051008' },
     nav: { bg: '#0e2a1d', fg: '#8fb3a2', active: '#10b981', border: 'rgba(255,255,255,0.10)' },
     shadow: {
       card: '0 1px 3px rgba(0,0,0,0.4)',
@@ -346,7 +384,8 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     chart: {
       series: ['#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#22d3ee', '#f87171', '#86efac', '#94a3b8'],
       grid: 'rgba(255,255,255,0.08)',
-      axis: 'rgba(255,255,255,0.32)',
+      // .32 dava 2,8:1; .55 passa AA como texto de eixo.
+      axis: 'rgba(255,255,255,0.55)',
       track: 'rgba(255,255,255,0.07)',
       positive: '#34d399',
       negative: '#f87171',
