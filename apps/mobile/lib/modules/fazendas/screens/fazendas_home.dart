@@ -356,8 +356,12 @@ class FazendasHome extends ConsumerWidget {
               children: [
                 AppSectionTitle(
                   action: AppButton(
-                    variant: AppButtonVariant.link,
+                    variant: AppButtonVariant.soft,
                     size: AppButtonSize.sm,
+                    rightIcon: const AppIcon(
+                      AppIcons.arrowRight,
+                      size: AppSize.iconXs,
+                    ),
                     onPressed: () => context.push('/fazendas/atividades'),
                     child: const Text('Ver todas'),
                   ),
@@ -416,7 +420,7 @@ class _Grupo extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.space2),
       child: AppSectionTitle(
         action: AppButton(
-          variant: AppButtonVariant.link,
+          variant: AppButtonVariant.soft,
           size: AppButtonSize.sm,
           rightIcon: const AppIcon(AppIcons.arrowRight, size: AppSize.iconXs),
           onPressed: () => context.push(rota),
