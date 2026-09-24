@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
+import 'bottom_sheet.dart';
 import 'chip.dart';
 import 'pressable.dart';
 import '../design/generated/app_colors.dart';
@@ -204,7 +205,9 @@ class _FieldCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    final maxLines = field.captionMaxLines;
+    final onTap = field.onTap;
+    final maxLines = field.captionMaxLines ?? (onTap == null ? null : 2);
+    final overflow = maxLines == null ? null : TextOverflow.ellipsis;
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,9 +235,11 @@ class _FieldCell extends StatelessWidget {
         const SizedBox(height: AppSpacing.half),
         Text(
           field.value,
+          maxLines: maxLines,
+          overflow: overflow,
           style: TextStyle(
-            fontSize: AppTypography.md,
-            fontWeight: AppTypography.weightSemibold,
+            fontSize: AppTypography.xl,
+            fontWeight: AppTypography.weightMedium,
             height: AppTypography.lineHeightSnug,
             color: semantic.fgDefault,
           ),
@@ -244,7 +249,7 @@ class _FieldCell extends StatelessWidget {
           Text(
             field.caption!,
             maxLines: maxLines,
-            overflow: maxLines == null ? null : TextOverflow.ellipsis,
+            overflow: overflow,
             style: TextStyle(
               fontSize: AppTypography.base,
               color: semantic.fgMuted,
@@ -254,7 +259,6 @@ class _FieldCell extends StatelessWidget {
       ],
     );
 
-    final onTap = field.onTap;
     if (onTap == null) return content;
 
     return AppPressable(
@@ -273,10 +277,18 @@ class AppDetailList extends StatelessWidget {
     super.key,
     required this.items,
     this.emptyLabel = 'Nada informado.',
-  });
+    this.captions,
+    this.onItemTap,
+  }) : assert(captions == null || captions.length == items.length);
 
   final List<String> items;
   final String emptyLabel;
+
+  /// Linha de apoio opcional por item, por exemplo função, quantidade ou uso.
+  final List<String?>? captions;
+
+  /// Abre o detalhe do item tocado, quando cada registro tiver mais campos.
+  final ValueChanged<int>? onItemTap;
 
   @override
   Widget build(BuildContext context) {
@@ -294,29 +306,73 @@ class AppDetailList extends StatelessWidget {
       );
     }
 
+    Widget itemRow(int index) {
+      final caption = captions?[index];
+      final content = Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.space3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.threeQuarter),
+              child: AppIcon(
+                AppIcons.checkCircle2,
+                size: AppSize.iconSm,
+                color: semantic.accentDefault,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(items[index], style: style),
+                  if (caption != null) ...[
+                    const SizedBox(height: AppSpacing.half),
+                    Text(
+                      caption,
+                      maxLines: onItemTap == null ? null : 2,
+                      overflow: onItemTap == null ? null : TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: AppTypography.base,
+                        color: semantic.fgMuted,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (onItemTap != null) ...[
+              const SizedBox(width: AppSpacing.space2),
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.threeQuarter),
+                child: AppIcon(
+                  AppIcons.chevronRight,
+                  size: AppSize.iconSm,
+                  color: semantic.fgMuted,
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+      final onTap = onItemTap;
+      if (onTap == null) return content;
+      return AppPressable(
+        semanticLabel: '${items[index]}. Ver detalhes',
+        onPressed: () => onTap(index),
+        minTouchTarget: false,
+        child: content,
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var i = 0; i < items.length; i++) ...[
           if (i > 0) Divider(height: 1, color: semantic.borderDefault),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.space3),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: AppSpacing.threeQuarter),
-                  child: AppIcon(
-                    AppIcons.checkCircle2,
-                    size: AppSize.iconSm,
-                    color: semantic.accentDefault,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.space3),
-                Expanded(child: Text(items[i], style: style)),
-              ],
-            ),
-          ),
+          itemRow(i),
         ],
       ],
     );
@@ -415,6 +471,33 @@ WidgetbookComponent buildDetailSectionWidgetbookComponent() {
             count: 2,
             child: AppDetailList(
               items: ['Trator John Deere 6110J', 'Pulverizador Jacto 2000 L'],
+            ),
+          ),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Lista tocável com apoio',
+        builder: (context) => sheet(
+          Builder(
+            builder: (context) => AppDetailSection(
+              icon: AppIcons.flaskConical,
+              title: 'Insumos',
+              count: 2,
+              child: AppDetailList(
+                items: const ['Herbicida pré-emergente', 'Óleo diesel S10'],
+                captions: const ['44 L · 2 L/ha', '90 L · 4,09 L/ha'],
+                onItemTap: (i) => showAppBottomSheet<void>(
+                  context,
+                  title: i == 0 ? 'Herbicida pré-emergente' : 'Óleo diesel S10',
+                  child: const AppDetailFields(
+                    columns: 2,
+                    fields: [
+                      AppDetailField(label: 'Un. medida', value: 'L'),
+                      AppDetailField(label: 'Estoque', value: '7,02'),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ),

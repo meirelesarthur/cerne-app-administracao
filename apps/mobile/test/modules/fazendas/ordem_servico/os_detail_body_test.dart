@@ -24,7 +24,7 @@ void main() {
 
     expect(find.text('Serviço'), findsOneWidget);
     expect(find.text('Solicitação e autorização'), findsOneWidget);
-    expect(find.text('Instruções de segurança'), findsOneWidget);
+    expect(find.text('Segurança e sustentabilidade'), findsOneWidget);
     expect(find.text('OS solicitada'), findsNothing);
     expect(tester.takeException(), isNull);
   });

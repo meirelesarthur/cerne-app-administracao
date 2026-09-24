@@ -220,9 +220,14 @@ void main() {
 
         // Lista as OS da fazenda, com o "+ Nova O.S" fixo no rodapé.
         expect(find.text('+ NOVA O.S'), findsOneWidget);
-        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
-          find.text('Construção de bebedouro no Piquete 07'),
+          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          ),
           findsOneWidget,
         );
         expect(find.text('Confinamento'), findsNothing);
@@ -242,9 +247,14 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
-          find.text('Construção de bebedouro no Piquete 07'),
+          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Manutenções Cochos/Bebedouros — Lote 07 - Bezerras Desmamadas',
+          ),
           findsNothing,
         );
       },

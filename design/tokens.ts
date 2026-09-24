@@ -566,10 +566,8 @@ export const layout = {
   moduleBarH: '48px',
   tabBarH: '68px',
   gutter: '16px',
-  /** folga inferior dos scrollers para o conteúdo não morrer sob a tab bar flutuante.
-   * Reduzido de 104 (ver plano de melhorias de UX): a folga anterior era maior que o
-   * necessário — dock (68px) + respiro (14px) já cobrem a cápsula flutuante. */
-  tabBarClearance: '88px',
+  /** Folga para o conteúdo passar acima da tab bar e do hexágono ativo flutuante. */
+  tabBarClearance: '112px',
 } as const
 
 // paleta categórica para gráficos SVG próprios
@@ -667,14 +665,21 @@ export const component = {
   kpi: {
     bg: '#f8fffe',
   },
-  /** Nova UI — tab bar flutuante em cápsula translúcida sobre o conteúdo */
+  /** Tab bar com hexágono ativo flutuante e ondulação sob a seleção. */
   tabbar: {
     blur: '20px',
     height: '68px',
-    /** respiro lateral/inferior da cápsula dentro do frame */
+    /** respiro lateral/inferior da barra dentro do frame */
     inset: '14px',
-    /** diâmetro dos botões circulares internos */
+    /** diâmetro das áreas interativas internas */
     itemSize: '48px',
+    /** caixa hexagonal do item ativo */
+    hexSize: '52px',
+    /** quanto o hexágono ativo sobe acima da barra */
+    lift: '24px',
+    /** largura e profundidade da ondulação sob o item ativo */
+    notchWidth: '104px',
+    notchDepth: '32px',
   },
   /** card de primeiro nível para menus extensos (mosaico 2×N com lista interna) */
   navigationCard: {
