@@ -126,6 +126,7 @@ class _DashAtivosState extends State<DashAtivos> {
           const SizedBox(height: AppSpacing.space4),
           AppChartCard(
             title: 'Patrimônio por categoria',
+            isEmpty: porCategoria.isEmpty,
             footnote:
                 'Valor de aquisição; o líquido desconta a depreciação acumulada.',
             child: Center(
@@ -143,6 +144,7 @@ class _DashAtivosState extends State<DashAtivos> {
           AppChartCard(
             title: 'Vida útil consumida',
             subtitle: 'Depreciação acumulada por ativo',
+            isEmpty: maisDepreciados.isEmpty,
             help:
                 'Quanto do valor de cada ativo já foi depreciado, em %. Perto '
                 'de 100% o ativo está no fim da vida útil contábil — hora de '

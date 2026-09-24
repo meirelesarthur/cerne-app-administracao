@@ -170,6 +170,10 @@ const dtcg = {
       itemStagger: duration(component.revealMenu.itemStagger),
     },
     header: mapColors(component.header),
+    splash: {
+      bg: color(component.splash.bg),
+      mark: dimension(component.splash.mark),
+    },
     hero: { angle: number(component.hero.angle) },
     kpi: mapColors(component.kpi),
     tabbar: mapDimensions(component.tabbar),

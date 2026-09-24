@@ -294,5 +294,6 @@ class AppComponentColors {
   static const Color headerPillBorder = Color(0x29FFFFFF);
   static const Color headerCreditBg = Color(0x1A4ADE80);
   static const Color headerCreditBorder = Color(0x404ADE80);
+  static const Color splashBg = Color(0xFF081A12);
   static const Color kpiBg = Color(0xFFF8FFFE);
 }

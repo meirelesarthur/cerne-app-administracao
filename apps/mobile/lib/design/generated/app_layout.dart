@@ -52,6 +52,7 @@ class AppComponentMetrics {
   static const double revealMenuAppScale = 0.78;
   static const double revealMenuAppShiftX = -58; // valor percentual original
   static const double revealMenuMenuWidth = 78; // valor percentual original
+  static const double splashMark = 84;
   static const double heroAngle = 233.92;
   static const double tabbarBlur = 20;
   static const double tabbarHeight = 68;

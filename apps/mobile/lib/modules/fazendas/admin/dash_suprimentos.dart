@@ -129,6 +129,7 @@ class _DashSuprimentosState extends State<DashSuprimentos> {
           const SizedBox(height: AppSpacing.space4),
           AppChartCard(
             title: 'Valor cotado por tipo',
+            isEmpty: lista.isEmpty,
             footnote: 'Inclui cotações abertas, aprovadas e recusadas.',
             child: Center(
               child: AppDonutChart(
@@ -146,6 +147,7 @@ class _DashSuprimentosState extends State<DashSuprimentos> {
           AppChartCard(
             title: 'Preço unitário × cotação anterior',
             subtitle: 'Abaixo do traço é economia',
+            isEmpty: lista.isEmpty,
             child: AppBulletChart(
               targetLabel: 'anterior',
               formatValue: _formatPreco,
