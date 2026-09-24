@@ -47,14 +47,12 @@ Future<void> _enterField(
   String value, {
   Type control = AppTextInput,
 }) async {
-  final formField = find.ancestor(
-    of: find.text(label),
-    matching: find.byType(AppFormField),
-  ).first;
-  final input = find.descendant(
-    of: formField,
-    matching: find.byType(control),
-  ).first;
+  final formField = find
+      .ancestor(of: find.text(label), matching: find.byType(AppFormField))
+      .first;
+  final input = find
+      .descendant(of: formField, matching: find.byType(control))
+      .first;
   await tester.ensureVisible(input);
   await tester.enterText(input, value);
   await tester.pumpAndSettle();
@@ -66,11 +64,7 @@ Future<void> _continue(WidgetTester tester) async {
 }
 
 Future<void> _fillIdentity(WidgetTester tester) async {
-  await _chooseSearch(
-    tester,
-    'Responsável pela execução',
-    'João Oliveira',
-  );
+  await _chooseSearch(tester, 'Responsável pela execução', 'João Oliveira');
   await tester.enterText(find.byType(AppDateInput).last, '30/12/2026');
   await _continue(tester);
 }
@@ -91,11 +85,7 @@ Future<void> _fillEarlierOsSteps(WidgetTester tester) async {
   await _continue(tester);
 
   await _chooseSearch(tester, 'Área / talhão', 'Talhão 01 — Sede');
-  await _chooseSearch(
-    tester,
-    'Cultura / variedade',
-    'Soja — TMG 2383',
-  );
+  await _chooseSearch(tester, 'Cultura / variedade', 'Soja — TMG 2383');
   await _continue(tester);
 
   await _enterField(
@@ -180,11 +170,7 @@ Future<void> _addResource(WidgetTester tester, String group) async {
       await _enterField(tester, 'Quantidade total', '84');
       break;
     case 'Produção':
-      await _chooseSearch(
-        tester,
-        'Armazém de produção',
-        'Armazém de Grãos',
-      );
+      await _chooseSearch(tester, 'Armazém de produção', 'Armazém de Grãos');
       await _chooseSearch(tester, 'Produto gerado', 'Soja em grão');
       await _enterField(tester, 'Quantidade', '120');
       break;
@@ -316,7 +302,10 @@ void main() {
       expect(find.byType(OsCreatePage), findsNothing);
       expect(find.byType(OsDetailPage), findsOneWidget);
       expect(find.textContaining('Aração'), findsWidgets);
-      expect(find.textContaining('Aplicar fertilizante no talhão.'), findsWidgets);
+      expect(
+        find.textContaining('Aplicar fertilizante no talhão.'),
+        findsWidgets,
+      );
 
       await tester.tap(find.byTooltip('Voltar').last);
       await tester.pumpAndSettle();
@@ -407,11 +396,7 @@ void main() {
 
     testWidgets('prazo no passado ou impossível não é aceito', (tester) async {
       await _openNewOs(tester);
-      await _chooseSearch(
-        tester,
-        'Responsável pela execução',
-        'João Oliveira',
-      );
+      await _chooseSearch(tester, 'Responsável pela execução', 'João Oliveira');
 
       await tester.enterText(find.byType(AppDateInput).last, '01/01/2020');
       await tester.tap(find.text('CONTINUAR'));
@@ -433,11 +418,7 @@ void main() {
       tester,
     ) async {
       await _openNewOs(tester);
-      await _chooseSearch(
-        tester,
-        'Responsável pela execução',
-        'João Oliveira',
-      );
+      await _chooseSearch(tester, 'Responsável pela execução', 'João Oliveira');
       await tester.tap(find.byTooltip('Voltar').last);
       await tester.pumpAndSettle();
 
@@ -481,12 +462,19 @@ void main() {
       await _continue(tester);
 
       expect(
-        tester.widget<AppSearchSelect>(_selectField('Cultura / variedade')).enabled,
+        tester
+            .widget<AppSearchSelect>(_selectField('Cultura / variedade'))
+            .enabled,
         isTrue,
       );
-      expect(tester.widget<AppSearchSelect>(_selectField('Lote')).enabled, isFalse);
       expect(
-        tester.widget<AppSearchSelect>(_selectField('Categoria zootécnica')).enabled,
+        tester.widget<AppSearchSelect>(_selectField('Lote')).enabled,
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<AppSearchSelect>(_selectField('Categoria zootécnica'))
+            .enabled,
         isFalse,
       );
 
@@ -499,34 +487,42 @@ void main() {
       await _chooseSearch(tester, 'Lote', 'Lote 12 — Recria');
 
       expect(
-        tester.widget<AppSearchSelect>(_selectField('Cultura / variedade')).enabled,
+        tester
+            .widget<AppSearchSelect>(_selectField('Cultura / variedade'))
+            .enabled,
         isFalse,
       );
-      expect(tester.widget<AppSearchSelect>(_selectField('Lote')).enabled, isTrue);
       expect(
-        tester.widget<AppSearchSelect>(_selectField('Categoria zootécnica')).enabled,
+        tester.widget<AppSearchSelect>(_selectField('Lote')).enabled,
+        isTrue,
+      );
+      expect(
+        tester
+            .widget<AppSearchSelect>(_selectField('Categoria zootécnica'))
+            .enabled,
         isTrue,
       );
     });
 
-    testWidgets('as cinco coleções permitem adicionar, editar, remover e desfazer', (
-      tester,
-    ) async {
-      await _openNewOs(tester);
-      await _fillEarlierOsSteps(tester);
+    testWidgets(
+      'as cinco coleções permitem adicionar, editar, remover e desfazer',
+      (tester) async {
+        await _openNewOs(tester);
+        await _fillEarlierOsSteps(tester);
 
-      for (final (group, title) in [
-        ('MO / Serviços', 'João Oliveira'),
-        ('Máq. / Implementos', 'Trator John Deere 6110'),
-        ('Insumos', 'Fertilizante NPK 20-05-20'),
-        ('Produção', 'Soja em grão'),
-        ('EPI', 'Óculos de proteção'),
-      ]) {
-        await _addResource(tester, group);
-        await _editRemoveAndUndoResource(tester, group, title);
-      }
-      expect(tester.takeException(), isNull);
-    });
+        for (final (group, title) in [
+          ('MO / Serviços', 'João Oliveira'),
+          ('Máq. / Implementos', 'Trator John Deere 6110'),
+          ('Insumos', 'Fertilizante NPK 20-05-20'),
+          ('Produção', 'Soja em grão'),
+          ('EPI', 'Óculos de proteção'),
+        ]) {
+          await _addResource(tester, group);
+          await _editRemoveAndUndoResource(tester, group, title);
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('lista só as OS da fazenda ativa', (tester) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));

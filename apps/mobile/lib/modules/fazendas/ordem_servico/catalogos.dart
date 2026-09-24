@@ -38,14 +38,8 @@ const operacoesComunsOs = <String>[
 
 /// A agricultura não oferece as cinco operações exclusivas da pecuária.
 const operacoesPorUso = <UsoOs, List<String>>{
-  UsoOs.agricultura: [
-    ...operacoesAgricolasOs,
-    ...operacoesComunsOs,
-  ],
-  UsoOs.pecuaria: [
-    ...operacoesPecuariasOs,
-    ...operacoesComunsOs,
-  ],
+  UsoOs.agricultura: [...operacoesAgricolasOs, ...operacoesComunsOs],
+  UsoOs.pecuaria: [...operacoesPecuariasOs, ...operacoesComunsOs],
   UsoOs.ambos: [
     ...operacoesAgricolasOs,
     ...operacoesPecuariasOs,
@@ -64,25 +58,24 @@ const atividadesPorOperacao = <String, List<String>>{
     'Nivelamento',
   ],
   'Plantio': ['Plantio Mecanizado', 'Plantio Manual', 'Semeadura a Lanço'],
-  'Adubação': [
-    'Adubação de Base',
-    'Adubação de Cobertura',
-    'Adubação Foliar',
-  ],
-  'Tratos Culturais': [
-    'Capina Mecanizada',
-    'Roçagem',
-    'Desbaste',
-    'Replantio',
-  ],
+  'Adubação': ['Adubação de Base', 'Adubação de Cobertura', 'Adubação Foliar'],
+  'Tratos Culturais': ['Capina Mecanizada', 'Roçagem', 'Desbaste', 'Replantio'],
   'Tratos Fitossanitários': [
     'Aplicação de Herbicida',
     'Aplicação de Fungicida',
     'Aplicação de Inseticida',
     'Pulverização Mecanizada',
   ],
-  'Irrigação': ['Irrigação por Aspersão', 'Irrigação por Pivô', 'Reparo de Irrigação'],
-  'Colheita': ['Colheita Mecanizada', 'Colheita Manual', 'Recolhimento de Grãos'],
+  'Irrigação': [
+    'Irrigação por Aspersão',
+    'Irrigação por Pivô',
+    'Reparo de Irrigação',
+  ],
+  'Colheita': [
+    'Colheita Mecanizada',
+    'Colheita Manual',
+    'Recolhimento de Grãos',
+  ],
   'Pós Colheita': ['Secagem', 'Classificação de Produto', 'Beneficiamento'],
   'Armazenagem': ['Recebimento', 'Secagem', 'Classificação de Produto'],
   'Conservação do Solo': ['Curva de Nível', 'Subsolagem', 'Cobertura Vegetal'],
@@ -91,28 +84,46 @@ const atividadesPorOperacao = <String, List<String>>{
   'Poda e Condução': ['Poda de Formação', 'Poda de Produção', 'Amarração'],
   'Roçada': ['Roçada Manual', 'Roçada Mecanizada'],
   'Manutenção Agrícola': ['Revisão de Máquinas', 'Reparo de Implementos'],
-  'Alimentação Animal': ['Distribuição de Ração', 'Fornecimento de Sal Mineral'],
+  'Alimentação Animal': [
+    'Distribuição de Ração',
+    'Fornecimento de Sal Mineral',
+  ],
   'Manejo Sanitário': [
     'Vacinação',
     'Vermifugação',
     'Aplicação de Medicamentos',
     'Inspeção Sanitária',
   ],
-  'Manejo Reprodutivo': ['Inseminação', 'Diagnóstico de Gestação', 'Estação de Monta'],
+  'Manejo Reprodutivo': [
+    'Inseminação',
+    'Diagnóstico de Gestação',
+    'Estação de Monta',
+  ],
   'Manejo de Rebanho': [
     'Transferência de Lote',
     'Apartação',
     'Pesagem',
     'Identificação Animal',
   ],
-  'Ordenha': ['Ordenha Mecânica', 'Higienização de Equipamento', 'Resfriamento do Leite'],
+  'Ordenha': [
+    'Ordenha Mecânica',
+    'Higienização de Equipamento',
+    'Resfriamento do Leite',
+  ],
   'Manutenção de Infraestrutura': [
     'Reparo de Cerca',
     'Manutenção de Curral',
     'Reparo de Estradas',
   ],
-  'Limpeza e Conservação': ['Limpeza de Curral', 'Limpeza de Galpão', 'Desinfecção'],
-  'Transporte Interno': ['Deslocamento de Equipamento', 'Movimentação de Carga'],
+  'Limpeza e Conservação': [
+    'Limpeza de Curral',
+    'Limpeza de Galpão',
+    'Desinfecção',
+  ],
+  'Transporte Interno': [
+    'Deslocamento de Equipamento',
+    'Movimentação de Carga',
+  ],
 };
 
 List<String> atividadesParaOperacao(String? operacao) =>
@@ -247,7 +258,10 @@ const responsaveisOs = <ResponsavelOsCadastro>[
   ResponsavelOsCadastro(nome: 'Maria Souza', funcao: 'Técnica agrícola'),
   ResponsavelOsCadastro(nome: 'Carlos Dias', funcao: 'Supervisor de campo'),
   ResponsavelOsCadastro(nome: 'Ana Costa', funcao: 'Médica veterinária'),
-  ResponsavelOsCadastro(nome: 'Pedro Almeida', funcao: 'Encarregado de produção'),
+  ResponsavelOsCadastro(
+    nome: 'Pedro Almeida',
+    funcao: 'Encarregado de produção',
+  ),
 ];
 
 class ExecutorMaoDeObraOsCadastro {

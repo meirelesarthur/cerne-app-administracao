@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../design/generated/app_layout.dart';
 import '../../../../design/generated/app_spacing.dart';
 import '../../../../ui/ui.dart';
 import '../../state/fazendas_store.dart';
@@ -57,7 +58,9 @@ class OsCreatePage extends ConsumerStatefulWidget {
 class _OsCreatePageState extends ConsumerState<OsCreatePage> {
   final _hoje = DateUtils.dateOnly(DateTime.now());
   late final _dataEmissao = TextEditingController(text: _formatarDataOs(_hoje));
-  late final _dataExecucao = TextEditingController(text: _formatarDataOs(_hoje));
+  late final _dataExecucao = TextEditingController(
+    text: _formatarDataOs(_hoje),
+  );
   final _prazo = TextEditingController();
   final _requisitosClimaticos = TextEditingController();
   final _temperaturaMinima = TextEditingController();
@@ -184,20 +187,22 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
         return {
           'responsavel': _obrigatorio(_responsavel, 'Responsável'),
           'emissao': emissao,
-          'execucao': execucao ??
+          'execucao':
+              execucao ??
               (dataEmissao != null &&
                       dataExecucao != null &&
                       dataExecucao.isBefore(dataEmissao)
                   ? 'A execução não pode começar antes da emissão.'
                   : null),
-          'prazo': prazo ??
+          'prazo':
+              prazo ??
               (dataPrazo != null && dataPrazo.isBefore(_hoje)
                   ? 'O prazo não pode ser anterior a hoje.'
                   : (dataPrazo != null &&
-                        dataExecucao != null &&
-                        dataPrazo.isBefore(dataExecucao)
-                    ? 'O prazo deve ser igual ou posterior à execução.'
-                    : null)),
+                            dataExecucao != null &&
+                            dataPrazo.isBefore(dataExecucao)
+                        ? 'O prazo deve ser igual ou posterior à execução.'
+                        : null)),
         };
       case 1:
         return {
@@ -227,7 +232,8 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
             _temperaturaMinima.text,
             'Temperatura mínima',
           ),
-          'temperaturaMaxima': _numeroObrigatorio(
+          'temperaturaMaxima':
+              _numeroObrigatorio(
                 _temperaturaMaxima.text,
                 'Temperatura máxima',
               ) ??
@@ -256,10 +262,7 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
             _restricoesAmbientais.text,
             'Restrições ambientais',
           ),
-          'legal': _obrigatorio(
-            _conformidadeLegal.text,
-            'Conformidade legal',
-          ),
+          'legal': _obrigatorio(_conformidadeLegal.text, 'Conformidade legal'),
         };
       case 6:
         return {
@@ -294,9 +297,8 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     return null;
   }
 
-  String? _erro(String campo) => _etapasTentadas.contains(_etapa)
-      ? _errosDaEtapa(_etapa)[campo]
-      : null;
+  String? _erro(String campo) =>
+      _etapasTentadas.contains(_etapa) ? _errosDaEtapa(_etapa)[campo] : null;
 
   int get _quantidadeErros => _etapasTentadas.contains(_etapa)
       ? _errosDaEtapa(_etapa).values.where((erro) => erro != null).length
@@ -341,7 +343,8 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     setState(() {
       _lote = lote;
       final cadastrado = loteOsPorNome(lote);
-      final categorias = categoriasPorEspecieOs[cadastrado?.especie] ?? const [];
+      final categorias =
+          categoriasPorEspecieOs[cadastrado?.especie] ?? const [];
       _categoria = categorias.contains(cadastrado?.categoria)
           ? cadastrado!.categoria
           : null;
@@ -567,7 +570,9 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
           _atividade = null;
         }),
         enabled: _uso != null,
-        placeholder: _uso == null ? 'Escolha o uso primeiro' : 'Selecionar operação',
+        placeholder: _uso == null
+            ? 'Escolha o uso primeiro'
+            : 'Selecionar operação',
       ),
       _campoBusca(
         'atividade',
@@ -587,14 +592,12 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     final categorias = _lote == null
         ? [
             for (final item in categoriasZootecnicasOs)
-              AppSearchSelectOption(
-                value: item.categoria,
-                label: item.rotulo,
-              ),
+              AppSearchSelectOption(value: item.categoria, label: item.rotulo),
           ]
         : [
-            for (final categoria in
-                categoriasPorEspecieOs[loteOsPorNome(_lote)?.especie] ?? const <String>[])
+            for (final categoria
+                in categoriasPorEspecieOs[loteOsPorNome(_lote)?.especie] ??
+                    const <String>[])
               AppSearchSelectOption(
                 value: categoria,
                 label: '${loteOsPorNome(_lote)?.especie} — $categoria',
@@ -603,21 +606,17 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _tituloEtapa('Defina onde o serviço acontece e os cadastros ligados ao uso.'),
-        _campoBusca(
-          'area',
-          'Área / talhão',
-          _area,
-          [
-            for (final area in areasOs)
-              AppSearchSelectOption(
-                value: area.nome,
-                label: area.nome,
-                detail: '${_formatarNumeroOs(area.hectares)} ha',
-              ),
-          ],
-          (valor) => setState(() => _area = valor),
+        _tituloEtapa(
+          'Defina onde o serviço acontece e os cadastros ligados ao uso.',
         ),
+        _campoBusca('area', 'Área / talhão', _area, [
+          for (final area in areasOs)
+            AppSearchSelectOption(
+              value: area.nome,
+              label: area.nome,
+              detail: '${_formatarNumeroOs(area.hectares)} ha',
+            ),
+        ], (valor) => setState(() => _area = valor)),
         if (_uso?.usaCultura ?? false)
           _campoBusca(
             'cultura',
@@ -638,20 +637,14 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
             placeholder: 'Não se aplica ao uso selecionado',
           ),
         if (_uso?.usaLote ?? false) ...[
-          _campoBusca(
-            'lote',
-            'Lote',
-            _lote,
-            [
-              for (final lote in lotesOs)
-                AppSearchSelectOption(
-                  value: lote.nome,
-                  label: lote.nome,
-                  detail: '${lote.especie} · ${lote.quantidade} animais',
-                ),
-            ],
-            _escolherLote,
-          ),
+          _campoBusca('lote', 'Lote', _lote, [
+            for (final lote in lotesOs)
+              AppSearchSelectOption(
+                value: lote.nome,
+                label: lote.nome,
+                detail: '${lote.especie} · ${lote.quantidade} animais',
+              ),
+          ], _escolherLote),
           _campoBusca(
             'categoria',
             'Categoria zootécnica',
@@ -692,7 +685,9 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
   Widget _etapaCondicoes() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _tituloEtapa('Registre as condições permitidas para a execução do serviço.'),
+      _tituloEtapa(
+        'Registre as condições permitidas para a execução do serviço.',
+      ),
       _campoTexto(
         'clima',
         'Requisitos climáticos',
@@ -705,14 +700,20 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
         'Temperatura mínima (°C)',
         _temperaturaMinima,
         placeholder: 'Ex.: 18',
-        teclado: const TextInputType.numberWithOptions(decimal: true, signed: true),
+        teclado: const TextInputType.numberWithOptions(
+          decimal: true,
+          signed: true,
+        ),
       ),
       _campoTexto(
         'temperaturaMaxima',
         'Temperatura máxima (°C)',
         _temperaturaMaxima,
         placeholder: 'Ex.: 30',
-        teclado: const TextInputType.numberWithOptions(decimal: true, signed: true),
+        teclado: const TextInputType.numberWithOptions(
+          decimal: true,
+          signed: true,
+        ),
       ),
       _campoTexto(
         'horarioInicio',
@@ -866,52 +867,58 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     _ => _etapaRecursos(),
   };
 
-  List<Object> _itensDoGrupo(String grupo) => switch (_OsItemKind.fromLabel(grupo)) {
-    _OsItemKind.maoDeObra => _maoDeObra,
-    _OsItemKind.maquinas => _maquinas,
-    _OsItemKind.insumos => _insumos,
-    _OsItemKind.producao => _producao,
-    _OsItemKind.epis => _epis,
-  };
+  List<Object> _itensDoGrupo(String grupo) =>
+      switch (_OsItemKind.fromLabel(grupo)) {
+        _OsItemKind.maoDeObra => _maoDeObra,
+        _OsItemKind.maquinas => _maquinas,
+        _OsItemKind.insumos => _insumos,
+        _OsItemKind.producao => _producao,
+        _OsItemKind.epis => _epis,
+      };
 
   List<AppCollectionItemView> _visualizacoesDoGrupo(String grupo) {
-    final kind = _OsItemKind.fromLabel(grupo);
-    return [
-      for (final item in _itensDoGrupo(grupo))
-        switch (kind) {
-          _OsItemKind.maoDeObra => AppCollectionItemView(
-            title: (item as MaoDeObraOs).executor,
-            subtitle: [
-              (item as MaoDeObraOs).tipo.label,
-              if ((item as MaoDeObraOs).funcao case final funcao?) funcao,
-            ].join(' · '),
+    return switch (_OsItemKind.fromLabel(grupo)) {
+      _OsItemKind.maoDeObra => [
+        for (final item in _maoDeObra)
+          AppCollectionItemView(
+            title: item.executor,
+            subtitle: [item.tipo.label, ?item.funcao].join(' · '),
           ),
-          _OsItemKind.maquinas => AppCollectionItemView(
-            title: (item as MaquinaOs).equipamento,
+      ],
+      _OsItemKind.maquinas => [
+        for (final item in _maquinas)
+          AppCollectionItemView(
+            title: item.equipamento,
             subtitle: [
-              equipamentoOsPorNome((item as MaquinaOs).equipamento)?.tipo,
-              equipamentoOsPorNome((item as MaquinaOs).equipamento)?.unidadeUso,
-              if ((item as MaquinaOs).observacao case final observacao?) observacao,
+              equipamentoOsPorNome(item.equipamento)?.tipo,
+              equipamentoOsPorNome(item.equipamento)?.unidadeUso,
+              item.observacao,
             ].whereType<String>().join(' · '),
           ),
-          _OsItemKind.insumos => AppCollectionItemView(
-            title: (item as InsumoOs).produto,
+      ],
+      _OsItemKind.insumos => [
+        for (final item in _insumos)
+          AppCollectionItemView(
+            title: item.produto,
             subtitle:
-                '${_formatarNumeroOs((item as InsumoOs).quantidadeTotal)} ${(item as InsumoOs).unidadeMedida} · ${_formatarNumeroOs((item as InsumoOs).quantidadePorHa)} ${(item as InsumoOs).unidadeMedida}/ha · saldo ${_formatarNumeroOs((item as InsumoOs).estoque)}',
+                '${_formatarNumeroOs(item.quantidadeTotal)} ${item.unidadeMedida} · ${_formatarNumeroOs(item.quantidadePorHa)} ${item.unidadeMedida}/ha · saldo ${_formatarNumeroOs(item.estoque)}',
           ),
-          _OsItemKind.producao => AppCollectionItemView(
-            title: (item as ProducaoOs).produto,
+      ],
+      _OsItemKind.producao => [
+        for (final item in _producao)
+          AppCollectionItemView(
+            title: item.produto,
             subtitle: [
-              '${_formatarNumeroOs((item as ProducaoOs).quantidade)} ${(item as ProducaoOs).unidadeMedida}',
-              if ((item as ProducaoOs).observacao case final observacao?) observacao,
+              '${_formatarNumeroOs(item.quantidade)} ${item.unidadeMedida}',
+              ?item.observacao,
             ].join(' · '),
           ),
-          _OsItemKind.epis => AppCollectionItemView(
-            title: (item as EpiOs).produto,
-            subtitle: (item as EpiOs).observacao,
-          ),
-        },
-    ];
+      ],
+      _OsItemKind.epis => [
+        for (final item in _epis)
+          AppCollectionItemView(title: item.produto, subtitle: item.observacao),
+      ],
+    };
   }
 
   Future<void> _abrirGerenciador(BuildContext context, String grupo) =>
@@ -964,10 +971,7 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
     };
   }
 
-  Future<_OsResourceDraft?> _abrirEditor(
-    String grupo, {
-    Object? original,
-  }) {
+  Future<_OsResourceDraft?> _abrirEditor(String grupo, {Object? original}) {
     final kind = _OsItemKind.fromLabel(grupo);
     final key = GlobalKey<_OsResourceEditorSheetState>();
     return showAppBottomSheet<_OsResourceDraft>(
@@ -1002,9 +1006,7 @@ class _OsCreatePageState extends ConsumerState<OsCreatePage> {
       stepLabel: _etapasOs[_etapa],
       hasUnsavedChanges: _temDados,
       actionBar: AppActionBar(
-        primaryLabel: _etapa == _etapasOs.length - 1
-            ? 'Criar OS'
-            : 'Continuar',
+        primaryLabel: _etapa == _etapasOs.length - 1 ? 'Criar OS' : 'Continuar',
         onPrimary: _etapa == _etapasOs.length - 1 ? _criar : _avancar,
         alternativeLabel: _etapa > 0 ? 'Etapa anterior' : null,
         onAlternative: _etapa > 0 ? _voltarEtapa : null,
@@ -1053,7 +1055,8 @@ enum _OsItemKind {
 
   static _OsItemKind fromLabel(String label) => values.firstWhere(
     (kind) => kind.label == label,
-    orElse: () => throw ArgumentError.value(label, 'label', 'Grupo desconhecido'),
+    orElse: () =>
+        throw ArgumentError.value(label, 'label', 'Grupo desconhecido'),
   );
 }
 
@@ -1188,7 +1191,8 @@ class _OsResourceEditorSheetState extends State<_OsResourceEditorSheet> {
               ? 'Selecione um produto com saldo nesse armazém.'
               : null,
           'dose': _quantity(_quantidadePorHa, 'a quantidade por hectare'),
-          'total': _quantity(_quantidadeTotal, 'a quantidade total') ??
+          'total':
+              _quantity(_quantidadeTotal, 'a quantidade total') ??
               (item != null &&
                       (_lerNumeroOs(_quantidadeTotal.text) ?? 0) > item.saldo
                   ? 'A quantidade total supera o saldo disponível.'
@@ -1232,7 +1236,10 @@ class _OsResourceEditorSheetState extends State<_OsResourceEditorSheet> {
       _OsItemKind.insumos => _OsResourceDraft(
         item: InsumoOs(
           produto: _produtoInsumo!,
-          unidadeMedida: produtoEstoqueOs(_armazemInsumos, _produtoInsumo)!.unidade,
+          unidadeMedida: produtoEstoqueOs(
+            _armazemInsumos,
+            _produtoInsumo,
+          )!.unidade,
           estoque: produtoEstoqueOs(_armazemInsumos, _produtoInsumo)!.saldo,
           quantidadePorHa: _lerNumeroOs(_quantidadePorHa.text)!,
           quantidadeTotal: _lerNumeroOs(_quantidadeTotal.text)!,
@@ -1364,7 +1371,7 @@ class _OsResourceEditorSheetState extends State<_OsResourceEditorSheet> {
                 value: executor.nome,
                 label: executor.nome,
                 detail: [
-                  if (executor.funcao case final funcao?) funcao,
+                  ?executor.funcao,
                   if (executor.custoHora case final custo?)
                     'R\$ ${_formatarNumeroOs(custo)}/h',
                 ].join(' · '),
@@ -1520,7 +1527,8 @@ class _OsResourceEditorSheetState extends State<_OsResourceEditorSheet> {
   }
 
   List<AppSearchSelectOption> _opcoes(List<String> values) => [
-    for (final value in values) AppSearchSelectOption(value: value, label: value),
+    for (final value in values)
+      AppSearchSelectOption(value: value, label: value),
   ];
 
   Widget _formularioEpi() => Column(
