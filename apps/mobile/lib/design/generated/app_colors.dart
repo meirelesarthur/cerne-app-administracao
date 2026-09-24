@@ -121,6 +121,7 @@ class AppColorsLight {
   static const Color bgInset = Color(0xFFF0F0F0);
   static const Color fieldOnSurface = Color(0xFFF5F5F5);
   static const Color fieldOnCanvas = Color(0xFFFFFFFF);
+  static const Color fieldBorder = Color(0xFFD1D5DB);
   static const Color borderDefault = Color(0xFFE8E9E1);
   static const Color borderStrong = Color(0xFFC4C7BB);
   static const Color borderSubtle = Color(0xFFF0F1EA);
@@ -203,6 +204,7 @@ class AppColorsGbMode {
   static const Color bgInset = Color(0xFF123A28);
   static const Color fieldOnSurface = Color(0xFF123A28);
   static const Color fieldOnCanvas = Color(0xFF123A28);
+  static const Color fieldBorder = Color(0x2EFFFFFF);
   static const Color borderDefault = Color(0x1AFFFFFF);
   static const Color borderStrong = Color(0x2EFFFFFF);
   static const Color borderSubtle = Color(0x0FFFFFFF);
