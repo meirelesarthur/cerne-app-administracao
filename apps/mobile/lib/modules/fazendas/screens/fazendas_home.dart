@@ -159,7 +159,9 @@ class FazendasHome extends ConsumerWidget {
         children: [
           rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
           const SizedBox(height: AppSpacing.space2),
-          rise(AppAlertStrip(items: _alertas(context, osAtrasadas))),
+          rise(
+            AppAlertStrip(items: _alertas(context, osAtrasadas), maxItems: 2),
+          ),
           const SizedBox(height: AppSpacing.space5),
 
           // --- Resultado -------------------------------------------------

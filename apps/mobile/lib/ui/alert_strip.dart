@@ -46,20 +46,25 @@ class AppAlertItem {
 /// no quadrado do ícone, para a pilha não virar um mosaico de cores e o número
 /// continuar legível.
 class AppAlertStrip extends StatelessWidget {
-  const AppAlertStrip({super.key, required this.items});
+  const AppAlertStrip({super.key, required this.items, this.maxItems});
 
   final List<AppAlertItem> items;
 
+  /// Teto de alertas exibidos, na ordem recebida (a lista já vem por
+  /// gravidade). Os excedentes não aparecem. `null` mostra todos.
+  final int? maxItems;
+
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) return const SizedBox.shrink();
+    final visible = maxItems == null ? items : items.take(maxItems!).toList();
+    if (visible.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var i = 0; i < items.length; i++) ...[
+        for (var i = 0; i < visible.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.space2),
-          _AlertRow(item: items[i]),
+          _AlertRow(item: visible[i]),
         ],
       ],
     );
@@ -196,6 +201,13 @@ WidgetbookComponent buildAlertStripWidgetbookComponent() {
         builder: (context) => Padding(
           padding: const EdgeInsets.all(AppSpacing.space4),
           child: AppAlertStrip(items: sample),
+        ),
+      ),
+      WidgetbookUseCase(
+        name: 'Máximo de 2',
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(AppSpacing.space4),
+          child: AppAlertStrip(items: sample, maxItems: 2),
         ),
       ),
       WidgetbookUseCase(
