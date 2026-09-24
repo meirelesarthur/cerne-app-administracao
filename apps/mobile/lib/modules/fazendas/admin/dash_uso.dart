@@ -62,7 +62,7 @@ class _DashUsoState extends ConsumerState<DashUso> {
     if (!isOnline) {
       return DashboardScreen(
         key: ValueKey(_tentativa),
-        title: 'Adoção & Governança',
+        title: 'Adoção e governança',
         restricted: true,
         hideOfflineBanner: true,
         child: AppErrorState(
@@ -111,7 +111,7 @@ class _DashUsoState extends ConsumerState<DashUso> {
     final todosUsuarios = _usuario == null;
 
     return DashboardScreen(
-      title: 'Adoção & Governança',
+      title: 'Adoção e governança',
       restricted: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

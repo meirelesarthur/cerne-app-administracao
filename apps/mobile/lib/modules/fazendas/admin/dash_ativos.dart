@@ -72,7 +72,7 @@ class _DashAtivosState extends State<DashAtivos> {
     final todosSelecionados = _ativoId == null;
 
     return DashboardScreen(
-      title: 'Ativos & Manutenção',
+      title: 'Ativos e depreciação',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

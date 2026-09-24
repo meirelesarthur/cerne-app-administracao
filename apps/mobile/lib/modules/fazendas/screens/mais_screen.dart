@@ -35,7 +35,7 @@ const _groups = [
         to: '/fazendas/dashboards/resultado',
       ),
       _LinkItem(
-        label: 'Rebanho & Confinamento',
+        label: 'Rebanho e confinamento',
         icon: AppIcons.warehouse,
         to: '/fazendas/dashboards/confinamento',
       ),
@@ -45,12 +45,12 @@ const _groups = [
         to: '/fazendas/dashboards/suprimentos',
       ),
       _LinkItem(
-        label: 'Ativos & Manutenção',
+        label: 'Ativos e depreciação',
         icon: AppIcons.package,
         to: '/fazendas/dashboards/ativos',
       ),
       _LinkItem(
-        label: 'Adoção & Governança',
+        label: 'Adoção e governança',
         icon: AppIcons.users,
         to: '/fazendas/dashboards/uso',
       ),

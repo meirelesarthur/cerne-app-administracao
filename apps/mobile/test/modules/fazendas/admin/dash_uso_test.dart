@@ -24,7 +24,7 @@ void main() {
         await tester.pumpWidget(_wrap(const DashUso()));
         await tester.pumpAndSettle();
 
-        expect(find.text('Adoção & Governança'), findsWidgets);
+        expect(find.text('Adoção e governança'), findsWidgets);
         expect(find.text('Adoção por fazenda'), findsOneWidget);
         expect(find.text('Trilha de auditoria'), findsOneWidget);
         expect(find.text('Acesso restrito'), findsOneWidget);

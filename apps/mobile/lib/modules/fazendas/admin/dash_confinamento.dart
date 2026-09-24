@@ -45,7 +45,7 @@ class _DashConfinamentoState extends ConsumerState<DashConfinamento> {
         : confinamento.currais.where((c) => c.id == _curralId).toList();
 
     return DashboardScreen(
-      title: 'Rebanho & Confinamento',
+      title: 'Rebanho e confinamento',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

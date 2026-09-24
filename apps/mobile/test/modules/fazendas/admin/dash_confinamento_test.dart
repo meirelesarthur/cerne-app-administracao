@@ -21,7 +21,7 @@ void main() {
       await tester.pumpWidget(_wrap(const DashConfinamento()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Rebanho & Confinamento'), findsOneWidget);
+      expect(find.text('Rebanho e confinamento'), findsOneWidget);
       expect(find.text('Visão geral'), findsOneWidget);
 
       await tester.tap(find.text('Mapa'));

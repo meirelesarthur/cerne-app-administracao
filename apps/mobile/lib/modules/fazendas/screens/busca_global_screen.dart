@@ -54,9 +54,25 @@ class _BuscaGlobalScreenState extends ConsumerState<BuscaGlobalScreen> {
       body: SafeArea(
         child: AppContentSheet(
           padded: false,
-          header: AppFarmSelector(
-            farmName: activeFarm.name,
-            onTap: () => openFarmPicker(context, ref),
+          // Voltar visível: a busca abre em tela cheia com o teclado aberto
+          // e, sem este botão, só saía pelo gesto do sistema.
+          header: Row(
+            children: [
+              AppIconButton(
+                icon: const AppIcon(AppIcons.arrowLeft, size: AppSize.iconLg),
+                label: 'Fechar busca',
+                onPressed: () => context.canPop()
+                    ? context.pop()
+                    : context.go('/fazendas/visao-geral'),
+              ),
+              const SizedBox(width: AppSpacing.space2),
+              Expanded(
+                child: AppFarmSelector(
+                  farmName: activeFarm.name,
+                  onTap: () => openFarmPicker(context, ref),
+                ),
+              ),
+            ],
           ),
           child: ListView(
             padding: const EdgeInsets.fromLTRB(
@@ -156,19 +172,14 @@ class _SearchSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-
     return Semantics(
       header: true,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Sem chevron: o título não é tocável, e a seta prometia um "ver
+          // tudo" que não existia.
           AppHeading(child: Text(title)),
-          AppIcon(
-            AppIcons.chevronRight,
-            size: AppSize.iconLg,
-            color: semantic.fgDefault,
-          ),
         ],
       ),
     );

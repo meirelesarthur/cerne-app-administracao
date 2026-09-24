@@ -121,6 +121,11 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
   }
 
   /// Sai do formulário perguntando antes quando há algo preenchido.
+  /// Volta para quem abriu a tela (a busca, um painel, a aba) — e só cai na
+  /// aba de origem quando não há histórico (link direto).
+  void _voltarParaOrigem() =>
+      context.canPop() ? context.pop() : context.go(widget.centerRoute);
+
   Future<void> _leaveForm(VoidCallback leave) async {
     if (_hasUnsavedChanges && !await confirmAppLeave(context)) return;
     if (mounted) leave();
@@ -369,7 +374,7 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
               size: AppButtonSize.lg,
               onPressed: feature.listMode
                   ? _showList
-                  : () => context.go(widget.centerRoute),
+                  : _voltarParaOrigem,
               child: Text(feature.listMode ? 'VER TODOS' : 'CONCLUIR'),
             ),
           ],
@@ -420,7 +425,7 @@ class _MappedFeatureJourneyState extends ConsumerState<_MappedFeatureJourney> {
           ? _retreat
           : backToRecords
           ? () => _leaveForm(_showList)
-          : () => _leaveForm(() => context.go(widget.centerRoute)),
+          : () => _leaveForm(_voltarParaOrigem),
       hasUnsavedChanges: _hasUnsavedChanges,
       actionIcon: showingForm ? AppIcons.moreVertical : null,
       actionLabel: showingForm ? 'Mais opções' : null,

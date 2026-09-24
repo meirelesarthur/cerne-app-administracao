@@ -150,10 +150,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 padding: const EdgeInsets.only(
                                   left: AppSpacing.space1,
                                 ),
-                                // Mock — recuperação de senha fora do escopo do protótipo.
+                                // Recuperação automática fora do escopo do
+                                // protótipo: em vez de um link morto, diz o
+                                // que fazer.
                                 child: AppButton(
                                   variant: AppButtonVariant.link,
-                                  onPressed: () {},
+                                  onPressed: () => showAppHelpSheet(
+                                    context,
+                                    title: 'Esqueceu a senha?',
+                                    text:
+                                        'Peça a redefinição ao administrador '
+                                        'do GB CERNE na sua empresa. Ele envia '
+                                        'uma senha provisória para o seu '
+                                        'e-mail.',
+                                  ),
                                   child: const Text('Esqueceu a senha?'),
                                 ),
                               ),
