@@ -298,13 +298,17 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     // série do tema claro = a paleta categórica histórica de `chart.series`,
     // mantida para não mudar a leitura dos painéis já publicados.
     chart: {
-      series: ['#059669', '#2563eb', '#f59e0b', '#7c3aed', '#0891b2', '#dc2626', '#14532d', '#9ca3af'],
+      // Âmbar e cinza escurecidos (amber[600], neutral[500]): #f59e0b e
+      // #9ca3af ficavam abaixo de 3:1 sobre o branco do card (WCAG 1.4.11) —
+      // a leitura dos painéis do ADM depende de distinguir as séries.
+      series: ['#059669', '#2563eb', primitive.amber[600], '#7c3aed', '#0891b2', '#dc2626', '#14532d', primitive.neutral[500]],
       // grid mais claro que track de proposito: a linha de grade e referencia
       // de fundo, o trilho e a escala cheia de uma barra/gauge e precisa ser
       // visivel sobre a superficie branca do card (o neutral[100] anterior era
       // o mesmo tom do canvas e sumia).
       grid: primitive.neutral[150],
-      axis: primitive.neutral[400],
+      // neutral[500]: rótulo de eixo é texto — o neutral[400] dava 2,5:1.
+      axis: primitive.neutral[500],
       track: primitive.neutral[200],
       positive: primitive.brand[600],
       negative: primitive.red[600],
@@ -377,7 +381,8 @@ export const themePalette: Record<'light' | 'gbMode', ThemePalette> = {
     chart: {
       series: ['#34d399', '#60a5fa', '#fbbf24', '#a78bfa', '#22d3ee', '#f87171', '#86efac', '#94a3b8'],
       grid: 'rgba(255,255,255,0.08)',
-      axis: 'rgba(255,255,255,0.32)',
+      // .32 dava 2,8:1; .55 passa AA como texto de eixo.
+      axis: 'rgba(255,255,255,0.55)',
       track: 'rgba(255,255,255,0.07)',
       positive: '#34d399',
       negative: '#f87171',

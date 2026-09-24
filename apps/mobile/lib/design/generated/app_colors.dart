@@ -152,15 +152,15 @@ class AppColorsLight {
   static const List<Color> chartSeries = [
     Color(0xFF059669),
     Color(0xFF2563EB),
-    Color(0xFFF59E0B),
+    Color(0xFFD97706),
     Color(0xFF7C3AED),
     Color(0xFF0891B2),
     Color(0xFFDC2626),
     Color(0xFF14532D),
-    Color(0xFF9CA3AF),
+    Color(0xFF6B7280),
   ];
   static const Color chartGrid = Color(0xFFF3F4F6);
-  static const Color chartAxis = Color(0xFF9CA3AF);
+  static const Color chartAxis = Color(0xFF6B7280);
   static const Color chartTrack = Color(0xFFE5E7EB);
   static const Color chartPositive = Color(0xFF059669);
   static const Color chartNegative = Color(0xFFDC2626);
@@ -242,7 +242,7 @@ class AppColorsGbMode {
     Color(0xFF94A3B8),
   ];
   static const Color chartGrid = Color(0x14FFFFFF);
-  static const Color chartAxis = Color(0x52FFFFFF);
+  static const Color chartAxis = Color(0x8CFFFFFF);
   static const Color chartTrack = Color(0x12FFFFFF);
   static const Color chartPositive = Color(0xFF34D399);
   static const Color chartNegative = Color(0xFFF87171);
