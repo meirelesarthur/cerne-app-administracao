@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cerne_app/design/theme/app_theme.dart';
-import 'package:cerne_app/modules/fazendas/mocks/dashboards_mocks.dart';
 import 'package:cerne_app/modules/fazendas/screens/fazendas_home.dart';
 import 'package:cerne_app/ui/ui.dart';
 
@@ -12,7 +11,7 @@ import '../../../support/test_viewport.dart';
 void main() {
   group('FazendasHome', () {
     testWidgets(
-      'visão gerencial mostra resumo da safra e atividades recentes',
+      'visão geral mostra a fazenda, o que pede atenção e atividades',
       (tester) async {
         await setTallSurface(tester);
         await tester.pumpWidget(
@@ -25,14 +24,17 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Resumo da safra'), findsOneWidget);
+        expect(find.text('Visão geral'), findsOneWidget);
+        expect(find.text('Fazenda São Pedro'), findsWidgets);
+        expect(find.text('Pede atenção hoje'), findsOneWidget);
         expect(find.text('Atividades recentes'), findsOneWidget);
-        expect(find.text('Crédito pré-aprovado'), findsOneWidget);
+        // O banner de crédito (Bank) saiu da visão da fazenda.
+        expect(find.text('Crédito pré-aprovado'), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );
 
-    testWidgets('a torre de controle traz um bloco de cada painel', (
+    testWidgets('traz um grupo por painel, cada um com "Ver painel"', (
       tester,
     ) async {
       await setTallSurface(tester);
@@ -47,15 +49,23 @@ void main() {
       await tester.pumpAndSettle();
 
       // Alerta acionável no topo, antes de qualquer gráfico.
-      expect(find.text('vencidos'), findsOneWidget);
-      expect(find.text(FinanceiroKpis.atrasados), findsOneWidget);
+      expect(find.text('em contas vencidas'), findsOneWidget);
 
-      // Um bloco por painel — Resultado, Confinamento, Ativos e Uso.
-      expect(find.text('Resultado'), findsWidgets);
-      expect(find.text('Ocupação e GMD'), findsOneWidget);
-      expect(find.text('Despesa por centro de custo'), findsOneWidget);
+      // Um grupo por painel de decisão, na ordem da aba Painéis, mais as OS.
+      for (final painel in [
+        'Resultado',
+        'Rebanho e confinamento',
+        'Ordens de serviço',
+        'Suprimentos',
+        'Ativos e depreciação',
+        'Adoção e governança',
+      ]) {
+        expect(find.text(painel), findsOneWidget, reason: painel);
+      }
+      expect(find.text('Ver painel'), findsNWidgets(5));
+      expect(find.text('Ver OS'), findsOneWidget);
+      expect(find.text('Ocupação dos currais e ganho de peso'), findsOneWidget);
       expect(find.text('Patrimônio por categoria'), findsOneWidget);
-      expect(find.text('Adoção por fazenda'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

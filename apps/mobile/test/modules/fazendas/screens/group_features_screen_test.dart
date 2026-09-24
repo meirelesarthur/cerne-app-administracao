@@ -20,7 +20,9 @@ void main() {
         );
         addTearDown(harness.dispose);
 
-        harness.router.go('/fazendas/administracao/grupo/consultas-e-auditoria');
+        harness.router.go(
+          '/fazendas/administracao/grupo/consultas-e-auditoria',
+        );
         await tester.pumpWidget(harness.buildApp());
         await tester.pumpAndSettle();
 

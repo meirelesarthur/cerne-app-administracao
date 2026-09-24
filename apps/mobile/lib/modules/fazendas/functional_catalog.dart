@@ -1373,8 +1373,8 @@ const adminFeatures = <FeatureDefinition>[
   // Espelha `minhas-os`, mas para o Administrativo: cria novas OS e tem as
   // duas ações que o perfil pode tomar enquanto uma OS não foi encerrada pelo
   // Operacional (avaliar, cancelar) — `admin/dash_ordem_servico.dart`, mesmo
-  // painel (`ordem_servico/screens/ordem_servico_painel.dart`) da aba "OS"
-  // própria da Administração (`ordem_servico_tab_screen.dart`).
+  // painel (`ordem_servico/screens/ordem_servico_painel.dart`). É o primeiro
+  // ladrilho da aba Consultas.
   FeatureDefinition(
     id: 'consulta-os',
     profile: FeatureProfile.administration,

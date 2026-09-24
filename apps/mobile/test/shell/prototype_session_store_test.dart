@@ -26,7 +26,8 @@ void main() {
       final session = container.read(prototypeSessionProvider);
       expect(session.isAuthenticated, isTrue);
       expect(session.profile, UserAccessProfile.administration);
-      expect(session.profile?.homeRoute, '/fazendas/administracao');
+      expect(session.profile?.homeRoute, '/fazendas/visao-geral');
+      expect(session.profile?.landingRoute, '/fazendas/visao-geral');
     });
 
     test('logout invalida a sessão', () {

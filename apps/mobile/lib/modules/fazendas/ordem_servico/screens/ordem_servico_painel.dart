@@ -11,16 +11,13 @@ import 'os_detail_page.dart';
 
 /// Painel de Ordens de Serviço (Administrativo): lista as OS da fazenda
 /// ativa, filtráveis por status e por data de prazo. Criar abre em tela cheia
-/// pelo [OsCriarButton] que a moldura põe à direita do título ("OS" na aba,
-/// faixa do topo no dashboard); avaliar e cancelar ficam no detalhe em tela
-/// cheia ([OsDetailPage]). Mesma OS e
-/// mesmo desenho que o app Operação lê em campo (Lei 2: uma única OS, dois
-/// perfis de leitura/ação).
+/// pelo [OsCriarButton] que a moldura (`DashOrdemServico`) põe à direita do
+/// título; avaliar e cancelar ficam no detalhe em tela cheia ([OsDetailPage]).
+/// Mesma OS e mesmo desenho que o app Operação lê em campo (Lei 2: uma única
+/// OS, dois perfis de leitura/ação).
 ///
-/// Conteúdo puro (sem scaffold/scroll próprio) para caber tanto na aba "OS"
-/// (`OrdemServicoTabScreen`, raiz de aba) quanto no dashboard acessível pela
-/// busca global e pelo catálogo (`DashOrdemServico`, dentro de um
-/// `DashboardScreen` com voltar) — Lei 2: uma única implementação da lista.
+/// Conteúdo puro (sem scaffold/scroll próprio): a moldura de navegação é do
+/// `DashboardScreen` que o envolve.
 class OrdemServicoPainel extends ConsumerStatefulWidget {
   const OrdemServicoPainel({super.key});
 

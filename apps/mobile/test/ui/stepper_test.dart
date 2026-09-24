@@ -19,10 +19,7 @@ void main() {
 
       expect(find.text('3'), findsOneWidget);
       expect(find.text('sc'), findsOneWidget);
-      expect(
-        tester.getSize(find.byType(AppStepper)).height,
-        AppSize.controlLg,
-      );
+      expect(tester.getSize(find.byType(AppStepper)).height, AppSize.controlLg);
       expect(tester.takeException(), isNull);
     });
 

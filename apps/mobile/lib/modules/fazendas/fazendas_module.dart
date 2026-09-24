@@ -10,7 +10,6 @@ import 'screens/fazendas_home.dart';
 import 'screens/group_features_screen.dart';
 import 'screens/mais_screen.dart';
 import 'screens/mapped_feature_screen.dart';
-import 'screens/ordem_servico_tab_screen.dart';
 import 'screens/responsibility_workspace.dart';
 
 /// Rotas do módulo Fazendas (ex-"Cerne") — espelha `FazendasModule.tsx`.
@@ -30,7 +29,8 @@ GoRoute buildFazendasModuleRoute() {
           child: ResponsibilityWorkspace(
             profile: FeatureProfile.administration,
             showLocalContext: false,
-            focusGroup: 'Painéis de decisão',
+            focusGroups: ['Painéis de decisão'],
+            sectionTitle: 'Painéis de decisão',
           ),
         ),
         routes: [
@@ -54,6 +54,11 @@ GoRoute buildFazendasModuleRoute() {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: 'visao-geral',
+        builder: (context, state) =>
+            const _FazendasScaffold(child: FazendasHome()),
       ),
       GoRoute(
         path: 'atividades',
@@ -88,7 +93,11 @@ GoRoute buildFazendasModuleRoute() {
           child: ResponsibilityWorkspace(
             profile: FeatureProfile.administration,
             showLocalContext: false,
-            focusGroup: 'Consultas e auditoria',
+            // OS em primeiro (pedido de produto): a consulta que o gestor
+            // mais abre, junto das demais consultas e auditorias.
+            focusGroups: ['Ordem de serviço', 'Consultas e auditoria'],
+            sectionTitle: 'Consultas',
+            routeSegment: 'consultas',
           ),
         ),
         routes: [
@@ -109,13 +118,12 @@ GoRoute buildFazendasModuleRoute() {
           ),
         ],
       ),
-      // Aba "OS" da Administração: lista direto as ordens de serviço da
-      // fazenda ativa, filtráveis por status e prazo, com a opção de criar
-      // uma nova — sem a camada intermediária de tiles (`OrdemServicoTabScreen`).
+      // Antiga aba "OS": a lista de OS agora abre pelo primeiro ladrilho da
+      // aba Consultas, na tela com voltar e o "+" no topo. O path continua
+      // resolvendo para links salvos.
       GoRoute(
         path: 'ordem-servico',
-        builder: (context, state) =>
-            const _FazendasScaffold(child: OrdemServicoTabScreen()),
+        redirect: (context, state) => '/fazendas/dashboards/ordem-servico',
       ),
       GoRoute(
         path: 'dashboards/:dashId',

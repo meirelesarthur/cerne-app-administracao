@@ -131,6 +131,5 @@ void main() {
 
       expect(container.read(shellStoreProvider).isOnline, isFalse);
     });
-
   });
 }

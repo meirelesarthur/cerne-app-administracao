@@ -31,9 +31,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('mostra o erro sem esconder a dica', (
-      tester,
-    ) async {
+    testWidgets('mostra o erro sem esconder a dica', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const AppFormField(

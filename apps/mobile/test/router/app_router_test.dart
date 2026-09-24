@@ -1,3 +1,5 @@
+import 'dart:ui' show Rect;
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cerne_app/shell/components/bottom_tab_bar.dart';
@@ -37,8 +39,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Conta GB Banking'), findsOneWidget);
-      expect(find.text('Acesso rápido'), findsOneWidget);
+      expect(find.text('Pede atenção hoje'), findsOneWidget);
       expect(find.byType(AppContextTabs), findsOneWidget);
       expect(find.byType(AppBottomTabBar), findsOneWidget);
     });
@@ -89,17 +90,16 @@ void main() {
         // Abas administrativas de Fazendas — a central agora entrega cada
         // domínio no primeiro toque, sem a camada intermediária de grupos.
         final contextTabs = find.byType(AppContextTabs);
-        expect(
-          find.descendant(of: contextTabs, matching: find.text('Gestão')),
-          findsOneWidget,
-        );
-        expect(
-          find.descendant(of: contextTabs, matching: find.text('Consultas')),
-          findsOneWidget,
-        );
+        for (final aba in ['Visão geral', 'Painéis', 'Consultas']) {
+          expect(
+            find.descendant(of: contextTabs, matching: find.text(aba)),
+            findsOneWidget,
+            reason: aba,
+          );
+        }
         expect(
           find.descendant(of: contextTabs, matching: find.text('OS')),
-          findsOneWidget,
+          findsNothing,
         );
         expect(
           find.descendant(of: contextTabs, matching: find.text('Fazendas')),
@@ -110,28 +110,25 @@ void main() {
           findsNothing,
         );
         expect(find.text('Central de gestão'), findsNothing);
-        final managementTab = tester.getRect(
+        Rect aba(String rotulo) => tester.getRect(
           find.ancestor(
-            of: find.text('Gestão'),
+            of: find.descendant(of: contextTabs, matching: find.text(rotulo)),
             matching: find.byType(AppPressable),
           ),
         );
-        final consultsTab = tester.getRect(
-          find.ancestor(
-            of: find.text('Consultas'),
-            matching: find.byType(AppPressable),
-          ),
-        );
-        final ordemServicoTab = tester.getRect(
-          find.ancestor(
-            of: find.text('OS'),
-            matching: find.byType(AppPressable),
-          ),
-        );
-        expect(managementTab.width, closeTo(consultsTab.width, 0.1));
-        expect(managementTab.width, closeTo(ordemServicoTab.width, 0.1));
-        expect(find.text('Painéis de decisão'), findsOneWidget);
+        expect(aba('Visão geral').width, closeTo(aba('Painéis').width, 0.1));
+        expect(aba('Visão geral').width, closeTo(aba('Consultas').width, 0.1));
+        // "/fazendas" abre a Visão geral, com um grupo por painel.
+        expect(find.text('Pede atenção hoje'), findsOneWidget);
         expect(find.text('Resultado'), findsOneWidget);
+
+        // A aba Painéis traz os painéis de decisão completos.
+        await tester.tap(
+          find.descendant(of: contextTabs, matching: find.text('Painéis')),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Painéis de decisão'), findsOneWidget);
+        expect(find.text('Rebanho e confinamento'), findsOneWidget);
         // Abas do Início não devem aparecer.
         expect(find.text('Apps'), findsNothing);
         expect(find.text('Carteira'), findsNothing);
@@ -139,7 +136,7 @@ void main() {
     );
 
     testWidgets(
-      'aba Consultas entrega consultas e auditoria e abre a consulta gerencial',
+      'aba Consultas traz a OS primeiro, junto das consultas, e abre a consulta gerencial',
       (tester) async {
         await setTallSurface(tester);
         harness.router.go('/fazendas/administracao');
@@ -152,11 +149,15 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Consultas e auditoria'), findsOneWidget);
         expect(find.text('Central de gestão'), findsNothing);
         expect(find.text('Consultas gerenciais'), findsOneWidget);
         expect(find.text('Exportar log de estoque'), findsOneWidget);
-        expect(find.byType(AppModuleTile), findsNWidgets(10));
+        // Ordem de Serviço + Apontamentos + as 10 consultas e auditorias.
+        expect(find.byType(AppModuleTile), findsNWidgets(12));
+        final primeiro = tester.widget<AppModuleTile>(
+          find.byType(AppModuleTile).first,
+        );
+        expect(primeiro.label, 'Ordem de Serviço');
 
         await tester.tap(find.text('Consultas gerenciais'));
         await tester.pumpAndSettle();
@@ -185,7 +186,7 @@ void main() {
     );
 
     testWidgets(
-      'aba OS lista as ordens de serviço da fazenda, com filtro e criação',
+      'OS abre pelo primeiro ladrilho de Consultas, com filtro e criação',
       (tester) async {
         await setTallSurface(tester);
         harness.router.go('/fazendas');
@@ -194,12 +195,13 @@ void main() {
 
         final contextTabs = find.byType(AppContextTabs);
         await tester.tap(
-          find.descendant(of: contextTabs, matching: find.text('OS')),
+          find.descendant(of: contextTabs, matching: find.text('Consultas')),
         );
         await tester.pumpAndSettle();
+        await tester.tap(find.byType(AppModuleTile).first);
+        await tester.pumpAndSettle();
 
-        // Lista direto as OS da fazenda — sem a camada intermediária de
-        // tiles que as demais abas usam.
+        // Lista as OS da fazenda, com o "+" de criar na faixa do topo.
         expect(find.byTooltip('Criar OS'), findsOneWidget);
         expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
