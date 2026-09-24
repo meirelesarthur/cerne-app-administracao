@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../design/generated/app_layout.dart';
 import '../../../design/generated/app_spacing.dart';
+import '../../../design/theme/app_theme_extension.dart';
 import '../../../shared/simulated_load.dart';
 import '../../../shell/components/sub_page_header.dart';
 import '../../../shell/state/shell_store.dart';
@@ -59,6 +60,15 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // O seletor de fazenda substitui o antigo texto fixo "de qual
+        // fazenda são estes números": bem no topo da tela, acima até do
+        // "Voltar" — sempre visível e alcançável primeiro, para trocar de
+        // fazenda sem entrar no painel (o dashboard inteiro já observa
+        // `fazendasStoreProvider` e atualiza sozinho).
+        _FarmSelectorBand(
+          farmName: fazenda,
+          onTap: () => openFarmPicker(context, ref),
+        ),
         SubPageHeader(
           title: title,
           action: restricted
@@ -75,15 +85,6 @@ class DashboardScreen extends ConsumerWidget {
         Expanded(
           child: AppContentSheet(
             padded: false,
-            // O seletor de fazenda substitui o antigo texto fixo "de qual
-            // fazenda são estes números": nas telas fundas, ele agora mora
-            // no topo desta folha — sempre visível, e permite trocar de
-            // fazenda sem sair do painel (o dashboard inteiro já observa
-            // `fazendasStoreProvider` e atualiza sozinho).
-            header: AppFarmSelector(
-              farmName: fazenda,
-              onTap: () => openFarmPicker(context, ref),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -131,6 +132,36 @@ class DashboardScreen extends ConsumerWidget {
         ),
         ?bottomBar,
       ],
+    );
+  }
+}
+
+/// Faixa branca do seletor de fazenda no topo da tela funda — mesmo fundo e
+/// respiro do header de [AppContentSheet] (Lei 3: nenhuma cor nova), só que
+/// acima do "Voltar" em vez de colado à folha.
+class _FarmSelectorBand extends StatelessWidget {
+  const _FarmSelectorBand({required this.farmName, required this.onTap});
+
+  final String farmName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerBg = isDark ? semantic.bgCanvas : semantic.bgSurface;
+
+    return ColoredBox(
+      color: headerBg,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppContentSheet.contentInset,
+          AppSpacing.space2,
+          AppContentSheet.contentInset,
+          AppSpacing.space3,
+        ),
+        child: AppFarmSelector(farmName: farmName, onTap: onTap),
+      ),
     );
   }
 }
