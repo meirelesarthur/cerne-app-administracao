@@ -185,31 +185,17 @@ void main() {
       expect(AppIcons.pecuaria.glyph, isNull);
     });
 
-    test('o traço dos vetores autorais é o traço do sistema', () async {
-      // O desenho vive num viewBox de 34 de largura e é encaixado numa caixa de
-      // 24: a espessura na fonte precisa ser 1.2 × 34/24 = 1.7 para cair em 1.2
-      // na tela. Este teste guarda a conta — reexportar o SVG do Figma sem
-      // renormalizar deixaria o ícone mais fino que todo o resto do app.
-      const esperado = 1.2 * 34 / 24;
-      final svg = await File(AppIcons.confinamento.asset!).readAsString();
-      final larguras = RegExp(
-        r'stroke-width="([\d.]+)"',
-      ).allMatches(svg).map((m) => double.parse(m.group(1)!)).toSet();
+    test('os vetores autorais são contorno vetorizado, e não traço', () async {
+      // Registro executável de uma limitação real (§6-C da esteira): os
+      // arquivos oficiais de confinamento e pecuária não têm traço nenhum — a
+      // espessura está embutida na geometria e não acompanha
+      // `AppSize.iconStroke`. Se um dia vier uma versão traçada, este teste
+      // falha e avisa que a ressalva pode sair da documentação.
+      for (final icon in [AppIcons.confinamento, AppIcons.pecuaria]) {
+        final svg = await File(icon.asset!).readAsString();
 
-      expect(larguras, isNotEmpty, reason: 'o SVG perdeu os traços');
-      for (final largura in larguras) {
-        expect(largura, closeTo(esperado, 0.001));
+        expect(svg.contains('stroke-width'), isFalse, reason: icon.asset);
       }
-    });
-
-    test('pecuária é contorno vetorizado, e não traço', () async {
-      // Registro executável de uma limitação real (§6-C da esteira): o arquivo
-      // enviado não tem traço nenhum — a espessura está embutida na geometria e
-      // não acompanha `AppSize.iconStroke`. Se um dia vier uma versão traçada,
-      // este teste falha e avisa que a ressalva pode sair da documentação.
-      final svg = await File(AppIcons.pecuaria.asset!).readAsString();
-
-      expect(svg.contains('stroke-width'), isFalse);
     });
 
     test('o set de origem é stroke-rounded, e não sólido', () {
@@ -226,22 +212,19 @@ void main() {
       );
     });
 
-    test(
-      'ícones de navegação distintos não colidem por identidade',
-      () {
-        // banco-real (correção de identidade): `chevronLeft`/`chevronRight`
-        // reaproveitavam o mesmo glifo 01 de `arrowLeft`/`arrowRight` — como
-        // os dois são `const AppIconData.glyph(...)` com o mesmo argumento,
-        // Dart canoniza os dois literais no mesmo objeto, e
-        // `find.byWidgetPredicate` por `identical(...)`
-        // (`test/helpers/app_icon_finder.dart`) via `findAppIcon` passava a
-        // casar os dois ao mesmo tempo — uma tela com o botão Voltar
-        // (`arrowLeft`) e uma paginação (`chevronLeft`) juntos quebrava
-        // `getRect`/`tap` por ambiguidade. Guarda para o par não colidir de
-        // novo silenciosamente.
-        expect(identical(AppIcons.arrowLeft, AppIcons.chevronLeft), isFalse);
-        expect(identical(AppIcons.arrowRight, AppIcons.chevronRight), isFalse);
-      },
-    );
+    test('ícones de navegação distintos não colidem por identidade', () {
+      // banco-real (correção de identidade): `chevronLeft`/`chevronRight`
+      // reaproveitavam o mesmo glifo 01 de `arrowLeft`/`arrowRight` — como
+      // os dois são `const AppIconData.glyph(...)` com o mesmo argumento,
+      // Dart canoniza os dois literais no mesmo objeto, e
+      // `find.byWidgetPredicate` por `identical(...)`
+      // (`test/helpers/app_icon_finder.dart`) via `findAppIcon` passava a
+      // casar os dois ao mesmo tempo — uma tela com o botão Voltar
+      // (`arrowLeft`) e uma paginação (`chevronLeft`) juntos quebrava
+      // `getRect`/`tap` por ambiguidade. Guarda para o par não colidir de
+      // novo silenciosamente.
+      expect(identical(AppIcons.arrowLeft, AppIcons.chevronLeft), isFalse);
+      expect(identical(AppIcons.arrowRight, AppIcons.chevronRight), isFalse);
+    });
   });
 }
