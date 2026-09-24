@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cerne_app/design/theme/app_theme.dart';
 import 'package:cerne_app/modules/fazendas/admin/dash_ordem_servico.dart';
+import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_create_page.dart';
 import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_detail_page.dart';
 import 'package:cerne_app/ui/ui.dart';
 
@@ -22,7 +23,8 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      expect(find.text('Criar OS'), findsOneWidget);
+      expect(find.byType(OsCriarButton), findsOneWidget);
+      expect(find.byTooltip('Criar OS'), findsOneWidget);
       expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
       expect(
         find.text('Construção de bebedouro no Piquete 07'),
@@ -66,12 +68,17 @@ void main() {
       expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
     });
 
-    testWidgets('cria uma nova OS a partir do formulário', (tester) async {
+    testWidgets('cria uma nova OS pelo formulário em tela cheia', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(AppButton, 'Criar OS').first);
+      await tester.tap(find.byType(OsCriarButton));
       await tester.pumpAndSettle();
+
+      expect(find.byType(OsCreatePage), findsOneWidget);
+      expect(find.byType(BottomSheet), findsNothing);
 
       await tester.enterText(
         find.byType(AppTextInput).at(0),
@@ -85,12 +92,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final submitButton = find.widgetWithText(AppButton, 'Criar OS').last;
-      await tester.ensureVisible(submitButton);
-      await tester.pumpAndSettle();
-      await tester.tap(submitButton);
+      await tester.tap(find.text('CRIAR OS'));
       await tester.pumpAndSettle();
 
+      expect(find.byType(OsCreatePage), findsNothing);
       expect(find.textContaining('Reparo do moinho de vento'), findsOneWidget);
       expect(
         find.descendant(

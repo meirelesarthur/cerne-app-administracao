@@ -25,6 +25,7 @@ class DashboardScreen extends ConsumerWidget {
     required this.child,
     this.restricted = false,
     this.hideOfflineBanner = false,
+    this.action,
   });
 
   final String title;
@@ -35,6 +36,10 @@ class DashboardScreen extends ConsumerWidget {
 
   /// Oculta o banner de dados em cache (ex.: telas não cacheáveis offline).
   final bool hideOfflineBanner;
+
+  /// Ação à direita da faixa do topo (ex.: o "+" de criar). O selo de acesso
+  /// restrito ([restricted]) tem precedência sobre ela.
+  final Widget? action;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,7 +59,7 @@ class DashboardScreen extends ConsumerWidget {
                     child: Text('Acesso restrito'),
                   ),
                 )
-              : null,
+              : action,
         ),
         Expanded(
           child: AppContentSheet(

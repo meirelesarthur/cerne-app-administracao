@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../ui/ui.dart';
 import '../ordem_servico/screens/ordem_servico_painel.dart';
+import '../ordem_servico/screens/os_create_page.dart';
 
 /// Raiz da aba "OS" da Administração — lista direto as demandas da fazenda
 /// ativa (`OrdemServicoPainel`), sem a camada intermediária de tiles que
@@ -18,7 +19,7 @@ class OrdemServicoTabScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.space4),
       children: const [
-        AppSectionTitle(child: Text('OS')),
+        AppSectionTitle(action: OsCriarButton(), child: Text('OS')),
         SizedBox(height: AppSpacing.space2),
         OrdemServicoPainel(),
       ],

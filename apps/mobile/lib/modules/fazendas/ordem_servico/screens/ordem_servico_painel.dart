@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../design/generated/app_layout.dart';
 import '../../../../design/generated/app_spacing.dart';
 import '../../../../ui/ui.dart';
-import '../../state/fazendas_store.dart';
 import '../models.dart';
 import '../state/ordem_servico_store.dart';
 import '../widgets.dart';
 import 'os_detail_page.dart';
 
 /// Painel de Ordens de Serviço (Administrativo): lista as OS da fazenda
-/// ativa, filtráveis por status e por data de prazo. Criar fica aqui; avaliar
-/// e cancelar ficam no detalhe em tela cheia ([OsDetailPage]). Mesma OS e
+/// ativa, filtráveis por status e por data de prazo. Criar abre em tela cheia
+/// pelo [OsCriarButton] que a moldura põe à direita do título ("OS" na aba,
+/// faixa do topo no dashboard); avaliar e cancelar ficam no detalhe em tela
+/// cheia ([OsDetailPage]). Mesma OS e
 /// mesmo desenho que o app Operação lê em campo (Lei 2: uma única OS, dois
 /// perfis de leitura/ação).
 ///
@@ -100,13 +100,6 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AppButton(
-          fullWidth: true,
-          leftIcon: const AppIcon(AppIcons.plus, size: AppSize.iconXs),
-          onPressed: () => _abrirCriar(context),
-          child: const Text('Criar OS'),
-        ),
-        const SizedBox(height: AppSpacing.space4),
         AppFormField(
           label: 'Data do prazo',
           child: AppDateInput(
@@ -171,131 +164,6 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
             const SizedBox(height: AppSpacing.space3),
           ],
       ],
-    );
-  }
-
-  void _abrirCriar(BuildContext context) {
-    final notifier = ref.read(ordemServicoStoreProvider.notifier);
-    final fazenda = ref.read(fazendasStoreProvider).activeFarm.name;
-    final tituloController = TextEditingController();
-    final areaController = TextEditingController();
-    final descricaoController = TextEditingController();
-    final prazoController = TextEditingController();
-    var tipo = TipoServicoOs.agricola.name;
-    var prioridade = PrioridadeOs.media.name;
-    DateTime? prazo;
-
-    showAppBottomSheet<void>(
-      context,
-      title: 'Criar OS',
-      child: StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppFormField(
-                label: 'Título',
-                required: true,
-                child: AppTextInput(
-                  controller: tituloController,
-                  placeholder: 'Ex.: Reparo de cerca do Talhão 04',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Tipo de serviço',
-                required: true,
-                child: AppFormSelect(
-                  options: [
-                    for (final t in TipoServicoOs.values)
-                      AppFormSelectOption(value: t.name, label: t.label),
-                  ],
-                  value: tipo,
-                  onChanged: (v) => setSheetState(() => tipo = v ?? tipo),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Área / talhão',
-                required: true,
-                child: AppTextInput(
-                  controller: areaController,
-                  placeholder: 'Ex.: Talhão 04',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Prioridade',
-                required: true,
-                child: AppFormSelect(
-                  options: [
-                    for (final p in PrioridadeOs.values)
-                      AppFormSelectOption(value: p.name, label: p.label),
-                  ],
-                  value: prioridade,
-                  onChanged: (v) =>
-                      setSheetState(() => prioridade = v ?? prioridade),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Prazo',
-                required: true,
-                child: AppDateInput(
-                  controller: prazoController,
-                  onChanged: (formatted) {
-                    final match = RegExp(
-                      r'^(\d{2})/(\d{2})/(\d{4})$',
-                    ).firstMatch(formatted);
-                    if (match == null) return;
-                    final dia = int.parse(match.group(1)!);
-                    final mes = int.parse(match.group(2)!);
-                    final ano = int.parse(match.group(3)!);
-                    setSheetState(() => prazo = DateTime(ano, mes, dia));
-                  },
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space3),
-              AppFormField(
-                label: 'Descrição',
-                required: true,
-                child: AppTextarea(
-                  controller: descricaoController,
-                  placeholder: 'Detalhe o que precisa ser feito...',
-                ),
-              ),
-              const SizedBox(height: AppSpacing.space5),
-              AppButton(
-                fullWidth: true,
-                onPressed: () {
-                  final titulo = tituloController.text.trim();
-                  final area = areaController.text.trim();
-                  final descricao = descricaoController.text.trim();
-                  if (titulo.isEmpty ||
-                      area.isEmpty ||
-                      descricao.isEmpty ||
-                      prazo == null) {
-                    return;
-                  }
-                  notifier.criar(
-                    titulo: titulo,
-                    tipo: TipoServicoOs.values.byName(tipo),
-                    fazenda: fazenda,
-                    areaOuTalhao: area,
-                    prioridade: PrioridadeOs.values.byName(prioridade),
-                    prazo: prazo!,
-                    descricao: descricao,
-                    autor: autorAdministrativoOs,
-                  );
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Criar OS'),
-              ),
-            ],
-          );
-        },
-      ),
     );
   }
 }

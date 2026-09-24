@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../ordem_servico/screens/ordem_servico_painel.dart';
+import '../ordem_servico/screens/os_create_page.dart';
 import 'dashboard_screen.dart';
 
 /// Consulta de Ordem de Serviço (Administrativo) — alcançada pela busca
@@ -15,6 +16,7 @@ class DashOrdemServico extends StatelessWidget {
   Widget build(BuildContext context) {
     return const DashboardScreen(
       title: 'Ordem de Serviço',
+      action: OsCriarButton(),
       child: OrdemServicoPainel(),
     );
   }

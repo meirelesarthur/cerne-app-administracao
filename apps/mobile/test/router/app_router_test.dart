@@ -200,7 +200,7 @@ void main() {
 
         // Lista direto as OS da fazenda — sem a camada intermediária de
         // tiles que as demais abas usam.
-        expect(find.text('Criar OS'), findsOneWidget);
+        expect(find.byTooltip('Criar OS'), findsOneWidget);
         expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
         expect(
           find.text('Construção de bebedouro no Piquete 07'),
