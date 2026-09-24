@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 import 'app_icon.dart';
-import '../design/generated/app_colors.dart';
 import '../design/generated/app_radius.dart';
 import '../design/generated/app_spacing.dart';
 import '../design/generated/app_typography.dart';
@@ -36,124 +35,125 @@ class AppAlertItem {
   final VoidCallback? onTap;
 }
 
-/// Faixa horizontal de alertas no topo de uma home de gestão.
+/// Lista vertical de alertas no topo de uma home de gestão ("Radar").
 ///
 /// A regra é: só entra aqui o que pede uma decisão hoje. Um indicador que está
-/// dentro do esperado não vira cápsula — vira gráfico mais abaixo. Alerta que
+/// dentro do esperado não vira alerta — vira gráfico mais abaixo. Alerta que
 /// não leva a lugar nenhum é ruído, por isso [AppAlertItem.onTap] é o caminho
 /// normal de uso.
+///
+/// Cada alerta é uma linha branca, um abaixo do outro: a gravidade aparece só
+/// no quadrado do ícone, para a pilha não virar um mosaico de cores e o número
+/// continuar legível.
 class AppAlertStrip extends StatelessWidget {
   const AppAlertStrip({super.key, required this.items});
 
   final List<AppAlertItem> items;
 
-  static const double _height = AppSpacing.space16;
-
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
 
-    return SizedBox(
-      height: _height,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        itemCount: items.length,
-        separatorBuilder: (context, index) =>
-            const SizedBox(width: AppSpacing.space2),
-        itemBuilder: (context, index) => _AlertPill(item: items[index]),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          if (i > 0) const SizedBox(height: AppSpacing.space2),
+          _AlertRow(item: items[i]),
+        ],
+      ],
     );
   }
 }
 
-class _AlertPill extends StatelessWidget {
-  const _AlertPill({required this.item});
+class _AlertRow extends StatelessWidget {
+  const _AlertRow({required this.item});
 
   final AppAlertItem item;
 
-  ({Color fg, Color bg, Color border}) _palette(AppSemanticColors s) =>
-      switch (item.tone) {
-        // Mesma tríade bg/fg/border que `AppChip` já usa por tom — a cápsula
-        // de alerta é a irmã maior do chip, não uma paleta nova.
-        AppAlertTone.critical => (
-          fg: AppColors.red600,
-          bg: AppColors.red50,
-          border: AppColors.red200,
-        ),
-        AppAlertTone.warning => (
-          fg: AppColors.amber600,
-          bg: AppColors.amber50,
-          border: AppColors.amber200,
-        ),
-        AppAlertTone.info => (
-          fg: AppColors.blue600,
-          bg: AppColors.blue50,
-          border: AppColors.blue200,
-        ),
-        AppAlertTone.neutral => (
-          fg: s.fgMuted,
-          bg: s.bgSubtle,
-          border: s.borderDefault,
-        ),
-      };
+  static const double _tileSize = AppSize.controlSm;
+
+  /// Mesma dupla bg/fg por tom que `AppChip` usa — theme-aware (gbMode).
+  ({Color fg, Color bg}) _tone(AppSemanticColors s) => switch (item.tone) {
+    AppAlertTone.critical => (fg: s.toneRedFg, bg: s.toneRedBg),
+    AppAlertTone.warning => (fg: s.toneAmberFg, bg: s.toneAmberBg),
+    AppAlertTone.info => (fg: s.toneBlueFg, bg: s.toneBlueBg),
+    AppAlertTone.neutral => (fg: s.toneNeutralFg, bg: s.toneNeutralBg),
+  };
 
   @override
   Widget build(BuildContext context) {
     final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    final palette = _palette(semantic);
+    final tone = _tone(semantic);
+    final radius = BorderRadius.circular(AppRadius.lgPlus);
 
-    final pill = Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.space3,
-        vertical: AppSpacing.space2,
-      ),
+    final row = Container(
+      padding: const EdgeInsets.all(AppSpacing.space3),
       decoration: BoxDecoration(
-        color: palette.bg,
-        border: Border.all(color: palette.border),
-        borderRadius: BorderRadius.circular(AppRadius.xl2),
+        color: semantic.bgSurface,
+        borderRadius: radius,
+        border: Border.all(color: semantic.borderDefault),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          AppIcon(item.icon, size: AppSize.iconSm, color: palette.fg),
-          const SizedBox(width: AppSpacing.space2),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.value,
-                style: TextStyle(
-                  fontSize: AppTypography.lg,
-                  fontWeight: AppTypography.weightBold,
-                  height: AppTypography.lineHeightTight,
-                  color: palette.fg,
-                ),
-              ),
-              Text(
-                item.label,
-                style: TextStyle(
-                  fontSize: AppTypography.sm,
-                  height: AppTypography.lineHeightTight,
-                  color: semantic.fgMuted,
-                ),
-              ),
-            ],
+          Container(
+            width: _tileSize,
+            height: _tileSize,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: tone.bg,
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: AppIcon(item.icon, size: AppSize.iconSmPlus, color: tone.fg),
           ),
+          const SizedBox(width: AppSpacing.space3),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.value,
+                  style: TextStyle(
+                    fontSize: AppTypography.lg,
+                    fontWeight: AppTypography.weightBold,
+                    height: AppTypography.lineHeightTight,
+                    color: semantic.fgDefault,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.half),
+                Text(
+                  item.label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: AppTypography.sm,
+                    height: AppTypography.lineHeightTight,
+                    color: semantic.fgMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (item.onTap != null) ...[
+            const SizedBox(width: AppSpacing.space2),
+            AppIcon(
+              AppIcons.chevronRight,
+              size: AppSize.iconSm,
+              color: semantic.fgQuiet,
+            ),
+          ],
         ],
       ),
     );
 
-    if (item.onTap == null) return pill;
+    if (item.onTap == null) return row;
 
     return AppPressable(
       semanticLabel: '${item.value} ${item.label}',
       onPressed: item.onTap,
-      borderRadius: BorderRadius.circular(AppRadius.xl2),
-      minTouchTarget: false,
-      child: pill,
+      borderRadius: radius,
+      child: row,
     );
   }
 }

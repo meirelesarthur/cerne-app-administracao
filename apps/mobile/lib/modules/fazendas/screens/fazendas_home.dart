@@ -17,7 +17,6 @@ import '../ordem_servico/models.dart';
 import '../ordem_servico/state/ordem_servico_store.dart';
 import '../state/fazendas_store.dart';
 import '../types.dart';
-import 'package:cerne_app/design/generated/app_typography.dart';
 import '../../../design/generated/app_layout.dart';
 
 /// Aba **Visão geral** do módulo Fazendas — a primeira tela depois do login.
@@ -158,37 +157,7 @@ class FazendasHome extends ConsumerWidget {
       builder: (context, onActivityTap) => ListView(
         padding: const EdgeInsets.all(AppSpacing.space4),
         children: [
-          rise(
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AppHeading(
-                        level: AppHeadingLevel.h3,
-                        child: Text('Visão geral'),
-                      ),
-                      const SizedBox(height: AppSpacing.half),
-                      Text(
-                        fazenda,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                const _SafraPill(),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.space2),
-          Text(
-            'Os principais números de cada painel. Toque em "Ver painel" '
-            'para o detalhe completo.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppSpacing.space4),
-          rise(const AppSectionTitle(child: Text('Pede atenção hoje'))),
+          rise(const AppSectionTitle(child: Text('Radar da fazenda'))),
           const SizedBox(height: AppSpacing.space2),
           rise(AppAlertStrip(items: _alertas(context, osAtrasadas))),
           const SizedBox(height: AppSpacing.space5),
@@ -464,36 +433,6 @@ class _ActivityAwareList extends StatelessWidget {
     return builder(
       context,
       (activity) => showActivityDetailSheet(context, activity: activity),
-    );
-  }
-}
-
-/// Safra de referência dos números da Visão geral. Só leitura: não abre
-/// seletor (o chevron antigo prometia uma troca que não existia).
-class _SafraPill extends StatelessWidget {
-  const _SafraPill();
-
-  @override
-  Widget build(BuildContext context) {
-    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.space3,
-        vertical: AppSpacing.space1,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: semantic.borderDefault),
-        color: semantic.bgSurface,
-      ),
-      child: Text(
-        'Safra 24/25',
-        style: TextStyle(
-          fontWeight: AppTypography.weightSemibold,
-          fontSize: AppTypography.base,
-          color: semantic.fgDefault,
-        ),
-      ),
     );
   }
 }

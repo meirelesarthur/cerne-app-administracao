@@ -11,7 +11,7 @@ import '../../../support/test_viewport.dart';
 void main() {
   group('FazendasHome', () {
     testWidgets(
-      'visão geral mostra a fazenda, o que pede atenção e atividades',
+      'visão geral abre no radar da fazenda e mostra atividades',
       (tester) async {
         await setTallSurface(tester);
         await tester.pumpWidget(
@@ -24,9 +24,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Visão geral'), findsOneWidget);
-        expect(find.text('Fazenda São Pedro'), findsWidgets);
-        expect(find.text('Pede atenção hoje'), findsOneWidget);
+        // O cabeçalho "Visão geral" (título, fazenda e safra) saiu: a aba e o
+        // seletor de fazenda do shell já dizem onde a pessoa está.
+        expect(find.text('Visão geral'), findsNothing);
+        expect(find.text('Safra 24/25'), findsNothing);
+        expect(find.text('Radar da fazenda'), findsOneWidget);
         expect(find.text('Atividades recentes'), findsOneWidget);
         // O banner de crédito (Bank) saiu da visão da fazenda.
         expect(find.text('Crédito pré-aprovado'), findsNothing);
