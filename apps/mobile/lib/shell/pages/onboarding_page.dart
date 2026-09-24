@@ -155,10 +155,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                     Expanded(
                       flex: 4,
-                      // `Transform.translate` sobrepõe a folha à base da foto;
-                      // o recorte curvo revela a imagem ao longo da divisão.
+                      // A folha sobe 40 px sobre a foto para dar presença à
+                      // curva e deixar a transição clara.
                       child: Transform.translate(
-                        offset: const Offset(0, -AppSpacing.space5),
+                        offset: const Offset(0, -AppSpacing.space10),
                         child: ClipPath(
                           clipper: const _OnboardingPanelClipper(),
                           clipBehavior: Clip.antiAlias,
@@ -167,7 +167,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: SingleChildScrollView(
                               padding: const EdgeInsets.fromLTRB(
                                 AppSpacing.space6,
-                                AppSpacing.space4 + AppSpacing.space5,
+                                AppSpacing.space4 + AppSpacing.space10,
                                 AppSpacing.space6,
                                 AppSpacing.space4,
                               ),
