@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../design/generated/app_spacing.dart';
 import '../../../../ui/ui.dart';
+import '../../state/fazendas_store.dart';
 import '../models.dart';
 import '../state/ordem_servico_store.dart';
 import '../widgets.dart';
@@ -78,11 +79,12 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
     });
   }
 
-  List<OrdemServico> _filtrar(List<OrdemServico> ordens) {
+  List<OrdemServico> _filtrar(List<OrdemServico> ordens, String fazenda) {
     final filtro = _filtros[_filtroIndex];
     final data = _dataFiltro;
     final filtradas =
         ordens
+            .where((o) => o.fazenda == fazenda)
             .where(filtro.aplica)
             .where((o) => data == null || _mesmoDia(o.prazo, data))
             .toList()
@@ -94,7 +96,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
   Widget build(BuildContext context) {
     final ordens = ref.watch(ordemServicoStoreProvider.select((s) => s.ordens));
     final agora = ref.watch(osRelogioProvider)();
-    final filtradas = _filtrar(ordens);
+    final fazenda = ref.watch(
+      fazendasStoreProvider.select((s) => s.activeFarm.name),
+    );
+    final filtradas = _filtrar(ordens, fazenda);
     final temFiltroData = _dataFiltro != null;
 
     return Column(
@@ -104,16 +109,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
           label: 'Data do prazo',
           child: AppDateInput(
             controller: _dataController,
-            onChanged: (formatted) {
-              final match = RegExp(
-                r'^(\d{2})/(\d{2})/(\d{4})$',
-              ).firstMatch(formatted);
-              if (match == null) return;
-              final dia = int.parse(match.group(1)!);
-              final mes = int.parse(match.group(2)!);
-              final ano = int.parse(match.group(3)!);
-              setState(() => _dataFiltro = DateTime(ano, mes, dia));
-            },
+            // Data incompleta ou impossível (31/02) não filtra: antes o
+            // 31/02 virava março em silêncio.
+            onChanged: (formatted) =>
+                setState(() => _dataFiltro = osLerData(formatted)),
           ),
         ),
         const SizedBox(height: AppSpacing.space2),
@@ -151,8 +150,10 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
             tone: AppEmptyStateTone.brand,
             title: 'Nenhuma OS encontrada',
             description: temFiltroData
-                ? 'Nenhuma ordem de serviço com prazo em ${_dataController.text} nesse status.'
-                : 'Ordens de serviço registradas nesta sessão aparecem aqui.',
+                ? 'Nenhuma OS da $fazenda com prazo em ${_dataController.text} '
+                      'nesse status. Toque em "Todas as datas" para ampliar.'
+                : 'Nenhuma OS da $fazenda nesse status. Troque o filtro acima '
+                      'ou a fazenda no topo da tela.',
           )
         else
           for (final os in filtradas) ...[

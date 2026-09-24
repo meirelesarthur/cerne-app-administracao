@@ -95,7 +95,13 @@ void main() {
       await tester.tap(find.text('CRIAR OS'));
       await tester.pumpAndSettle();
 
+      // Criar troca a tela pelo detalhe da OS nova — a confirmação visível.
       expect(find.byType(OsCreatePage), findsNothing);
+      expect(find.byType(OsDetailPage), findsOneWidget);
+      expect(find.textContaining('Reparo do moinho de vento'), findsWidgets);
+
+      await tester.tap(find.byTooltip('Voltar').last);
+      await tester.pumpAndSettle();
       expect(find.textContaining('Reparo do moinho de vento'), findsOneWidget);
       expect(
         find.descendant(
@@ -144,10 +150,82 @@ void main() {
       await tester.tap(find.text('Confirmar cancelamento'));
       await tester.pumpAndSettle();
 
+      // Ação sem volta: pede a confirmação final antes de cancelar.
+      expect(find.text('Cancelar a OS #2201 de vez?'), findsOneWidget);
+      await tester.tap(find.text('Cancelar OS'));
+      await tester.pumpAndSettle();
+
       expect(find.byType(OsDetailPage), findsOneWidget);
       expect(find.text('Motivo do cancelamento'), findsOneWidget);
       expect(find.text('CANCELAR OS'), findsNothing);
       expect(find.text('AVALIAR'), findsNothing);
+    });
+
+    testWidgets('enviar a OS vazia mostra o erro em cada campo', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(OsCriarButton));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('CRIAR OS'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OsCreatePage), findsOneWidget);
+      expect(
+        find.text('Revise os 4 campos destacados para criar a OS.'),
+        findsOneWidget,
+      );
+      expect(find.text('Preencha o campo "Título".'), findsOneWidget);
+      expect(find.text('Informe a data em "Prazo".'), findsOneWidget);
+    });
+
+    testWidgets('prazo no passado ou impossível não é aceito', (tester) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(OsCriarButton));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(AppDateInput), '01/01/2020');
+      await tester.tap(find.text('CRIAR OS'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('O prazo não pode ser anterior a hoje.'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(find.byType(AppDateInput), '31/02/2030');
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Data inválida. Use o formato DD/MM/AAAA.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('voltar com dados preenchidos pergunta antes de descartar', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(OsCriarButton));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(AppTextInput).first, 'Rascunho');
+      await tester.pump();
+      await tester.tap(find.byTooltip('Voltar').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sair sem salvar?'), findsOneWidget);
+    });
+
+    testWidgets('lista só as OS da fazenda ativa', (tester) async {
+      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpAndSettle();
+
+      // Fazenda padrão (São Pedro): a vacinação é da Santa Rita.
+      expect(find.text('Vacinação contra aftosa — Lote 12'), findsNothing);
+      expect(find.text('Reparo de cerca do Talhão 04'), findsOneWidget);
     });
   });
 }
