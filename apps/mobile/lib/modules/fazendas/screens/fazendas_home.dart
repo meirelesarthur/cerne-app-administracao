@@ -25,7 +25,8 @@ import '../../../design/generated/app_layout.dart';
 /// É a leitura que o gestor faz no desktop: primeiro o que pede atenção hoje
 /// (faixa de alertas), depois um bloco por painel de decisão, na mesma ordem
 /// da aba Painéis, cada um com os um ou dois números que resumem o painel e
-/// um "Ver painel" que abre o painel completo.
+/// um "Ver painel" (no título do grupo, único atalho — os cards não repetem
+/// "Abrir painel") que abre o painel completo.
 ///
 /// Regra desta tela: cada bloco reusa o **mesmo widget e o mesmo dado** do
 /// painel de origem — `AppKpiStatCard`/`AppChartCard(compact: true)` sobre os
@@ -217,7 +218,6 @@ class FazendasHome extends ConsumerWidget {
               title: 'Receita × custo',
               period: '6 meses',
               compact: true,
-              onExpand: () => context.push(_resultado),
               footnote:
                   'Margem do mês: ${formatMilhares(resultadoMeses.last.margem)}.',
               child: AppLineChart(
@@ -247,7 +247,6 @@ class FazendasHome extends ConsumerWidget {
             AppChartCard(
               title: 'Ocupação dos currais e ganho de peso',
               compact: true,
-              onExpand: () => context.push(_confinamento),
               footnote:
                   'GMD = ganho médio diário por cabeça. A marca no medidor é o '
                   'previsto (${gmdPrevisto.toStringAsFixed(2)} kg/dia).',
@@ -330,7 +329,6 @@ class FazendasHome extends ConsumerWidget {
             AppChartCard(
               title: 'Patrimônio por categoria',
               compact: true,
-              onExpand: () => context.push(_ativos),
               footnote: switch (emManutencao) {
                 0 => 'Nenhum ativo em manutenção.',
                 1 => '1 ativo em manutenção agora.',
@@ -356,7 +354,6 @@ class FazendasHome extends ConsumerWidget {
             AppChartCard(
               title: 'Pessoas usando o app por fazenda',
               compact: true,
-              onExpand: () => context.push(_uso),
               footnote: 'Barra = usuários ativos agora; traço = cadastrados.',
               child: AppBulletChart(
                 targetLabel: 'cadastrados',
