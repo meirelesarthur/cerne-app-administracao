@@ -34,10 +34,43 @@ class FunctionalJourneyController {
 
   void startForm() {
     mode = FunctionalJourneyMode.form;
-    form = const FunctionalFormState();
+    // Datas de lançamento já vêm com hoje: quase sempre é o registro do
+    // próprio dia, e digitar data é o passo mais lento do formulário.
+    form = FunctionalFormState(
+      values: {
+        for (final field in feature.fields)
+          if (field.type == FeatureFieldType.date &&
+              _datasDoDia.contains(field.label))
+            field.id: hojeFormatado(),
+      },
+    );
     stepIndex = 0;
     editingRecordId = null;
   }
+
+  /// Hoje em `DD/MM/AAAA` — mesmo formato de `hojeFormatado()` do app
+  /// Operação (`cadastros_vinculados.dart`, que não existe neste app).
+  static String hojeFormatado() {
+    final d = DateTime.now();
+    return '${d.day.toString().padLeft(2, '0')}/'
+        '${d.month.toString().padLeft(2, '0')}/${d.year}';
+  }
+
+  /// Rótulos de data que registram algo que aconteceu agora. Datas de
+  /// nascimento, previsão, início/término e formação ficam em branco — hoje
+  /// seria um chute errado.
+  static const _datasDoDia = {
+    'Data',
+    'Data do manejo',
+    'Data do lançamento',
+    'Data de entrada',
+    'Data do diagnóstico',
+    'Data da transferência',
+    'Data da ocorrência',
+    'Data da marcação',
+    'Data da desmama',
+    'Data da batida',
+  };
 
   /// Reabre o formulário preenchido com os valores de [record], para o
   /// perfil operacional corrigir um registro já gravado — a mesma tela de
@@ -362,12 +395,23 @@ bool isCollectionItemFieldRequired(
   return false;
 }
 
+/// Mensagem de obrigatório com o nome do campo — "Campo obrigatório." não
+/// dizia qual, e numa tela longa a pessoa não achava o que faltava.
+String featureRequiredMessage(FeatureField field) => switch (field.type) {
+  FeatureFieldType.select ||
+  FeatureFieldType.searchSelect ||
+  FeatureFieldType.color ||
+  FeatureFieldType.boolean => 'Escolha uma opção em "${field.label}".',
+  FeatureFieldType.date => 'Informe a data em "${field.label}".',
+  _ => 'Preencha o campo "${field.label}".',
+};
+
 /// Validação que não depende do cadastro: obrigatoriedade e número positivo.
 /// Serve tanto para o campo do formulário principal quanto para o campo de um
 /// **item de coleção**, que não tem `FeatureDefinition` por trás.
 String? featureItemFieldError(FeatureField field, Map<String, String> values) {
   final value = values[field.id]?.trim() ?? '';
-  if (field.isRequired && value.isEmpty) return 'Campo obrigatório.';
+  if (field.isRequired && value.isEmpty) return featureRequiredMessage(field);
   if (field.type == FeatureFieldType.number && value.isNotEmpty) {
     final number = double.tryParse(value.replaceAll(',', '.'));
     if (number == null || number <= 0) {
@@ -411,7 +455,7 @@ String? collectionItemFieldError(
         formValues,
       ) &&
       value.isEmpty) {
-    return 'Campo obrigatório.';
+    return featureRequiredMessage(field);
   }
   if (field.type == FeatureFieldType.number && value.isNotEmpty) {
     final number = double.tryParse(value.replaceAll(',', '.'));
