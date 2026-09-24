@@ -70,6 +70,7 @@ export 'segmented_tabs.dart';
 export 'skeleton.dart';
 export 'sparkline_area.dart';
 export 'spinner.dart';
+export 'splash_screen.dart';
 export 'step_progress.dart';
 export 'stacked_bar.dart';
 export 'status_card.dart';

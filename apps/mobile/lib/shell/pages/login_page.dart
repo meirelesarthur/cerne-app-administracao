@@ -34,7 +34,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _loginAs(UserAccessProfile profile) {
+  /// Entrar toca a abertura da marca (como no CERNE desktop) e só depois
+  /// abre a sessão — assim o redirecionamento do login não corta a splash.
+  Future<void> _loginAs(UserAccessProfile profile) async {
+    await showAppSplash(context, tagline: 'Gestão das fazendas');
+    if (!mounted) return;
     ref.read(prototypeSessionProvider.notifier).loginAs(profile);
     context.go(profile.landingRoute);
   }
