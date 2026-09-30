@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../design/generated/app_layout.dart';
-import '../../../design/generated/app_radius.dart';
 import '../../../design/generated/app_spacing.dart';
 import '../../../design/generated/app_typography.dart';
 import '../../../design/theme/app_theme_extension.dart';
+import '../../../shell/module_config.dart';
 import '../../../shell/state/prototype_session_store.dart';
 import '../../../ui/ui.dart';
 import '../components/farm_picker.dart';
@@ -17,9 +17,9 @@ import '../state/fazendas_store.dart';
 /// Busca global de funcionalidades — destino do `AppSearchField` do cabeçalho.
 ///
 /// Tela cheia, fora do `ShellRoute`: conserva apenas o contexto da fazenda,
-/// enquanto troca o cabeçalho de perfil por descoberta de produtos, acessos
-/// recentes e histórico. Ao digitar, a curadoria dá lugar aos resultados do
-/// catálogo funcional dos dois perfis.
+/// enquanto troca o cabeçalho de perfil pela lista de todas as funcionalidades
+/// do menu ([menuFunctionalities]), com as de uso diário primeiro. Ao digitar,
+/// a lista dá lugar aos resultados do catálogo funcional.
 ///
 /// **Procura nos dois perfis**, por decisão de produto: o catálogo funcional é
 /// um só e a pessoa não deveria precisar saber em qual ambiente uma função
@@ -45,9 +45,7 @@ class _BuscaGlobalScreenState extends ConsumerState<BuscaGlobalScreen> {
     final activeFarm = ref.watch(fazendasStoreProvider).activeFarm;
     final results = searchFeatures(_query, sessionProfile: sessionProfile);
     final hasQuery = normalizeForSearch(_query).isNotEmpty;
-    final products = _productsFor(sessionProfile);
-    final recent = _recentFor(sessionProfile);
-    final history = _historyFor(sessionProfile);
+    final functionalities = menuFunctionalities(sessionProfile);
 
     return Scaffold(
       backgroundColor: semantic.bgCanvas,
@@ -103,21 +101,21 @@ class _BuscaGlobalScreenState extends ConsumerState<BuscaGlobalScreen> {
               ),
               const SizedBox(height: AppSpacing.space6),
               if (!hasQuery) ...[
-                const _SearchSectionHeader(title: 'Seus Produtos'),
+                const _SearchSectionHeader(title: 'Funcionalidades'),
                 const SizedBox(height: AppSpacing.space3),
-                _SearchDiscoveryRail(items: products),
-                const SizedBox(height: AppSpacing.space6),
-                const _SearchSectionHeader(title: 'Mais acessados'),
-                const SizedBox(height: AppSpacing.space3),
-                _SearchDiscoveryRail(items: recent),
-                const SizedBox(height: AppSpacing.space6),
-                const _SearchSectionHeader(title: 'Histórico'),
-                const SizedBox(height: AppSpacing.space2),
-                for (final item in history)
-                  _SearchHistoryItem(
-                    item: item,
+                for (final item in functionalities) ...[
+                  AppMenuItem(
+                    icon: item.icon,
+                    label: item.label,
+                    description: item.context,
+                    showShadow: false,
+                    // `go`, não `push`: a busca é rota de topo e o destino
+                    // mora no `ShellRoute` — empilhar um sobre o outro quebra
+                    // o `HeroControllerScope` e a navegação não acontece.
                     onTap: () => context.go(item.route),
                   ),
+                  const SizedBox(height: AppSpacing.space2),
+                ],
               ] else if (results.isEmpty)
                 const AppEmptyState(
                   icon: AppIcons.searchX,
@@ -146,7 +144,7 @@ class _BuscaGlobalScreenState extends ConsumerState<BuscaGlobalScreen> {
                         ? null
                         : AppTag(child: Text(_profileLabel(result.feature))),
                     onTap: result.openable
-                        ? () => context.push(featureDestination(result.feature))
+                        ? () => context.go(featureDestination(result.feature))
                         : null,
                   ),
                   const SizedBox(height: AppSpacing.space2),
@@ -186,180 +184,95 @@ class _SearchSectionHeader extends StatelessWidget {
   }
 }
 
-class _SearchDiscoveryRail extends StatelessWidget {
-  const _SearchDiscoveryRail({required this.items});
-
-  final List<_SearchShortcut> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 88,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        separatorBuilder: (context, index) =>
-            const SizedBox(width: AppSpacing.space2),
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return AppDiscoveryTile(
-            icon: item.icon,
-            label: item.label,
-            onTap: () => context.go(item.route),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _SearchHistoryItem extends StatelessWidget {
-  const _SearchHistoryItem({required this.item, required this.onTap});
-
-  final _SearchShortcut item;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final semantic = Theme.of(context).extension<AppSemanticColors>()!;
-
-    return AppPressable(
-      semanticLabel: item.label,
-      onPressed: onTap,
-      minTouchTarget: false,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: SizedBox(
-        height: AppSpacing.space14,
-        child: Row(
-          children: [
-            AppIcon(
-              item.icon,
-              size: AppSize.iconLg,
-              color: semantic.fgDefault,
-            ),
-            const SizedBox(width: AppSpacing.space4),
-            Expanded(
-              child: Text(
-                item.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: AppTypography.md,
-                  color: semantic.fgDefault,
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.space2),
-            AppIcon(
-              AppIcons.chevronRight,
-              size: AppSize.iconLg,
-              color: semantic.fgDefault,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchShortcut {
-  const _SearchShortcut({
+/// Uma funcionalidade do menu, pronta para a lista da busca.
+class MenuFunctionality {
+  const MenuFunctionality({
+    required this.key,
     required this.label,
+    required this.context,
     required this.icon,
     required this.route,
   });
 
+  /// `feature:<id>` para o catálogo das Fazendas, `<módulo>/<item>` para os
+  /// demais módulos — é a chave de [adminDailyPriority].
+  final String key;
   final String label;
+
+  /// Onde a função mora ("Fazendas · Painéis de decisão", "Bank").
+  final String context;
   final AppIconData icon;
   final String route;
 }
 
-List<_SearchShortcut> _productsFor(UserAccessProfile? profile) {
+/// O que o administrador mais abre no dia a dia, nesta ordem. Não há API de
+/// acessos recentes nem de histórico, então a prioridade é uma curadoria fixa:
+/// resultado e operação da fazenda primeiro, depois dinheiro e estoque.
+/// O restante do menu vem em seguida, na ordem do próprio menu.
+const adminDailyPriority = <String>[
+  'feature:painel-financeiro',
+  'feature:consulta-os',
+  'bank/pagamentos',
+  'bank/extrato',
+  'feature:saldo-estoque',
+  'feature:lotacao-currais',
+  'feature:consulta-apontamentos',
+  'feature:suprimentos',
+  'marketplace/pedidos',
+  'credito/propostas',
+  'feature:consultas-gerenciais',
+  'armazem/estoque',
+];
 
-  return const [
-    _SearchShortcut(
-      label: 'Fazendas',
-      icon: AppIcons.sprout,
-      route: '/fazendas/administracao',
-    ),
-    _SearchShortcut(
-      label: 'Gestão de Estoque',
-      icon: AppIcons.boxes,
-      route: '/armazem/estoque',
-    ),
-    _SearchShortcut(
-      label: 'Marketplace',
-      icon: AppIcons.store,
-      route: '/marketplace',
-    ),
-    _SearchShortcut(
-      label: 'Open Finance',
-      icon: AppIcons.openFinance,
-      route: '/bank',
-    ),
+/// Todas as funcionalidades do menu visíveis para a sessão: o catálogo
+/// funcional das Fazendas e as abas e itens de menu dos demais módulos.
+/// Início e "Mais" ficam de fora — são navegação, não funcionalidade.
+List<MenuFunctionality> menuFunctionalities(UserAccessProfile? profile) {
+  final items = <MenuFunctionality>[
+    for (final feature in allFeatures)
+      if (profile != null && featureProfileOf(profile) == feature.profile)
+        MenuFunctionality(
+          key: 'feature:${feature.id}',
+          label: feature.title,
+          context: 'Fazendas · ${feature.group}',
+          icon: groupIcon(feature.group),
+          route: featureDestination(feature),
+        ),
+    for (final module in modules)
+      if (module.id != 'fazendas') ...[
+        for (final tab in visibleBottomTabs(module, profile))
+          if (tab.path.isNotEmpty && tab.action == null && tab.id != 'mais')
+            MenuFunctionality(
+              key: '${module.id}/${tab.id}',
+              label: tab.label,
+              context: module.label,
+              icon: tab.icon,
+              route: '/${module.id}/${tab.path}',
+            ),
+        for (final section in getMenuSections(module, profile: profile))
+          for (final item in section.items)
+            MenuFunctionality(
+              key: '${module.id}/${item.id}',
+              label: item.label,
+              context: module.label,
+              icon: item.icon,
+              route: item.route,
+            ),
+      ],
   ];
-}
 
-List<_SearchShortcut> _recentFor(UserAccessProfile? profile) {
+  int rank(MenuFunctionality item) {
+    final index = adminDailyPriority.indexOf(item.key);
+    return index == -1 ? adminDailyPriority.length : index;
+  }
 
-  return const [
-    _SearchShortcut(
-      label: 'Open Finance',
-      icon: AppIcons.openFinance,
-      route: '/bank',
-    ),
-    _SearchShortcut(
-      label: 'Marketplace',
-      icon: AppIcons.store,
-      route: '/marketplace',
-    ),
-    _SearchShortcut(
-      label: 'Fazendas',
-      icon: AppIcons.sprout,
-      route: '/fazendas/administracao',
-    ),
-    _SearchShortcut(
-      label: 'Gestão de Estoque',
-      icon: AppIcons.boxes,
-      route: '/armazem/estoque',
-    ),
-  ];
-}
-
-List<_SearchShortcut> _historyFor(UserAccessProfile? profile) {
-
-  return const [
-    _SearchShortcut(
-      label: 'Empréstimos e Financiamentos',
-      icon: AppIcons.handCoins,
-      route: '/credito',
-    ),
-    _SearchShortcut(
-      label: 'Seguros, Consórcios e Capitalização',
-      icon: AppIcons.shieldCheck,
-      route: '/credito',
-    ),
-    _SearchShortcut(
-      label: 'Open Finance',
-      icon: AppIcons.openFinance,
-      route: '/bank',
-    ),
-    _SearchShortcut(
-      label: 'Transações',
-      icon: AppIcons.receipt,
-      route: '/bank/extrato',
-    ),
-    _SearchShortcut(
-      label: 'Autorizações',
-      icon: AppIcons.shieldCheck,
-      route: '/bank/pagamentos',
-    ),
-    _SearchShortcut(
-      label: 'Dashboards da Fazenda',
-      icon: AppIcons.layoutDashboard,
-      route: '/fazendas/administracao',
-    ),
-  ];
+  // Ordenação estável: fora da prioridade, vale a ordem do menu.
+  final indexed = items.indexed.toList()
+    ..sort((a, b) {
+      final byRank = rank(a.$2).compareTo(rank(b.$2));
+      return byRank != 0 ? byRank : a.$1.compareTo(b.$1);
+    });
+  return [for (final (_, item) in indexed) item];
 }
 
 /// Uma linha do resultado: a função encontrada e se a sessão atual pode abri-la.

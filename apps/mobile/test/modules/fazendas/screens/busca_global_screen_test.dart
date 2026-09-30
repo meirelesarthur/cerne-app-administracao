@@ -119,19 +119,62 @@ void main() {
     });
   });
 
+  group('menuFunctionalities', () {
+    final lista = menuFunctionalities(UserAccessProfile.administration);
+
+    test('traz o catálogo inteiro e os itens de menu dos módulos', () {
+      final chaves = lista.map((f) => f.key).toSet();
+      for (final feature in allFeatures) {
+        expect(chaves, contains('feature:${feature.id}'));
+      }
+      expect(
+        chaves,
+        containsAll([
+          'bank/extrato',
+          'bank/pix',
+          'credito/contratos',
+          'marketplace/pedidos',
+          'armazem/relatorios',
+        ]),
+      );
+      expect(chaves.length, lista.length, reason: 'item repetido');
+    });
+
+    test('deixa de fora Início e "Mais"', () {
+      expect(
+        lista.any((f) => f.label == 'Início' || f.label == 'Mais'),
+        isFalse,
+      );
+    });
+
+    test('abre com o uso diário do administrador, na ordem definida', () {
+      expect(
+        lista.take(adminDailyPriority.length).map((f) => f.key),
+        adminDailyPriority,
+      );
+    });
+
+    test('sessão sem perfil não lista funções do catálogo', () {
+      expect(
+        menuFunctionalities(null).any((f) => f.key.startsWith('feature:')),
+        isFalse,
+      );
+    });
+  });
+
   group('BuscaGlobalScreen', () {
-    testWidgets('abre com produtos, acessos recentes e histórico', (
+    testWidgets('abre com todas as funcionalidades, sem histórico', (
       tester,
     ) async {
       await tester.pumpWidget(_app(tester, UserAccessProfile.administration));
       await tester.pump();
 
-      expect(find.text('Seus Produtos'), findsOneWidget);
-      expect(find.text('Mais acessados'), findsOneWidget);
-      expect(find.text('Open Finance'), findsWidgets);
-      expect(find.text('Histórico'), findsOneWidget);
-      expect(find.byType(AppDiscoveryTile), findsNWidgets(8));
-      expect(find.byType(AppMenuItem), findsNothing);
+      expect(find.text('Funcionalidades'), findsOneWidget);
+      expect(find.text('Seus Produtos'), findsNothing);
+      expect(find.text('Mais acessados'), findsNothing);
+      expect(find.text('Histórico'), findsNothing);
+      expect(find.byType(AppDiscoveryTile), findsNothing);
+      expect(find.byType(AppMenuItem), findsWidgets);
     });
 
     testWidgets('lista o que encontrou com o ícone do módulo', (tester) async {

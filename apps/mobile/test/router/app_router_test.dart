@@ -1,6 +1,7 @@
 import 'dart:ui' show Rect;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart' show TextFormField;
 
 import 'package:cerne_app/shell/components/bottom_tab_bar.dart';
 import 'package:cerne_app/shell/components/context_tabs.dart';
@@ -72,12 +73,49 @@ void main() {
         await tester.tap(find.byType(AppSearchField));
         await tester.pumpAndSettle();
 
-        expect(find.text('Seus Produtos'), findsOneWidget);
-        expect(find.text('Mais acessados'), findsOneWidget);
-        expect(find.text('Histórico'), findsOneWidget);
+        expect(find.text('Funcionalidades'), findsOneWidget);
+        expect(find.text('Histórico'), findsNothing);
         expect(find.text('Boa tarde,'), findsNothing);
       },
     );
+
+    testWidgets('tocar uma funcionalidade da busca abre a tela dela', (
+      tester,
+    ) async {
+      await setTallSurface(tester);
+      await tester.pumpWidget(harness.buildApp());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(AppSearchField));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pagamentos'));
+      await tester.pumpAndSettle();
+
+      expect(
+        harness.router.routerDelegate.currentConfiguration.uri.path,
+        '/bank/pagamentos',
+      );
+    });
+
+    testWidgets('tocar um resultado da busca digitada abre a funcionalidade', (
+      tester,
+    ) async {
+      await setTallSurface(tester);
+      await tester.pumpWidget(harness.buildApp());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(AppSearchField));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField), 'saldo de estoque');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Saldo de estoque'));
+      await tester.pumpAndSettle();
+
+      expect(
+        harness.router.routerDelegate.currentConfiguration.uri.path,
+        '/fazendas/administracao/saldo-estoque',
+      );
+    });
 
     testWidgets('deep-link "/bank/extrato" abre o módulo Bank na aba Extrato', (
       tester,
