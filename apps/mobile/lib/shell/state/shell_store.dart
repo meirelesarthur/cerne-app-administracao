@@ -4,10 +4,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// tudo em memória (sem persistência local, restrição do protótipo).
 
 class UserProfile {
-  const UserProfile({required this.name, required this.initials});
+  const UserProfile({
+    required this.name,
+    required this.initials,
+    required this.email,
+  });
 
   final String name;
   final String initials;
+
+  /// E-mail de acesso — só leitura no protótipo (Informações pessoais).
+  final String email;
+
+  UserProfile copyWith({String? name}) {
+    final nextName = name ?? this.name;
+    return UserProfile(
+      name: nextName,
+      initials: name == null ? initials : initialsFor(nextName),
+      email: email,
+    );
+  }
+
+  /// Iniciais do avatar: primeira letra do primeiro e do último nome.
+  static String initialsFor(String name) {
+    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
+    if (parts.isEmpty) return '';
+    final first = parts.first[0];
+    final last = parts.length > 1 ? parts.last[0] : '';
+    return '$first$last'.toUpperCase();
+  }
 }
 
 /// Tipo da notificação — decide ícone e cor na tela (`NotificacoesPage`).
@@ -191,13 +216,21 @@ class ShellStoreNotifier extends Notifier<ShellState> {
   @override
   ShellState build() {
     return ShellState(
-      user: const UserProfile(name: 'Silvio Ventura', initials: 'SV'),
+      user: const UserProfile(
+        name: 'Silvio Ventura',
+        initials: 'SV',
+        email: 'silvio.ventura@gbcerne.app',
+      ),
       notifications: _mockNotifications(DateTime.now()),
       isOnline: true,
       balanceHidden: false,
       menuOpen: false,
     );
   }
+
+  /// Salva o nome editado em Informações pessoais (só em memória).
+  void updateUserName(String name) =>
+      state = state.copyWith(user: state.user.copyWith(name: name.trim()));
 
   void setOnline(bool value) => state = state.copyWith(isOnline: value);
 

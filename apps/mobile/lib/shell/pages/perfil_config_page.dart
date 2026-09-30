@@ -12,7 +12,7 @@ import '../state/shell_store.dart';
 import '../state/prototype_session_store.dart';
 
 /// Perfil / Configurações do Shell — espelha `PerfilConfig.tsx`: hero `ink` com
-/// avatar + progresso do cadastro, seguido de seções rotuladas ("Conta",
+/// avatar, nome e cargo, seguido de seções rotuladas ("Conta",
 /// "Geral") no padrão de listagens do catálogo (linhas `subtle` sem sombra
 /// sobre a folha branca). Conta + tema light/gbMode continuam funções do
 /// Shell (aqui via `themeVariantProvider`).
@@ -73,55 +73,7 @@ class PerfilConfigPage extends ConsumerWidget {
                                     color: semantic.inkMuted,
                                   ),
                                 ),
-                                AppButton(
-                                  variant: AppButtonVariant.link,
-                                  onPressed: () => context.go('/perfil'),
-                                  child: const Text('Ver perfil completo'),
-                                ),
                               ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.space3),
-                    // fidelidade-esteira: mesma linguagem de "Evolua seu
-                    // crédito" da home administrativa (fração + barra +
-                    // próximo passo) — não o anel da referência, para manter
-                    // um único idioma de "progresso de cadastro" no app.
-                    AppCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Perfil completo',
-                                style: TextStyle(
-                                  fontSize: AppTypography.sm,
-                                  fontWeight: AppTypography.weightMedium,
-                                  color: semantic.fgDefault,
-                                ),
-                              ),
-                              Text(
-                                '75%',
-                                style: TextStyle(
-                                  fontSize: AppTypography.sm,
-                                  fontWeight: AppTypography.weightSemibold,
-                                  color: semantic.accentDefault,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.space2),
-                          const AppProgressBar(value: 75),
-                          const SizedBox(height: AppSpacing.space2),
-                          Text(
-                            'Complete seus dados para liberar todos os recursos.',
-                            style: TextStyle(
-                              fontSize: AppTypography.sm,
-                              color: semantic.fgMuted,
                             ),
                           ),
                         ],
@@ -135,7 +87,7 @@ class PerfilConfigPage extends ConsumerWidget {
                       label: 'Informações pessoais',
                       description: 'Atualize seus dados cadastrais',
                       showShadow: false,
-                      onTap: () => context.go('/perfil'),
+                      onTap: () => context.push('/perfil/informacoes-pessoais'),
                     ),
                     const SizedBox(height: AppSpacing.space5),
                     const AppSectionTitle(child: Text('Geral')),
@@ -162,17 +114,17 @@ class PerfilConfigPage extends ConsumerWidget {
                           ref.read(themeVariantProvider.notifier).toggle(),
                     ),
                     const SizedBox(height: AppSpacing.space2),
+                    AppMenuItem(
+                      icon: AppIcons.shieldCheck,
+                      label: 'Segurança',
+                      description: 'Alterar senha de acesso',
+                      showShadow: false,
+                      onTap: () => context.push('/perfil/seguranca'),
+                    ),
+                    const SizedBox(height: AppSpacing.space2),
                     // Sem tela própria no protótipo ainda — sinalizado com a
                     // tag "Em breve" em vez de fingir um destino real (Limites
                     // do protótipo, CLAUDE.md).
-                    const AppMenuItem(
-                      icon: AppIcons.shieldCheck,
-                      label: 'Segurança',
-                      description: 'PIN, biometria e sessões',
-                      showShadow: false,
-                      trailing: AppTag(child: Text('Em breve')),
-                    ),
-                    const SizedBox(height: AppSpacing.space2),
                     const AppMenuItem(
                       icon: AppIcons.helpCircle,
                       label: 'Central de ajuda',

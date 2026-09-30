@@ -13,11 +13,13 @@ import '../modules/fazendas/state/fazendas_store.dart';
 import '../modules/fazendas/state/recent_access_store.dart';
 import '../modules/marketplace/marketplace_module.dart';
 import '../shell/module_config.dart';
+import '../shell/pages/informacoes_pessoais_page.dart';
 import '../shell/pages/login_page.dart';
 import '../shell/pages/module_placeholder_screen.dart';
 import '../shell/pages/notificacoes_page.dart';
 import '../shell/pages/onboarding_page.dart';
 import '../shell/pages/perfil_config_page.dart';
+import '../shell/pages/seguranca_page.dart';
 import '../shell/shell_layout.dart';
 import '../shell/state/prototype_session_store.dart';
 
@@ -116,6 +118,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/perfil',
         builder: (context, state) => const PerfilConfigPage(),
+        routes: [
+          GoRoute(
+            path: 'informacoes-pessoais',
+            builder: (context, state) => const InformacoesPessoaisPage(),
+          ),
+          GoRoute(
+            path: 'seguranca',
+            builder: (context, state) => const SegurancaPage(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/notificacoes',
