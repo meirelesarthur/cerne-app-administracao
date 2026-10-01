@@ -61,7 +61,6 @@ class AppAlertStrip extends StatelessWidget {
     if (visible.isEmpty) return const SizedBox.shrink();
 
     return AppMetricGrid(
-      minTileWidth: 168,
       maxColumns: 2,
       spacing: AppSpacing.space2,
       children: [for (final item in visible) _AlertRow(item: item)],

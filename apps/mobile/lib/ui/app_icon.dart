@@ -202,6 +202,9 @@ class AppIcons {
   static const AppIconData search = AppIconData.glyph(
     HugeIcons.strokeRoundedSearch01,
   );
+  static const AppIconData aiSearch = AppIconData.glyph(
+    HugeIcons.strokeRoundedAiSearch02,
+  );
   static const AppIconData searchX = AppIconData.glyph(
     HugeIcons.strokeRoundedSearchRemove,
   );

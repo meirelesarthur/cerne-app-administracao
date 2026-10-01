@@ -162,7 +162,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         offset: const Offset(0, -AppSpacing.space10),
                         child: ClipPath(
                           clipper: const _OnboardingPanelClipper(),
-                          clipBehavior: Clip.antiAlias,
                           child: Container(
                             color: semantic.bgSurface,
                             child: SingleChildScrollView(

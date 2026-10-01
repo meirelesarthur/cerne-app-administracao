@@ -70,10 +70,10 @@ String _fmtDataHora(DateTime d) =>
 /// Quantidade sem ",00" quando inteira (12 un., 7,02 L).
 String _qtd(num v) {
   if (v % 1 == 0) return v.toStringAsFixed(0);
-  return v.toStringAsFixed(2).replaceAll('.', ',').replaceFirst(
-    RegExp(r',?0+$'),
-    '',
-  );
+  return v
+      .toStringAsFixed(2)
+      .replaceAll('.', ',')
+      .replaceFirst(RegExp(r',?0+$'), '');
 }
 
 /// Dock de leitura de um item da OS: os campos do registro (os mesmos do
@@ -392,7 +392,7 @@ class OsSummaryCard extends StatelessWidget {
     // Nas listas (standard) o título é só o número da OS, com o status no
     // extremo direito; nas homes (featured/compact) o nome da tarefa é o que
     // se lê primeiro e o número fica na linha de apoio.
-    final lista = variant == AppStatusCardVariant.standard;
+    final lista = variant != AppStatusCardVariant.compact;
     return AppStatusCard(
       variant: variant,
       statusInHeader: lista,
@@ -639,7 +639,8 @@ class _OsDetailBodyState extends State<OsDetailBody> {
               fields: [
                 AppDetailField(
                   label: 'Temperatura',
-                  value: os.condicoes.temperaturaMinima == 0 &&
+                  value:
+                      os.condicoes.temperaturaMinima == 0 &&
                           os.condicoes.temperaturaMaxima == 0
                       ? 'Não informado'
                       : '${_qtd(os.condicoes.temperaturaMinima)} a '
@@ -647,7 +648,8 @@ class _OsDetailBodyState extends State<OsDetailBody> {
                 ),
                 AppDetailField(
                   label: 'Horário permitido',
-                  value: (os.condicoes.horarioInicio.isEmpty ||
+                  value:
+                      (os.condicoes.horarioInicio.isEmpty ||
                           os.condicoes.horarioFim.isEmpty)
                       ? 'Não informado'
                       : '${os.condicoes.horarioInicio} às '

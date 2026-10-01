@@ -183,9 +183,8 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
         else
           for (final os in filtradas) ...[
             OsSummaryCard(
-              // Mesmo card destacado que a lista "Minhas OS" do Operacional
-              // usa (Lei 2): nome grande, metas com ícone, situação com a
-              // mesma leitura visual nos dois perfis.
+              // Card da listagem: número da OS no título, status à direita e dados
+              // com ícone (ver OsSummaryCard); situação e ação rápida no rodapé.
               variant: AppStatusCardVariant.featured,
               os: os,
               agora: agora,

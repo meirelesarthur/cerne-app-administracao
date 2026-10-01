@@ -172,29 +172,43 @@ ThemeData buildAppTheme(AppThemeVariant variant) {
         color: semantic.fgSubtle,
       ),
       dayForegroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentContrast;
-        if (states.contains(WidgetState.disabled)) return semantic.fgQuiet;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentContrast;
+        }
+        if (states.contains(WidgetState.disabled)) {
+          return semantic.fgQuiet;
+        }
         return semantic.fgDefault;
       }),
       dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentDefault;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentDefault;
+        }
         return AppColors.transparent;
       }),
       todayForegroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentContrast;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentContrast;
+        }
         return semantic.accentDefault;
       }),
       todayBackgroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentDefault;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentDefault;
+        }
         return AppColors.transparent;
       }),
       todayBorder: BorderSide(color: semantic.accentDefault),
       yearForegroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentContrast;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentContrast;
+        }
         return semantic.fgDefault;
       }),
       yearBackgroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return semantic.accentDefault;
+        if (states.contains(WidgetState.selected)) {
+          return semantic.accentDefault;
+        }
         return AppColors.transparent;
       }),
       rangePickerShape: RoundedRectangleBorder(

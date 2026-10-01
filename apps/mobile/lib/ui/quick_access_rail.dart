@@ -74,7 +74,6 @@ class _QuickAccessTile extends StatelessWidget {
         height: AppSpacing.space14 + AppSpacing.space12,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             AppHexagon(
               size: AppSpacing.space14,

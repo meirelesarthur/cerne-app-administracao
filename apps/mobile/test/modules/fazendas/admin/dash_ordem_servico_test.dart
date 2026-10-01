@@ -217,14 +217,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(findCta('+ Nova O.S'), findsOneWidget);
-      expect(
-        find.text('OS #2201'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('OS #2185'),
-        findsOneWidget,
-      );
+      expect(find.text('OS #2201'), findsOneWidget);
+      expect(find.text('OS #2185'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -238,10 +232,7 @@ void main() {
       await tester.tap(find.text('Encerradas'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201'),
-        findsNothing,
-      );
+      expect(find.text('OS #2201'), findsNothing);
       expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
     });
 
@@ -257,22 +248,13 @@ void main() {
       await tester.tap(find.widgetWithText(AppButton, 'Hoje'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201'),
-        findsNothing,
-      );
-      expect(
-        find.text('OS #2207'),
-        findsOneWidget,
-      );
+      expect(find.text('OS #2201'), findsNothing);
+      expect(find.text('OS #2207'), findsOneWidget);
 
       await tester.tap(find.text('Todas as datas'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('OS #2201'),
-        findsOneWidget,
-      );
+      expect(find.text('OS #2201'), findsOneWidget);
     });
 
     testWidgets('cria uma nova OS pelo formulário em tela cheia', (
@@ -309,16 +291,12 @@ void main() {
 
       await tester.tap(find.byTooltip('Voltar').last);
       await tester.pumpAndSettle();
-      const tituloNovaOs = 'Aração — Soja — TMG 2383';
-      expect(find.text(tituloNovaOs), findsOneWidget);
+      // O card da lista traz o número da OS no título; a nova OS se acha
+      // pela atividade, e o status segue "Aguardando".
+      final cardNovaOs = find.widgetWithText(AppStatusCard, 'Aração');
+      expect(cardNovaOs, findsOneWidget);
       expect(
-        find.descendant(
-          of: find.ancestor(
-            of: find.text(tituloNovaOs),
-            matching: find.byType(AppStatusCard),
-          ),
-          matching: find.text('Aguardando'),
-        ),
+        find.descendant(of: cardNovaOs, matching: find.text('Aguardando')),
         findsOneWidget,
       );
     });
@@ -329,13 +307,9 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(
-        find.text('OS #2201'),
-      );
+      await tester.ensureVisible(find.text('OS #2201'));
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.text('OS #2201'),
-      );
+      await tester.tap(find.text('OS #2201'));
       await tester.pumpAndSettle();
 
       expect(find.byType(OsDetailPage), findsOneWidget);
@@ -351,13 +325,9 @@ void main() {
       await tester.pumpWidget(_wrap(const DashOrdemServico()));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(
-        find.text('OS #2201'),
-      );
+      await tester.ensureVisible(find.text('OS #2201'));
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.text('OS #2201'),
-      );
+      await tester.tap(find.text('OS #2201'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('CANCELAR OS'));
       await tester.pumpAndSettle();
@@ -530,10 +500,7 @@ void main() {
 
       // Fazenda padrão (São Pedro): a vacinação é da Santa Rita.
       expect(find.text('Vacinação — Lote 12 - Recria'), findsNothing);
-      expect(
-        find.text('OS #2201'),
-        findsOneWidget,
-      );
+      expect(find.text('OS #2201'), findsOneWidget);
     });
   });
 }
