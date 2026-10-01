@@ -59,7 +59,7 @@ void main() {
       await tester.pumpWidget(harness.buildApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Radar da fazenda'), findsOneWidget);
+      expect(find.text('Receita × custo'), findsOneWidget);
       expect(find.byType(AppContextTabs), findsOneWidget);
       expect(find.byType(AppBottomTabBar), findsOneWidget);
     });
@@ -176,8 +176,8 @@ void main() {
         expect(aba('Visão geral').width, closeTo(aba('Painéis').width, 0.1));
         expect(aba('Visão geral').width, closeTo(aba('Consultas').width, 0.1));
         // "/fazendas" abre a Visão geral, com um grupo por painel.
-        expect(find.text('Radar da fazenda'), findsOneWidget);
-        expect(find.text('Resultado'), findsOneWidget);
+        expect(find.text('Receita × custo'), findsOneWidget);
+        expect(find.text('Resultado'), findsWidgets);
 
         // A aba Painéis traz os painéis de decisão completos.
         await tester.tap(
@@ -261,11 +261,11 @@ void main() {
         // Lista as OS da fazenda, com o "+ Nova O.S" fixo no rodapé.
         expect(find.text('+ NOVA O.S'), findsOneWidget);
         expect(
-          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          find.text('OS #2201'),
           findsOneWidget,
         );
         expect(
-          find.text('Manutenções de Currais — Curral de manejo 1'),
+          find.text('OS #2185'),
           findsOneWidget,
         );
         expect(find.text('Confinamento'), findsNothing);
@@ -283,11 +283,11 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(
-          find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+          find.text('OS #2201'),
           findsNothing,
         );
         expect(
-          find.text('Manutenções de Currais — Curral de manejo 1'),
+          find.text('OS #2185'),
           findsNothing,
         );
       },

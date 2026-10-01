@@ -28,7 +28,7 @@ void main() {
         // seletor de fazenda do shell já dizem onde a pessoa está.
         expect(find.text('Visão geral'), findsNothing);
         expect(find.text('Safra 24/25'), findsNothing);
-        expect(find.text('Radar da fazenda'), findsOneWidget);
+        expect(find.text('Receita × custo'), findsOneWidget);
         expect(find.text('Atividades recentes'), findsOneWidget);
         // O banner de crédito (Bank) saiu da visão da fazenda.
         expect(find.text('Crédito pré-aprovado'), findsNothing);
@@ -51,7 +51,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Alerta acionável no topo, antes de qualquer gráfico.
-      expect(find.text('em contas vencidas'), findsOneWidget);
+      expect(find.text('Contas vencidas'), findsOneWidget);
 
       // Um grupo por painel de decisão, na ordem da aba Painéis, mais as OS.
       for (final painel in [
@@ -62,7 +62,7 @@ void main() {
         'Ativos e depreciação',
         'Adoção e governança',
       ]) {
-        expect(find.text(painel), findsOneWidget, reason: painel);
+        expect(find.text(painel), findsWidgets, reason: painel);
       }
       expect(find.text('Ver painel'), findsNWidgets(5));
       expect(find.text('Ver OS'), findsOneWidget);

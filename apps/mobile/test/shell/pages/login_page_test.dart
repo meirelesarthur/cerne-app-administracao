@@ -49,7 +49,7 @@ void main() {
       await tester.tap(find.text('ENTRAR'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Radar da fazenda'), findsOneWidget);
+      expect(find.text('Receita × custo'), findsOneWidget);
       expect(
         harness.container.read(prototypeSessionProvider).profile,
         UserAccessProfile.administration,

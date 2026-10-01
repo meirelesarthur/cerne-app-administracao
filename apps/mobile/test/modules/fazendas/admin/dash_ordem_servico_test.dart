@@ -6,11 +6,15 @@ import 'package:cerne_app/design/theme/app_theme.dart';
 import 'package:cerne_app/modules/fazendas/admin/dash_ordem_servico.dart';
 import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_create_page.dart';
 import 'package:cerne_app/modules/fazendas/ordem_servico/screens/os_detail_page.dart';
+import 'package:cerne_app/modules/fazendas/ordem_servico/state/ordem_servico_store.dart';
 import 'package:cerne_app/ui/ui.dart';
 
 import '../../../helpers/cta_finder.dart';
 
-Widget _wrap(Widget child) => ProviderScope(
+Widget _wrap(Widget child, {DateTime? agora}) => ProviderScope(
+  overrides: [
+    if (agora != null) osRelogioProvider.overrideWithValue(() => agora),
+  ],
   child: MaterialApp(
     theme: buildAppTheme(AppThemeVariant.light),
     home: Scaffold(body: child),
@@ -239,7 +243,9 @@ void main() {
     testWidgets('filtra por data de prazo e permite limpar o filtro', (
       tester,
     ) async {
-      await tester.pumpWidget(_wrap(const DashOrdemServico()));
+      await tester.pumpWidget(
+        _wrap(const DashOrdemServico(), agora: DateTime(2026, 9, 24, 9)),
+      );
       await tester.pumpAndSettle();
 
       // Só a OS #2207 tem prazo hoje — e como o card mostra o prazo por

@@ -121,7 +121,7 @@ class _OrdemServicoPainelState extends ConsumerState<OrdemServicoPainel> {
               AppButton(
                 variant: AppButtonVariant.secondary,
                 size: AppButtonSize.sm,
-                onPressed: () => _definirData(DateTime.now()),
+                onPressed: () => _definirData(ref.read(osRelogioProvider)()),
                 child: const Text('Hoje'),
               ),
             ],
