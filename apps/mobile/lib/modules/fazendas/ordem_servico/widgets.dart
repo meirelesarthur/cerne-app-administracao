@@ -389,43 +389,75 @@ class OsSummaryCard extends StatelessWidget {
     final urgente =
         os.prioridade == PrioridadeOs.alta ||
         os.prioridade == PrioridadeOs.urgente;
-    // O nome da tarefa é o que se lê primeiro em toda variante — é o que
-    // diz o que fazer; o número da OS fica na linha de apoio, para conferir.
+    // Nas listas (standard) o título é só o número da OS, com o status no
+    // extremo direito; nas homes (featured/compact) o nome da tarefa é o que
+    // se lê primeiro e o número fica na linha de apoio.
+    final lista = variant == AppStatusCardVariant.standard;
     return AppStatusCard(
       variant: variant,
+      statusInHeader: lista,
       statusLabel: os.status.label,
       statusTone: osStatusTone(os.status),
-      title: os.titulo,
-      // Dois por linha, na ordem do que se procura: onde e até quando;
-      // prioridade e quem executa; o número da OS para conferir.
-      meta: [
-        AppStatusCardMeta(
-          label: 'Local',
-          value: os.area,
-          icon: AppIcons.mapPin,
-        ),
-        AppStatusCardMeta(
-          label: 'Prazo',
-          value: osPrazoRelativo(os.prazo, agora),
-          icon: AppIcons.calendar,
-        ),
-        AppStatusCardMeta(
-          label: 'Prioridade',
-          value: os.prioridade.label,
-          highlight: urgente,
-          icon: AppIcons.alertCircle,
-        ),
-        AppStatusCardMeta(
-          label: 'Responsável',
-          value: os.responsavelExecucao,
-          icon: AppIcons.user,
-        ),
-        AppStatusCardMeta(
-          label: 'Código',
-          value: os.codigo,
-          icon: AppIcons.ordemServico,
-        ),
-      ],
+      title: lista ? os.codigo : os.titulo,
+      meta: lista
+          // Dois por linha: lote e prazo final; operação e atividade; executor.
+          // Sem lote (agricultura etc.), a área ocupa o lugar do lote.
+          ? [
+              AppStatusCardMeta(
+                label: os.lote != null ? 'Lote' : 'Local',
+                value: os.lote ?? os.area,
+                icon: AppIcons.mapPin,
+              ),
+              AppStatusCardMeta(
+                label: 'Prazo final',
+                value: _fmtData(os.prazo),
+                highlight: urgente,
+                icon: AppIcons.calendar,
+              ),
+              AppStatusCardMeta(
+                label: 'Operação',
+                value: os.operacao,
+                icon: AppIcons.layers,
+              ),
+              AppStatusCardMeta(
+                label: 'Atividade',
+                value: os.atividade,
+                icon: AppIcons.activity,
+              ),
+              AppStatusCardMeta(
+                label: 'Executor',
+                value: os.responsavelExecucao,
+                icon: AppIcons.user,
+              ),
+            ]
+          : [
+              AppStatusCardMeta(
+                label: 'Local',
+                value: os.area,
+                icon: AppIcons.mapPin,
+              ),
+              AppStatusCardMeta(
+                label: 'Prazo',
+                value: osPrazoRelativo(os.prazo, agora),
+                icon: AppIcons.calendar,
+              ),
+              AppStatusCardMeta(
+                label: 'Prioridade',
+                value: os.prioridade.label,
+                highlight: urgente,
+                icon: AppIcons.alertCircle,
+              ),
+              AppStatusCardMeta(
+                label: 'Responsável',
+                value: os.responsavelExecucao,
+                icon: AppIcons.user,
+              ),
+              AppStatusCardMeta(
+                label: 'Código',
+                value: os.codigo,
+                icon: AppIcons.ordemServico,
+              ),
+            ],
       situation: osSituacao(os, agora),
       action: acao == null
           ? null

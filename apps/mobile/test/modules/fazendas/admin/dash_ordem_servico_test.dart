@@ -218,11 +218,11 @@ void main() {
 
       expect(findCta('+ Nova O.S'), findsOneWidget);
       expect(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
         findsOneWidget,
       );
       expect(
-        find.text('Manutenções de Currais — Curral de manejo 1'),
+        find.text('OS #2185'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -239,7 +239,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
         findsNothing,
       );
       expect(find.text('Nenhuma OS encontrada'), findsOneWidget);
@@ -258,11 +258,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
         findsNothing,
       );
       expect(
-        find.text('Manutenções de Construções — Curral 12'),
+        find.text('OS #2207'),
         findsOneWidget,
       );
 
@@ -270,7 +270,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
         findsOneWidget,
       );
     });
@@ -330,11 +330,11 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
       );
       await tester.pumpAndSettle();
       await tester.tap(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
       );
       await tester.pumpAndSettle();
 
@@ -352,11 +352,11 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
       );
       await tester.pumpAndSettle();
       await tester.tap(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('CANCELAR OS'));
@@ -531,7 +531,7 @@ void main() {
       // Fazenda padrão (São Pedro): a vacinação é da Santa Rita.
       expect(find.text('Vacinação — Lote 12 - Recria'), findsNothing);
       expect(
-        find.text('Construção de Cercas — Lote 04 - Novilhas Recria'),
+        find.text('OS #2201'),
         findsOneWidget,
       );
     });

@@ -105,9 +105,14 @@ class AppStatusCard extends StatelessWidget {
     this.action,
     this.onTap,
     this.variant = AppStatusCardVariant.standard,
+    this.statusInHeader = false,
   });
 
   final AppStatusCardVariant variant;
+
+  /// `true` põe o chip de status no extremo direito da linha do título, em
+  /// vez de embaixo dos dados de apoio — para títulos curtos (ex.: "OS #2201").
+  final bool statusInHeader;
 
   final String statusLabel;
   final AppChipTone statusTone;
@@ -307,6 +312,19 @@ class AppStatusCard extends StatelessWidget {
     // O "próximo da fila" mostra só a primeira linha de dados.
     final visibleMeta = compact ? meta.take(2).toList() : meta;
     final hasFooter = !compact && (situation != null || action != null);
+    final titleText = Text(
+      title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: compact ? AppTypography.xl : AppTypography.xl2,
+        fontWeight: AppTypography.weightMedium,
+        height: compact
+            ? AppTypography.lineHeightSnug
+            : AppTypography.lineHeightTight,
+        color: semantic.fgHeading,
+      ),
+    );
 
     final content = Container(
       padding: const EdgeInsets.all(AppSpacing.space4),
@@ -317,19 +335,16 @@ class AppStatusCard extends StatelessWidget {
         children: [
           // O título usa a largura inteira: status e dados ficam embaixo,
           // nunca na lateral disputando espaço com o texto.
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: compact ? AppTypography.xl : AppTypography.xl2,
-              fontWeight: AppTypography.weightMedium,
-              height: compact
-                  ? AppTypography.lineHeightSnug
-                  : AppTypography.lineHeightTight,
-              color: semantic.fgHeading,
-            ),
-          ),
+          if (statusInHeader)
+            Row(
+              children: [
+                Expanded(child: titleText),
+                const SizedBox(width: AppSpacing.space3),
+                AppChip(tone: statusTone, child: Text(statusLabel)),
+              ],
+            )
+          else
+            titleText,
           if (subtitle != null) ...[
             const SizedBox(height: AppSpacing.space1),
             Text(
@@ -359,11 +374,13 @@ class AppStatusCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.space2),
             _metaGrid(semantic, visibleMeta),
           ],
-          const SizedBox(height: AppSpacing.space2),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: AppChip(tone: statusTone, child: Text(statusLabel)),
-          ),
+          if (!statusInHeader) ...[
+            const SizedBox(height: AppSpacing.space2),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: AppChip(tone: statusTone, child: Text(statusLabel)),
+            ),
+          ],
           if (hasFooter) ...[
             SizedBox(height: featured ? AppSpacing.space4 : AppSpacing.space3),
             _footer(semantic, featured: featured),
@@ -410,6 +427,7 @@ WidgetbookComponent buildStatusCardWidgetbookComponent() {
             ),
             const SizedBox(height: AppSpacing.space3),
             AppStatusCard(
+              statusInHeader: true,
               statusLabel: 'Aguardando',
               title: 'OS #2201',
               subtitle: 'Reparo de cerca do Talhão 04',
