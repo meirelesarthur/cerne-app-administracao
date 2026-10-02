@@ -1,5 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Situação do apontamento na consulta administrativa.
+enum ApontamentoStatus {
+  pendente('Pendente'),
+  aprovado('Aprovado'),
+  rejeitado('Rejeitado');
+
+  const ApontamentoStatus(this.label);
+  final String label;
+}
+
 /// Apontamento já lançado — o que `ApontamentoFlow` grava ao salvar. Guarda
 /// os mesmos 12 campos de cabeçalho do formulário (rótulos já resolvidos,
 /// não os `value` de dropdown) mais a contagem de cada uma das 5 coleções,
@@ -20,6 +30,7 @@ class ApontamentoRegistro {
     this.cultura,
     this.safra,
     this.armazemInsumo,
+    this.status = ApontamentoStatus.pendente,
     this.descricao = '',
     this.maoDeObra = const [],
     this.maquinas = const [],
@@ -43,6 +54,7 @@ class ApontamentoRegistro {
   final String? safra;
   final String? armazemInsumo;
   final String descricao;
+  final ApontamentoStatus status;
 
   /// Cada item já formatado para exibição (mesmo texto de `_ItemRow` no
   /// cadastro) — a listagem não recalcula rótulo de dropdown.
@@ -77,6 +89,7 @@ final _seed = <ApontamentoRegistro>[
     safra: '2025/2026',
     armazemInsumo: 'Armazém A',
     descricao: 'Aplicação preventiva pós-chuva.',
+    status: ApontamentoStatus.aprovado,
     registradoEm: DateTime(2026, 9, 10, 16, 20),
     maoDeObra: const ['Tratorista: Carlos Dias — 1 dia-homem · R\$ 180'],
     maquinas: const ['Pulverizador — 3 hora · horímetro 210→213'],

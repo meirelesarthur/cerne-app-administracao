@@ -59,6 +59,22 @@ class DashApontamentos extends ConsumerWidget {
   }
 }
 
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final ApontamentoStatus status;
+
+  @override
+  Widget build(BuildContext context) => AppChip(
+    tone: switch (status) {
+      ApontamentoStatus.pendente => AppChipTone.amber,
+      ApontamentoStatus.aprovado => AppChipTone.brand,
+      ApontamentoStatus.rejeitado => AppChipTone.red,
+    },
+    child: Text(status.label),
+  );
+}
+
 class _ApontamentoCard extends StatelessWidget {
   const _ApontamentoCard({required this.registro, required this.onTap});
 
@@ -88,10 +104,14 @@ class _ApontamentoCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.space2),
-              AppChip(child: Text(registro.data)),
+              _StatusChip(status: registro.status),
             ],
           ),
           const SizedBox(height: AppSpacing.space1),
+          Text(
+            registro.data,
+            style: TextStyle(fontSize: AppTypography.sm, color: semantic.fgMuted),
+          ),
           Text(
             '${registro.responsavel} · ${registro.area}',
             style: TextStyle(fontSize: AppTypography.sm, color: semantic.fgMuted),
